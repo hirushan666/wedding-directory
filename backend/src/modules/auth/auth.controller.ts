@@ -21,7 +21,7 @@ export class AuthController {
 
         // Set access_token as a regular cookie (not HttpOnly, so it is accessible from frontend)
         res.cookie('access_token', access_token, {
-            domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.sayido.lk',
+            // domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.ngrok-free.dev',
             httpOnly: false,
             secure: process.env.COOKIE_SECURE === 'true',
             sameSite: process.env.COOKIE_SAMESITE === 'lax' ? 'lax' : 'none',
@@ -29,7 +29,9 @@ export class AuthController {
         });
 
         // Return the access_token in the response as well
-        res.status(HttpStatus.OK).json({ message: 'Login successful' });
+        res.status(HttpStatus.OK).json({ message: 'Login successful' ,
+            access_token,
+         });
     }
 
     @UseGuards(LocalAuthGuard)
@@ -41,13 +43,15 @@ export class AuthController {
         }
         const { access_token } = this.authService.loginVendor(vendor);
         res.cookie('access_tokenVendor', access_token, {
-            domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.sayido.lk',
+            // domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.ngrok-free.dev',
             httpOnly: false,
             secure: process.env.COOKIE_SECURE === 'true',
             sameSite: process.env.COOKIE_SAMESITE === 'lax' ? 'lax' : 'none',
             maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
         });
-        
-        res.status(HttpStatus.OK).json({ message: 'Login successful' });
+
+        res.status(HttpStatus.OK).json({ message: 'Login successful',
+            access_token,
+        });
     }
 }
