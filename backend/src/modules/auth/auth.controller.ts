@@ -29,10 +29,13 @@ export class AuthController {
 
     // Set access_token as a regular cookie (not HttpOnly, so it is accessible from frontend)
     res.cookie('access_token', access_token, {
-      // domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.ngrok-free.dev',
+      // domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.railway.app',
       httpOnly: false,
-      secure: process.env.COOKIE_SECURE === 'true',
-      sameSite: process.env.COOKIE_SAMESITE === 'lax' ? 'lax' : 'none',
+      // secure: process.env.COOKIE_SECURE === 'true',
+      // sameSite: process.env.COOKIE_SAMESITE === 'none',
+      secure: true,
+      sameSite: 'none',
+      path: '/',
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     });
 
@@ -53,9 +56,12 @@ export class AuthController {
     res.cookie('access_tokenVendor', access_token, {
       // domain: process.env.COOKIE_DOMAIN === 'localhost' ? 'localhost' : '.ngrok-free.dev',
       httpOnly: false,
-      secure: process.env.COOKIE_SECURE === 'true',
+      // secure: process.env.COOKIE_SECURE === 'true',
+      // sameSite: 'none',
+      // domain: process.env.COOKIE_DOMAIN,
+      secure: true,
       sameSite: 'none',
-      domain: process.env.COOKIE_DOMAIN,
+      path: '/',
       maxAge: 86400000,
     });
 
