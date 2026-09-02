@@ -55,7 +55,6 @@
     "pgvector": "^0.2.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "stripe": "^18.1.0",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
