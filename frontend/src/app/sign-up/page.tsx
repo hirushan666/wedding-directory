@@ -21,6 +21,7 @@ import RePassword from "@/components/vendor-signup/RePassword";
 import { toast } from 'react-hot-toast';
 import { useVendorAuth } from '@/contexts/VendorAuthContext';
 import { loginVendor as loginApi } from '@/api/auth/vendor.auth.api';
+import GoogleAuthButton from '@/components/auth/GoogleAuthButton';
 
 const Signup = () => {
   const router = useRouter();
@@ -187,6 +188,14 @@ const Signup = () => {
                     {loading ? "Registering..." : "Register Now"}
                   </Button>
                 </div>
+
+                <div className="flex items-center my-4">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <GoogleAuthButton role="vendor" text="signup_with" />
               </form>
 
               <div className="mt-2">

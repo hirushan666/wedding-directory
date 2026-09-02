@@ -18,6 +18,7 @@ import {
   VerifyOtpDto,
   ResetPasswordDto,
 } from './dto/password-reset.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 
 const buildCookieOptions = (): CookieOptions => {
   const configuredDomain = process.env.COOKIE_DOMAIN?.trim();
@@ -103,5 +104,24 @@ export class AuthController {
       body.newPassword,
       body.role,
     );
+  }
+
+  @Post('google')
+  async googleAuth(
+    @Body() body: GoogleAuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.googleAuth(body.idToken, body.role);
+
+    const cookieName =
+      result.role === 'vendor' ? 'access_tokenVendor' : 'access_token';
+    res.cookie(cookieName, result.access_token, buildCookieOptions());
+
+    return {
+      message: result.isNewUser
+        ? 'Account created and logged in successfully'
+        : 'Login successful',
+      ...result,
+    };
   }
 }

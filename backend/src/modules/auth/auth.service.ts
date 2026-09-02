@@ -1,9 +1,10 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { VisitorService } from '../visitor/visitor.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { OAuth2Client, TokenPayload } from 'google-auth-library';
 
 import { VisitorEntity } from '../../database/entities/visitor.entity';
 import { jwtSecret } from './constants';
@@ -308,5 +309,76 @@ export class AuthService {
       message: 'Password reset successfully. You can now log in with your new password.',
       role: resolvedRole,
     };
+  }
+
+  /**
+   * Validates Google ID token and creates or logs in Visitor/Vendor.
+   */
+  async googleAuth(idToken: string, role: 'visitor' | 'vendor' = 'visitor') {
+    if (!idToken) {
+      throw new BadRequestException('Google ID token is required.');
+    }
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const client = new OAuth2Client(clientId);
+
+    let payload: TokenPayload | undefined;
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: clientId,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Invalid Google ID token');
+    }
+
+    if (!payload || !payload.email) {
+      throw new UnauthorizedException('Google account did not return an email address');
+    }
+
+    const email = payload.email.toLowerCase();
+
+    if (role === 'visitor') {
+      let visitor = await this.visitorService.getVisitorByEmail(email);
+      let isNewUser = false;
+      if (!visitor) {
+        visitor = await this.visitorService.createGoogleVisitor({
+          email,
+          visitor_fname: payload.given_name || payload.name || 'Visitor',
+          visitor_lname: payload.family_name || '',
+          profile_pic_url: payload.picture,
+        });
+        isNewUser = true;
+      }
+      const { access_token } = this.loginVisitor(visitor);
+      return {
+        access_token,
+        visitorId: visitor.id,
+        visitorEmail: visitor.email,
+        role: 'visitor' as const,
+        isNewUser,
+      };
+    } else {
+      let vendor = await this.vendorService.getVendorByEmail(email);
+      let isNewUser = false;
+      if (!vendor) {
+        vendor = await this.vendorService.createGoogleVendor({
+          email,
+          fname: payload.given_name || payload.name || 'Vendor',
+          lname: payload.family_name || '',
+          profile_pic_url: payload.picture,
+        });
+        isNewUser = true;
+      }
+      const { access_token } = this.loginVendor(vendor);
+      return {
+        access_token,
+        vendorId: vendor.id,
+        vendorEmail: vendor.email,
+        role: 'vendor' as const,
+        isNewUser,
+      };
+    }
   }
 }

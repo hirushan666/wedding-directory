@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { loginVendor as loginVendorAPI } from "@/api/auth/vendor.auth.api";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { toast } from 'react-hot-toast';
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 const VendorLoginPage = () => {
     const [email, setEmail] = useState("");
@@ -137,6 +138,15 @@ const VendorLoginPage = () => {
                                   Forget your password?
                               </Link>
                           </div>
+
+                          <div className="flex items-center my-4">
+                              <div className="flex-grow border-t border-gray-300"></div>
+                              <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
+                              <div className="flex-grow border-t border-gray-300"></div>
+                          </div>
+
+                          <GoogleAuthButton role="vendor" text="signin_with" />
+
                           <hr className="border-t-2 border-gray-300 my-4" />
                           <div className="text-center mt-3">
                               <label

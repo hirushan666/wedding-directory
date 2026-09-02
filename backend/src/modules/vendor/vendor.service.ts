@@ -116,6 +116,28 @@ export class VendorService {
     return this.vendorRepository.findOne({ where: { email } });
   }
 
+  async createGoogleVendor(data: {
+    email: string;
+    fname?: string;
+    lname?: string;
+    profile_pic_url?: string;
+  }): Promise<VendorEntity> {
+    const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+    const hashedPassword = await bcrypt.hash(randomPassword, 12);
+    const vendor = this.vendorRepository.create({
+      email: data.email,
+      fname: data.fname || 'Vendor',
+      lname: data.lname || '',
+      busname: `${data.fname || 'Vendor'}'s Services`,
+      phone: '',
+      city: '',
+      location: '',
+      profile_pic_url: data.profile_pic_url,
+      password: hashedPassword,
+    });
+    return await this.vendorRepository.save(vendor);
+  }
+
   async findVendorsByOffering(offeringId: string): Promise<VendorEntity[]> {
     return this.vendorRepository.findVendorsByOffering(offeringId);
   }

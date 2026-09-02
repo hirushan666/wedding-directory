@@ -11,6 +11,7 @@ import { loginVisitor as loginApi } from '@/api/auth/visitor.auth.api';
 import { useAuth } from "@/contexts/VisitorAuthContext";
 import { toast } from 'react-hot-toast';
 import LoaderJelly from "@/components/shared/Loaders/LoaderJelly";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<string>('');
@@ -134,6 +135,15 @@ const handleSubmit = async (e: React.FormEvent) => {
                     Forget your password?
                   </Link>
                 </div>
+
+                <div className="flex items-center my-4">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <GoogleAuthButton role="visitor" text="signin_with" />
+
                 <hr className="border-t-2 border-gray-300 my-4" />
                 <div className="text-center mt-3">
                   <label

@@ -5,6 +5,7 @@ import "./globals.css";
 import PageTransition from "@/components/PageTransition";
 import { VendorAuthProvider } from "@/contexts/VendorAuthContext";
 import { Toaster } from "react-hot-toast";
+import GoogleAuthProviderWrapper from "@/components/auth/GoogleAuthProviderWrapper";
 import Script from "next/script"
 import { GoogleAnalytics } from '@next/third-parties/google'
 
@@ -178,16 +179,18 @@ export default function RootLayout({
         className={`${montserratFont.variable} ${merriweatherFont.variable} ${montezFont.variable} ${outfitFont.variable} ${marckScriptFont.variable}`}
       >
         <ApolloWrapper>
-          {/* Wrapping the application with VisitorProvider */}
-          <VisitorAuthProvider>
-            <VendorAuthProvider>
-              <PageTransition>
-                {children}
-                <Toaster reverseOrder={false} />
-              </PageTransition>
-            </VendorAuthProvider>
-            {/* PageTransition can wrap around the children to handle animations */}
-          </VisitorAuthProvider>
+          <GoogleAuthProviderWrapper>
+            {/* Wrapping the application with VisitorProvider */}
+            <VisitorAuthProvider>
+              <VendorAuthProvider>
+                <PageTransition>
+                  {children}
+                  <Toaster reverseOrder={false} />
+                </PageTransition>
+              </VendorAuthProvider>
+              {/* PageTransition can wrap around the children to handle animations */}
+            </VisitorAuthProvider>
+          </GoogleAuthProviderWrapper>
         </ApolloWrapper>
       </body>
       <GoogleAnalytics gaId="G-TRC1DH6VXM" />
