@@ -130,12 +130,12 @@ const VendorLoginPage = () => {
                               </div>
                           </form>
                           <div className="text-center mt-2">
-                              <label
-                                htmlFor="terms"
-                                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              <Link
+                                href="/forgot-password?role=vendor"
+                                className="text-sm text-gray-700 hover:text-orange hover:underline transition-colors"
                               >
-                                  <Link href="/forgot-password">Forget your password?</Link>
-                              </label>
+                                  Forget your password?
+                              </Link>
                           </div>
                           <hr className="border-t-2 border-gray-300 my-4" />
                           <div className="text-center mt-3">

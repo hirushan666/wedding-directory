@@ -127,9 +127,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </Button>
                 </div>
                 <div className="text-center mt-2">
-                  <label className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <Link
+                    href="/forgot-password?role=visitor"
+                    className="text-sm text-gray-700 hover:text-orange hover:underline transition-colors"
+                  >
                     Forget your password?
-                  </label>
+                  </Link>
                 </div>
                 <hr className="border-t-2 border-gray-300 my-4" />
                 <div className="text-center mt-3">

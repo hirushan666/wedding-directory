@@ -54,6 +54,11 @@ export class VisitorService {
     return this.findVisitorById(id);
   }
 
+  async updatePassword(id: string, plainPassword: string): Promise<void> {
+    const hashedPassword = bcrypt.hashSync(plainPassword, 12);
+    await this.visitorRepository.update(id, { password: hashedPassword });
+  }
+
   async updateProfilePicture(visitorId: string, fileUrl: string): Promise<VisitorEntity> {
     // Find the visitor by ID
     const visitor = await this.visitorRepository.findOne({ where: { id: visitorId } });

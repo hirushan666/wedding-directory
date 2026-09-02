@@ -10,6 +10,8 @@ import { ReviewEntity } from './review.entity';
 import { VendorEntity } from './vendor.entity';
 import { VisitorEntity } from './visitor.entity';
 
+import { PasswordResetOtpEntity } from './password_reset_otp.entity';
+
 export function getEntities() {
   return [
     VisitorEntity,
@@ -23,6 +25,6 @@ export function getEntities() {
     PackageEntity,
     PaymentEntity,
     VendorEntity,
-    
+    PasswordResetOtpEntity,
   ];
 }

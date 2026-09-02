@@ -87,6 +87,11 @@ export class VendorService {
     return this.vendorRepository.findOne({ where: { id } });
   }
 
+  async updatePassword(id: string, plainPassword: string): Promise<void> {
+    const hashedPassword = bcrypt.hashSync(plainPassword, 12);
+    await this.vendorRepository.update(id, { password: hashedPassword });
+  }
+
   async updateVendorProfilePic(
     vendorId: string,
     fileUrl: string,
