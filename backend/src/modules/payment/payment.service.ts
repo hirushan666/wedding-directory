@@ -113,8 +113,6 @@ export class PaymentService {
       });
 
       if (payment && payment.package?.offering) {
-        console.log(`\n✅ Payment ${payment.id} completed - Adding to myVendors`);
-        
         // Check if already in myVendors
         const existingMyVendor = await this.myVendorsRepository.findOne({
           where: {
@@ -130,12 +128,7 @@ export class PaymentService {
             offering: payment.package.offering
           });
           await this.myVendorsRepository.save(myVendor);
-          console.log(`✅ Added offering ${payment.package.offering.id} to myVendors for visitor ${payment.visitor.id}`);
-        } else {
-          console.log(`⏭️  Offering ${payment.package.offering.id} already in myVendors for visitor ${payment.visitor.id}`);
         }
-      } else {
-        console.log(`⚠️  Payment ${stripeSessionId} missing package or offering relation`);
       }
     }
 
@@ -224,8 +217,6 @@ export class PaymentService {
     // If status is completed, ensure vendor is added to myVendors
     if (status === 'completed') {
       if (payment.package?.offering) {
-        console.log(`\n✅ Payment ${payment.id} marked as completed - Adding to myVendors`);
-        
         // Check if already in myVendors
         const existingMyVendor = await this.myVendorsRepository.findOne({
           where: {
@@ -241,12 +232,7 @@ export class PaymentService {
             offering: payment.package.offering
           });
           await this.myVendorsRepository.save(myVendor);
-          console.log(`✅ Added offering ${payment.package.offering.id} to myVendors for visitor ${payment.visitor.id}`);
-        } else {
-          console.log(`⏭️  Offering ${payment.package.offering.id} already in myVendors for visitor ${payment.visitor.id}`);
         }
-      } else {
-        console.log(`⚠️  Payment ${paymentId} missing package or offering relation`);
       }
     }
 
@@ -301,27 +287,17 @@ export class PaymentService {
         }
       });
 
-      console.log(`\n=== SYNC PROCESS STARTED ===`);
-      console.log(`Found ${completedPayments.length} completed payments`);
-
       let syncedCount = 0;
       let skippedCount = 0;
       let errorCount = 0;
 
       for (const payment of completedPayments) {
-        console.log(`\nProcessing payment ${payment.id}:`);
-        console.log(`  - Visitor: ${payment.visitor?.id || 'MISSING'}`);
-        console.log(`  - Package: ${payment.package?.id || 'MISSING'}`);
-        console.log(`  - Offering: ${payment.package?.offering?.id || 'MISSING'}`);
-
         if (!payment.visitor) {
-          console.log(`  ❌ Missing visitor relation`);
           errorCount++;
           continue;
         }
 
         if (!payment.package?.offering) {
-          console.log(`  ❌ Missing package or offering relation`);
           errorCount++;
           continue;
         }
@@ -335,29 +311,21 @@ export class PaymentService {
           });
 
           if (existingMyVendor) {
-            console.log(`  ⏭️  Already in myVendors (id: ${existingMyVendor.id})`);
             skippedCount++;
           } else {
             const myVendor = this.myVendorsRepository.create({
               visitor: payment.visitor,
               offering: payment.package.offering
             });
-            const saved = await this.myVendorsRepository.save(myVendor);
+            await this.myVendorsRepository.save(myVendor);
             syncedCount++;
-            console.log(`  ✅ Added to myVendors (id: ${saved.id})`);
           }
         } catch (err) {
-          console.error(`  ❌ Error processing payment ${payment.id}:`, err.message);
+          console.error(`Error syncing payment ${payment.id}:`, err.message);
           errorCount++;
         }
       }
 
-      console.log(`\n=== SYNC PROCESS COMPLETED ===`);
-      console.log(`Total payments: ${completedPayments.length}`);
-      console.log(`✅ Newly synced: ${syncedCount}`);
-      console.log(`⏭️  Already existed: ${skippedCount}`);
-      console.log(`❌ Errors: ${errorCount}`);
-      
       return { 
         message: `Synced ${syncedCount} new vendors to myVendors. ${skippedCount} already existed. ${errorCount} errors.`, 
         syncedCount,
@@ -366,7 +334,7 @@ export class PaymentService {
         total: completedPayments.length
       };
     } catch (error) {
-      console.error('❌ FATAL ERROR in syncCompletedPaymentsToMyVendors:', error);
+      console.error('Fatal error in syncCompletedPaymentsToMyVendors:', error);
       throw error;
     }
   }
@@ -388,8 +356,6 @@ export class PaymentService {
 
     // Delete the payment from the database
     await this.paymentRepository.delete({ id: paymentId });
-
-    console.log(`Payment ${paymentId} deleted by ${cancelledBy}`);
   }
 
   // Check if a vendor has a booking on a specific date
@@ -443,7 +409,6 @@ export class PaymentService {
       offeringId: payment.package?.offering?.id,
     };
 
-    console.log('Debug Payment Relations:', result);
     return JSON.stringify(result, null, 2);
   }
 

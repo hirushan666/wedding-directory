@@ -196,6 +196,7 @@ export class ChatService {
       throw new Error('Chat not found');
     }
 
+
     // Update readBy for all messages that don't already include this userId
     const updatedMessages = chat.messages.map(msg => {
       if (!msg.readBy) {
@@ -228,17 +229,10 @@ export class ChatService {
         // Count messages not sent by this user and not read by them
         if (message.senderId !== userId && !message.readBy?.includes(userId)) {
           unreadCount++;
-          console.log(`Unread message in chat ${chat.chatId}:`, {
-            messageId: message.id,
-            from: message.senderId,
-            readBy: message.readBy,
-            content: message.content.substring(0, 20)
-          });
         }
       }
     }
 
-    console.log(`Total unread count for ${userType} ${userId}:`, unreadCount);
     return unreadCount;
   }
 
@@ -261,4 +255,3 @@ export class ChatService {
     });
   }
 }
-

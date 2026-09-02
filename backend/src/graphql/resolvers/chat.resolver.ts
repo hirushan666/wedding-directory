@@ -104,7 +104,6 @@ export class ChatResolver {
     
     // Get updated unread count and emit via WebSocket so badge updates
     const unreadCount = await this.chatService.getUnreadCount(userId, userType as 'visitor' | 'vendor');
-    console.log(`markChatAsRead: ${userType} ${userId} - new unread count: ${unreadCount}`);
     this.chatGateway.emitUnreadCount(userId, unreadCount);
     
     return true;
