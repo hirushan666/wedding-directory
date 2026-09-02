@@ -19,7 +19,7 @@ export class UploadService {
   }
 
   // Method to upload an image
-  async uploadImage(fileName: string, fileBuffer: Buffer) {
+  async uploadImage(fileName: string, fileBuffer: Buffer, contentType: string = 'image/jpeg') {
     const bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME');
     const region = this.configService.get<string>('AWS_S3_REGION');
 
@@ -30,7 +30,7 @@ export class UploadService {
       Bucket: bucket,
       Key: fileName,
       Body: fileBuffer,
-      ContentType: 'image/jpeg|image/png', // Or 'image/png'
+      ContentType: contentType,
     };
 
     await this.s3Client.send(new PutObjectCommand(params));
@@ -39,7 +39,7 @@ export class UploadService {
   }
 
   // Method to upload a video
-  async uploadVideo(fileName: string, fileBuffer: Buffer) {
+  async uploadVideo(fileName: string, fileBuffer: Buffer, contentType: string = 'video/mp4') {
     const bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME');
     const region = this.configService.get<string>('AWS_S3_REGION');
 
@@ -50,8 +50,8 @@ export class UploadService {
       Bucket: bucket,
       Key: fileName,
       Body: fileBuffer,
-      ContentType: 'video/mp4|video/webm',
-    }
+      ContentType: contentType,
+    };
 
     await this.s3Client.send(new PutObjectCommand(params));
     return `https://${bucket}.s3.${region}.amazonaws.com/${fileName}`;

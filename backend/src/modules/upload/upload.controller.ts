@@ -47,7 +47,7 @@ export class UploadController {
 
     // Try to upload the file
     try {
-      const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer);
+      const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer, file.mimetype);
       await this.visitorService.updateProfilePicture(visitorId, fileUrl);
       return { fileUrl };
     } catch (error) {
@@ -80,7 +80,7 @@ export class UploadController {
 
     // Try to upload the file
     try {
-      const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer);
+      const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer, file.mimetype);
       await this.offeringService.updateOfferingBanner(offeringID, fileUrl);
       return { fileUrl };
     } catch (error) {
@@ -120,7 +120,7 @@ export class UploadController {
       const fileName = `${Date.now()}-${file.originalname}`;
 
       try {
-        const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer);
+        const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer, file.mimetype);
         uploadedUrls.push(fileUrl);
       } catch (error) {
         console.error('Upload failed:', error);
@@ -168,7 +168,7 @@ export class UploadController {
       const fileName = `${Date.now()}-${file.originalname}`;
 
       try {
-        const fileUrl = await this.uploadService.uploadVideo(fileName, file.buffer); // Assuming uploadVideo method in uploadService
+        const fileUrl = await this.uploadService.uploadVideo(fileName, file.buffer, file.mimetype); // Assuming uploadVideo method in uploadService
         uploadedUrls.push(fileUrl);
       } catch (error) {
         console.error('Upload failed:', error);
@@ -211,7 +211,7 @@ export class UploadController {
       const fileName = `${Date.now()}-${file.originalname}`;
 
       try {
-        const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer);
+        const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer, file.mimetype);
         uploadedUrls.push(fileUrl);
       } catch (error) {
         console.error('Upload failed:', error);
