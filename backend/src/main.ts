@@ -10,6 +10,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
   'https://sayido-eta.vercel.app',
   'https://sayido.duckdns.org',
   'https://sayido.easycase.site',
+  'https://wedding-directory-two.vercel.app',
 ];
 
 const LOCALHOST_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
