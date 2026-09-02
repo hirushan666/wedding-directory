@@ -81,7 +81,7 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className='relative w-full min-h-screen h-screen overflow-hidden '>
+    <div className='relative w-full min-h-screen overflow-hidden'>
       {/* Header */}
       <div className="relative z-10">
         <Header />
@@ -99,14 +99,14 @@ const SignupPage: React.FC = () => {
         <div className="absolute inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
       </div>
 
-      <div className='relative z-20 flex justify-center items-center h-full px-4'>
-        <div className='bg-white w-[450px] rounded-md p-8 font-body shadow-lg'>
+      <div className='relative z-20 flex min-h-[calc(100vh-92px)] justify-center items-center px-4 py-10'>
+        <div className='bg-white w-full max-w-[450px] rounded-md p-4 sm:p-8 font-body shadow-lg'>
           <h1 className='text-3xl font-bold text-center font-title'>
             Welcome to Say I Do
           </h1>
 
           <form onSubmit={handleSubmit}>
-            <div className="mt-12 grid grid-cols-1 w-full items-center gap-x-12 gap-y-5">
+            <div className="mt-8 grid grid-cols-1 w-full items-center gap-x-12 gap-y-5">
               <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
                 <Input
                   className="h-12 pl-6 pb-3"
@@ -144,7 +144,7 @@ const SignupPage: React.FC = () => {
 
             <div className="mt-6 flex flex-col w-full">
               <Button
-                className="rounded-none text-black font-bold hover:bg-primary bg-primary text-lg"
+                className="rounded-none text-white font-bold hover:bg-orange bg-orange text-lg"
                 type="submit"
                 disabled={loading}  // Disable button during mutation
               >
@@ -155,11 +155,13 @@ const SignupPage: React.FC = () => {
             <div className='text-center mt-3'>
               <label htmlFor="terms" className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Already have an account?{' '}
-                <Link href="/visitor-login" className="underline">
+                <Link href="/visitor-login" className="text-orange hover:underline">
                   Sign In
                 </Link>
               </label>
             </div>
+
+            <hr className="border-t-2 border-gray-300 my-4" />
 
             <div className="text-center mt-2">
               <label
@@ -167,7 +169,7 @@ const SignupPage: React.FC = () => {
                 className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Are you a wedding service provider?{" "}
-                <Link href="/sign-up" className="underline">
+                <Link href="/vendor-signup" className="text-orange hover:underline">
                   Start from here
                 </Link>
               </label>
