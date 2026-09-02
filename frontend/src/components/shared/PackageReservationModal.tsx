@@ -22,7 +22,6 @@ interface PackageReservationModalProps {
     onPay: (date: Date) => void;
     visitorId?: string;
     offeringId?: string;
-    currencyRate?: number;
 }
 
 const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
@@ -32,7 +31,6 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
     onPay,
     visitorId,
     offeringId,
-    currencyRate = 0.0031
 }) => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [note, setNote] = useState("");
@@ -82,7 +80,6 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
     };
 
     const advanceAmount = pkg.pricing * 0.2;
-    const advanceAmountUSD = (advanceAmount * currencyRate).toFixed(2);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
@@ -170,9 +167,6 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
                                     <div className="flex justify-between items-center text-orange font-bold text-lg">
                                         <span>Advance (20%)</span>
                                         <span>LKR {advanceAmount.toLocaleString()}</span>
-                                    </div>
-                                    <div className="text-right text-xs text-gray-500 mt-1">
-                                        ≈ ${advanceAmountUSD} USD
                                     </div>
                                 </div>
 

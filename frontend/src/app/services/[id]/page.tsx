@@ -32,9 +32,6 @@ import PackageReservationModal from "@/components/shared/PackageReservationModal
 import { ensureSessionId } from "@/utils/session";
 import ChatModal from "@/components/chat/ChatModal";
 
-// Add this constant at the top of the file with other imports
-const LKR_TO_USD_RATE = 0.0031; // 1 LKR = 0.0031 USD (you should use real-time rates)
-
 // Add this interface before the Service component
 interface Package {
   id: string;
@@ -45,6 +42,11 @@ interface Package {
   visible: boolean;
   requiresReservation: boolean;
   bookedDates?: string[];
+}
+
+interface PayHerePaymentResponse {
+  actionUrl: string;
+  payment: Record<string, string | boolean>;
 }
 
 const Service: React.FC = () => {
@@ -259,30 +261,46 @@ const Service: React.FC = () => {
         return;
       }
 
-      // Convert LKR to USD and round to 2 decimal places
-      const amountInUSD = Number((amount * LKR_TO_USD_RATE).toFixed(2));
-
-      // Ensure minimum charge amount for Stripe (0.50 USD)
-      if (amountInUSD < 0.5) {
+      if (amount <= 0) {
         toast.error("Amount is too small for processing");
         return;
       }
 
-      const { data } = await request.post(
-        "/api/stripe/create-checkout-session",
+      const { data } = await request.post<PayHerePaymentResponse>(
+        "/api/payhere/create-payment",
         {
-          amount: amountInUSD, // Send amount in USD
+          amount,
           packageId,
           visitorId: visitor.id,
           vendorId: offering.vendor.id,
           offeringId: offering.id,
-          originalAmountLKR: amount, // Send original LKR amount for reference
           bookingDate: bookingDate ? bookingDate.toISOString() : undefined,
+          customer: {
+            email: visitor.email,
+            city: offering.vendor.city,
+          },
         }
       );
-      window.location.href = data.url;
-    } catch {
-      toast.error("Payment processing failed. Please try again.");
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.actionUrl;
+
+      Object.entries(data.payment).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Payment processing failed. Please try again.";
+      toast.error(Array.isArray(message) ? message[0] : message);
     }
   };
 
@@ -493,15 +511,6 @@ const Service: React.FC = () => {
                                               <span className="font-normal">
                                                 LKR {(pkg.pricing * 0.2).toLocaleString()}
                                               </span>
-                                              <div className="text-xs mt-1 opacity-80">
-                                                ≈ $
-                                                {(
-                                                  pkg.pricing *
-                                                  0.2 *
-                                                  LKR_TO_USD_RATE
-                                                ).toFixed(2)}{" "}
-                                                USD
-                                              </div>
                                             </>
                                           )}
                                         </button>
@@ -537,15 +546,6 @@ const Service: React.FC = () => {
                                           <span className="font-normal">
                                             LKR {(pkg.pricing * 0.2).toLocaleString()}
                                           </span>
-                                          <div className="text-xs mt-1 opacity-80">
-                                            ≈ $
-                                            {(
-                                              pkg.pricing *
-                                              0.2 *
-                                              LKR_TO_USD_RATE
-                                            ).toFixed(2)}{" "}
-                                            USD
-                                          </div>
                                         </>
                                       )}
                                     </button>

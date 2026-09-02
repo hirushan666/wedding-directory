@@ -8,8 +8,6 @@ import { PackageEntity } from '../../database/entities/package.entity';
 import { MyVendorsEntity } from '../../database/entities/myVendors.entity';
 import { OfferingEntity } from '../../database/entities/offering.entity';
 
-const USD_TO_LKR_RATE = 322.58; // 1 USD = 322.58 LKR (inverse of LKR_TO_USD_RATE)
-
 @Injectable()
 export class PaymentService {
   constructor(
@@ -32,9 +30,11 @@ export class PaymentService {
     vendorId: string,
     packageId: string,
     offeringId: string,
-    amount: number, // amount in USD
-    stripeSessionId: string,
+    amount: number,
+    paymentReference: string,
     bookingDate?: Date, 
+    gateway = 'payhere',
+    gatewayPaymentId?: string,
   ) {
     // Check for date conflicts if bookingDate is provided
     if (bookingDate) {
@@ -49,15 +49,15 @@ export class PaymentService {
     const package_ = await this.packageRepository.findOneBy({ id: packageId });
     const offering = await this.offeringRepository.findOneBy({ id: offeringId });
 
-    // Convert USD to LKR and round to 2 decimal places
-    const amountInLKR = Number((amount * USD_TO_LKR_RATE).toFixed(2));
-
     const payment = this.paymentRepository.create({
       visitor,
       vendor,
       package: package_,
-      amount: amountInLKR, // Save the LKR amount
-      stripeSessionId,
+      amount: Number(amount.toFixed(2)),
+      stripeSessionId: gateway === 'stripe' ? paymentReference : undefined,
+      paymentReference,
+      gateway,
+      gatewayPaymentId,
       status: 'pending',
       bookingDate
     });
@@ -143,6 +143,62 @@ export class PaymentService {
       { stripeSessionId },
       { status }
     );
+  }
+
+  async updatePaymentStatusByReference(
+    paymentReference: string,
+    status: 'completed' | 'failed',
+    gatewayPaymentId?: string,
+  ) {
+    if (status === 'completed') {
+      const payment = await this.paymentRepository.findOne({
+        where: { paymentReference },
+        relations: {
+          visitor: true,
+          package: {
+            offering: true
+          }
+        }
+      });
+
+      if (payment && payment.package?.offering) {
+        const existingMyVendor = await this.myVendorsRepository.findOne({
+          where: {
+            visitor: { id: payment.visitor.id },
+            offering: { id: payment.package.offering.id }
+          }
+        });
+
+        if (!existingMyVendor) {
+          const myVendor = this.myVendorsRepository.create({
+            visitor: payment.visitor,
+            offering: payment.package.offering
+          });
+          await this.myVendorsRepository.save(myVendor);
+        }
+      }
+    }
+
+    return this.paymentRepository.update(
+      { paymentReference },
+      {
+        status,
+        ...(gatewayPaymentId ? { gatewayPaymentId } : {}),
+      }
+    );
+  }
+
+  async findByPaymentReference(paymentReference: string) {
+    return this.paymentRepository.findOne({
+      where: { paymentReference },
+      relations: {
+        visitor: true,
+        vendor: true,
+        package: {
+          offering: true
+        }
+      }
+    });
   }
 
   // Update payment status by payment ID (for manual testing)
