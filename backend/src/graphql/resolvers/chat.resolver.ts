@@ -55,12 +55,35 @@ export class ChatResolver {
     @Args("visitorSenderId", { nullable: true }) visitorSenderId?: string,
     @Args("vendorSenderId", { nullable: true }) vendorSenderId?: string
   ) {
-    return this.chatService.sendMessage({
+    const updatedChat = await this.chatService.sendMessage({
       chatId,
       content,
       visitorSenderId,
       vendorSenderId,
     });
+
+    if (updatedChat?.chatId) {
+      const latestMessage = updatedChat.messages?.[updatedChat.messages.length - 1];
+      this.chatGateway.server.to(`chat:${updatedChat.chatId}`).emit('newMessage', {
+        chatId: updatedChat.chatId,
+        message: latestMessage,
+        chat: updatedChat,
+      });
+
+      const [visitorUnreadCount, vendorUnreadCount] = await Promise.all([
+        this.chatService.getUnreadCount(updatedChat.visitorId, 'visitor'),
+        this.chatService.getUnreadCount(updatedChat.vendorId, 'vendor'),
+      ]);
+
+      this.chatGateway.server.to(`user:${updatedChat.visitorId}`).emit('unreadCount', {
+        count: visitorUnreadCount,
+      });
+      this.chatGateway.server.to(`user:${updatedChat.vendorId}`).emit('unreadCount', {
+        count: vendorUnreadCount,
+      });
+    }
+
+    return updatedChat;
   }
 
   @Query(() => Number)

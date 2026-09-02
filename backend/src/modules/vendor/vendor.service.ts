@@ -114,4 +114,17 @@ export class VendorService {
   async findVendorsByOffering(offeringId: string): Promise<VendorEntity[]> {
     return this.vendorRepository.findVendorsByOffering(offeringId);
   }
+
+  async registerPushToken(vendorId: string, pushToken: string): Promise<void> {
+    if (!vendorId.trim()) {
+      throw new Error('Invalid vendor id');
+    }
+    if (!pushToken.trim()) {
+      throw new Error('Invalid push token');
+    }
+
+    await this.vendorRepository.update(vendorId, {
+      expoPushToken: pushToken.trim(),
+    });
+  }
 }

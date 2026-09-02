@@ -203,7 +203,7 @@ const VisitorSignup: React.FC<VisitorSignupProps> = ({ isVisible, onClose }) => 
             </p>
             <p>
               Are you a wedding service provider?{' '}
-              <Link href="/sign-up" className="hover:underline text-primary">
+              <Link href="/vendor-signup" className="hover:underline text-primary">
                 Start from here
               </Link>
             </p>

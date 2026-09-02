@@ -1,6 +1,5 @@
 'use client'
 
-import Footer from "@/components/shared/Footer";
 import Header from "@/components/shared/Headers/Header";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -61,7 +60,7 @@ const Signup = () => {
 
   // Go to vendor login page
   const goToVendorLogin = () => {
-    router.push('/login');
+    router.push('/vendor-login');
   };
 
   // Register vendor
@@ -122,20 +121,27 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      <Header />
-      <div className="relative z-10 w-full h-[1000px] md:h-[800px]">
+    <div className="relative w-full min-h-screen overflow-hidden">
+      <div className="relative z-20">
+        <Header />
+      </div>
+
+      <div className="absolute inset-0">
         <Image
           src="/images/login-signup.webp"
-          layout="fill"
-          objectFit="cover"
+          fill
+          className="object-cover"
           alt="sign image"
+          priority
         />
-        <div className="absolute inset-0 font-body">
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+      </div>
+
+      <div className="relative z-10 min-h-[calc(100vh-92px)] px-4 py-10 font-body">
           <div className='flex flex-col justify-center items-center text-center'>
-            <div><p className="mt-8 w-full">Crafting Timeless Celebrations</p></div>
-            <div><h1 className="font-title font-bold text-3xl w-full ">Welcome Vendors</h1></div>
-            <div className='bg-white bg-opacity-70 mt-6 w-[350px] md:w-[600px] border-solid border-black border-2 border-opacity-60 rounded-md p-8' >
+            <div><p className="w-full text-white">Crafting Timeless Celebrations</p></div>
+            <div><h1 className="font-title font-bold text-3xl w-full text-white">Welcome Vendors</h1></div>
+            <div className='bg-white mt-6 w-full max-w-[600px] rounded-md p-4 sm:p-8 shadow-lg' >
               <h1 className='text-text mx-[30px] md:mx-[90px] text-2xl font-bold text-center font-title'>Connect with couples to make their dream wedding come true!</h1>
               <form>
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-2 w-full items-center gap-x-12 gap-y-5">
@@ -171,10 +177,11 @@ const Signup = () => {
                   </label>
                 </div>
 
-                <div className="border-black rounded-md border-2 mt-6 flex flex-col w-full border-solid  bg-primary">
+                <div className="border-black rounded-md border-2 mt-6 flex flex-col w-full border-solid bg-orange">
                   <Button
+                    type="button"
                     onClick={onRegister}
-                    className="rounded-none text-black font-bold hover:bg-primary bg-primary text-xl"
+                    className="rounded-none text-white font-bold hover:bg-orange bg-orange text-lg"
                     disabled={loading || !termsAccepted} // Disable if loading or terms not accepted
                   >
                     {loading ? "Registering..." : "Register Now"}
@@ -185,14 +192,12 @@ const Signup = () => {
               <div className="mt-2">
                 Already have an account?<span> </span>
                 <button onClick={goToVendorLogin}>
-                  <div className="text-decoration-line: underline hover:text-orange">Login</div>
+                  <div className="text-orange hover:underline">Login</div>
                 </button>
               </div>
             </div>
           </div>
-        </div>
       </div>
-      <Footer />
     </div>
   );
 };

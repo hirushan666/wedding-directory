@@ -21,6 +21,51 @@ export class ChatService {
     private offeringRepository: Repository<OfferingEntity>
   ) {}
 
+  private async sendPushToVendor(
+    chat: IChat,
+    messageContent: string,
+    visitorId?: string,
+  ): Promise<void> {
+    try {
+      const vendor = await this.vendorRepository.findOne({
+        where: { id: chat.vendorId },
+      });
+      const pushToken = vendor?.expoPushToken?.trim();
+      if (!pushToken) return;
+
+      const visitor = visitorId
+        ? await this.visitorRepository.findOne({ where: { id: visitorId } })
+        : null;
+      const visitorName = [visitor?.visitor_fname, visitor?.partner_fname]
+        .filter(Boolean)
+        .join(' & ')
+        .trim();
+
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: pushToken,
+          sound: 'default',
+          title: visitorName ? `New message from ${visitorName}` : 'New message',
+          body: messageContent.substring(0, 140),
+          data: {
+            type: 'chat_message',
+            chatId: chat.chatId,
+            visitorId: chat.visitorId,
+            vendorId: chat.vendorId,
+          },
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send vendor push notification:', error);
+    }
+  }
+
   async findOrCreateChat(
     offeringId: string,
     visitorId: string
@@ -123,7 +168,7 @@ export class ChatService {
       readBy: [senderId], // Sender has read their own message
     };
 
-    return this.chatModel.findOneAndUpdate(
+    const updatedChat = await this.chatModel.findOneAndUpdate(
       { chatId: data.chatId },
       {
         $push: { messages: message },
@@ -131,6 +176,12 @@ export class ChatService {
       },
       { new: true }
     );
+
+    if (updatedChat && data.visitorSenderId) {
+      await this.sendPushToVendor(updatedChat, data.content, data.visitorSenderId);
+    }
+
+    return updatedChat;
   }
 
   async markMessagesAsRead(

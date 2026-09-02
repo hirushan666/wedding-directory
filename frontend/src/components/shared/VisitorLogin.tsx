@@ -205,7 +205,7 @@ const VisitorLogin: React.FC<VisitorLoginProps> = ({ isVisible, onClose }) => {
 
               <p className="text-sm text-center">
                 Are you a wedding service provider?{' '}
-                <Link href="/login" className="text-primary hover:underline">
+                <Link href="/vendor-login" className="text-primary hover:underline">
                   Start from here
                 </Link>
               </p>
