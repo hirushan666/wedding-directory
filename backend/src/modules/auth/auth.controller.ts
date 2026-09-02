@@ -19,6 +19,12 @@ import {
   ResetPasswordDto,
 } from './dto/password-reset.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
+import {
+  RequestSignupOtpDto,
+  VerifySignupOtpDto,
+  CompleteVisitorSignupDto,
+  CompleteVendorSignupDto,
+} from './dto/signup-otp.dto';
 
 const buildCookieOptions = (): CookieOptions => {
   const configuredDomain = process.env.COOKIE_DOMAIN?.trim();
@@ -123,5 +129,39 @@ export class AuthController {
         : 'Login successful',
       ...result,
     };
+  }
+
+  @Post('signup/request-otp')
+  async requestSignupOtp(@Body() body: RequestSignupOtpDto) {
+    return await this.authService.requestSignupOtp(body.email, body.role);
+  }
+
+  @Post('signup/verify-otp')
+  async verifySignupOtp(@Body() body: VerifySignupOtpDto) {
+    return await this.authService.verifySignupOtp(
+      body.email,
+      body.otp,
+      body.role,
+    );
+  }
+
+  @Post('signup/complete-visitor')
+  async completeVisitorSignup(
+    @Body() body: CompleteVisitorSignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.completeVisitorSignup(body);
+    res.cookie('access_token', result.access_token, buildCookieOptions());
+    return result;
+  }
+
+  @Post('signup/complete-vendor')
+  async completeVendorSignup(
+    @Body() body: CompleteVendorSignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.completeVendorSignup(body);
+    res.cookie('access_tokenVendor', result.access_token, buildCookieOptions());
+    return result;
   }
 }

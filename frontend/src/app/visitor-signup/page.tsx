@@ -1,83 +1,153 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/VisitorAuthContext";
-import { loginVisitor as loginApi } from '@/api/auth/visitor.auth.api';
 import { toast } from 'react-hot-toast';
-import { CREATE_VISITOR_MUTATION } from '@/graphql/mutations';
 import Image from 'next/image';
 import Header from '@/components/shared/Headers/Header';
 import GoogleAuthButton from '@/components/auth/GoogleAuthButton';
+import LoaderJelly from "@/components/shared/Loaders/LoaderJelly";
+import {
+  requestSignupOtp,
+  verifySignupOtp,
+  completeVisitorSignup,
+} from '@/api/auth/signup-otp.api';
+import { Mail, ArrowLeft, KeyRound } from 'lucide-react';
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [otp, setOtp] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Step 1: Enter email & password, Step 2: Enter 6-digit OTP
+  const [step, setStep] = useState<1 | 2>(1);
+
+  // Resend cooldown timer
+  const [resendTimer, setResendTimer] = useState<number>(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   const router = useRouter();
-  const { login } = useAuth();  // Access the login method from VisitorAuthContext
+  const { login } = useAuth();
 
-  // Use Apollo's useMutation for the signup mutation
-  const [createVisitor, { loading }] = useMutation(CREATE_VISITOR_MUTATION);
+  useEffect(() => {
+    if (resendTimer > 0) {
+      timerRef.current = setTimeout(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [resendTimer]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1: Request Signup OTP
+  const handleInitiateSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Reset error before submission
+    setError(null);
 
-    if (!email || !password) {
-      setError('Email and password are required');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
+      setError('Email and password are required.');
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      // Perform signup mutation
-      const response = await createVisitor({
-        variables: {
-          email,
-          password,
-        },
-        context: {
-          fetchOptions: {
-            credentials: 'include',
-          },
-        },
+      const response = await requestSignupOtp(trimmedEmail, 'visitor');
+      toast.success(response.message || 'Verification code sent to your email!', {
+        style: { background: '#333', color: '#fff' },
       });
+      setResendTimer(60);
+      setStep(2);
+    } catch (err: any) {
+      const errorMsg =
+        err?.response?.data?.message || 'Failed to send verification code. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg, {
+        style: { background: '#333', color: '#fff' },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      if (response.data) {
-        toast.success('Successfully Registered!', {style: {background: '#333', color: '#fff',},});
-        console.log('Visitor created successfully:', response.data.createVisitor);
+  // Resend OTP
+  const handleResendOtp = async () => {
+    if (resendTimer > 0) return;
+    setError(null);
+    setIsLoading(true);
+    try {
+      const response = await requestSignupOtp(email.trim(), 'visitor');
+      toast.success(response.message || 'A new verification code has been sent.', {
+        style: { background: '#333', color: '#fff' },
+      });
+      setResendTimer(60);
+    } catch (err: any) {
+      const errorMsg =
+        err?.response?.data?.message || 'Failed to resend code. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg, {
+        style: { background: '#333', color: '#fff' },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        // After successful signup, login using the provided email and password
-        await loginApi(email, password);
+  // Step 2: Verify OTP and complete visitor account creation
+  const handleVerifyAndRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
 
-        // Check if the backend set the token in the cookies
-        const storedToken = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('access_token='));
+    const cleanOtp = otp.trim();
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      setError('Please enter the 6-digit verification code.');
+      return;
+    }
 
-        if (storedToken) {
-          const token = storedToken.split('=')[1];
-          login(token);  // Call the login method from context to set the visitor in state
+    setIsLoading(true);
+    try {
+      // 1. Verify OTP
+      const verifyRes = await verifySignupOtp(email.trim(), cleanOtp, 'visitor');
+      
+      // 2. Complete registration
+      const signupRes = await completeVisitorSignup(
+        email.trim(),
+        password,
+        verifyRes.signupVerificationToken,
+      );
 
-          // Redirect to onboarding page one
-          router.push('/pageone');
-        } else {
-          setError('Login failed. Token not found in cookies.');
-        }
+      if (signupRes && signupRes.access_token) {
+        toast.success('Successfully Registered & Verified!', {
+          style: { background: '#333', color: '#fff' },
+        });
 
+        login(signupRes.access_token);
+        router.push('/pageone');
       } else {
-        setError('Signup failed. Please try again.');
+        setError('Registration succeeded, but login failed. Please sign in.');
       }
-
-    } catch (err) {
-      toast.error('Registration Failed!', {style: {background: '#333', color: '#fff',},});
-      console.error('Signup or login failed:', err);
-      setError('Failed to sign up. Please try again.');
+    } catch (err: any) {
+      const errorMsg =
+        err?.response?.data?.message || 'Verification failed. Please check the code and try again.';
+      setError(errorMsg);
+      toast.error(errorMsg, {
+        style: { background: '#333', color: '#fff' },
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -91,99 +161,193 @@ const SignupPage: React.FC = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/hero.webp" // Same image used in Hero component
+          src="/images/hero.webp"
           alt="Login Background"
           className="object-cover"
           fill
-          priority // Ensures the image is loaded faster
+          priority
         />
-        <div className="absolute inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
 
       <div className='relative z-20 flex min-h-[calc(100vh-92px)] justify-center items-center px-4 py-10'>
-        <div className='bg-white w-full max-w-[450px] rounded-md p-4 sm:p-8 font-body shadow-lg'>
-          <h1 className='text-3xl font-bold text-center font-title'>
-            Welcome to Say I Do
-          </h1>
+        <div className='bg-white w-full max-w-[450px] rounded-md p-6 sm:p-8 font-body shadow-lg relative'>
+          {/* Loader Overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-30 rounded-md">
+              <LoaderJelly />
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="mt-8 grid grid-cols-1 w-full items-center gap-x-12 gap-y-5">
-              <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
-                <Input
-                  className="h-12 pl-6 pb-3"
-                  type="email"
-                  id="email"
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+          {/* STEP 1: ENTER DETAILS */}
+          {step === 1 && (
+            <>
+              <h1 className='text-3xl font-bold text-center font-title'>
+                Welcome to Say I Do
+              </h1>
+              <p className="text-sm text-gray-500 text-center mt-2">
+                Create your couple account to plan your dream wedding.
+              </p>
+
+              <form onSubmit={handleInitiateSignup} className="mt-6">
+                <div className="grid grid-cols-1 w-full items-center gap-y-4">
+                  <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
+                    <Input
+                      className="h-12 pl-6 pb-3 text-base"
+                      type="email"
+                      id="email"
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
+                    <Input
+                      className="h-12 pl-6 pb-3 text-base"
+                      type="password"
+                      id="password"
+                      placeholder="Password (min 6 characters)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <p className="text-red-500 text-sm mt-2.5 text-center">{error}</p>
+                )}
+
+                <div className="mt-6 flex space-x-2 items-center justify-center">
+                  <Checkbox id="terms" defaultChecked />
+                  <label className="text-sm text-center leading-none text-gray-600">
+                    Send me wedding tips, ideas and special offers
+                  </label>
+                </div>
+
+                <div className="mt-6 flex flex-col w-full">
+                  <Button
+                    className="rounded-none text-white font-bold hover:bg-orange bg-orange text-lg h-12"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    Continue with Email
+                  </Button>
+                </div>
+
+                <div className="flex items-center my-4">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <GoogleAuthButton role="visitor" text="signup_with" />
+
+                <div className='text-center mt-4'>
+                  <label htmlFor="terms" className="text-sm leading-none text-gray-600">
+                    Already have an account?{' '}
+                    <Link href="/visitor-login" className="text-orange hover:underline font-semibold">
+                      Sign In
+                    </Link>
+                  </label>
+                </div>
+
+                <hr className="border-t-2 border-gray-300 my-4" />
+
+                <div className="text-center mt-2">
+                  <label
+                    htmlFor="terms"
+                    className="text-sm font-bold leading-none text-gray-700"
+                  >
+                    Are you a wedding service provider?{" "}
+                    <Link href="/vendor-signup" className="text-orange hover:underline">
+                      Start from here
+                    </Link>
+                  </label>
+                </div>
+              </form>
+            </>
+          )}
+
+          {/* STEP 2: VERIFY OTP CODE */}
+          {step === 2 && (
+            <>
+              <div className="w-12 h-12 bg-orange/10 text-orange rounded-full flex items-center justify-center mx-auto mb-3">
+                <Mail className="w-6 h-6 text-orange" />
               </div>
-              <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
-                <Input
-                  className="h-12 pl-6 pb-3"
-                  type="password"
-                  id="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
 
-            {error && (
-              <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
-            )}
+              <h1 className="text-3xl font-bold text-center font-title text-gray-900">
+                Verify Your Email
+              </h1>
+              <p className="text-sm text-gray-600 text-center mt-2">
+                We sent a 6-digit verification code to <br />
+                <span className="font-semibold text-gray-800">{email}</span>
+              </p>
 
-            <div className="mt-9 flex space-x-2 items-center justify-center">
-              <Checkbox id="terms" />
-              <label className="text-sm text-center leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Send me wedding tips, ideas and special offers
-              </label>
-            </div>
+              <form onSubmit={handleVerifyAndRegister} className="mt-6">
+                <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
+                  <Input
+                    className="h-12 text-center text-2xl font-mono tracking-widest uppercase font-bold"
+                    type="text"
+                    id="otp"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={otp}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setOtp(val);
+                    }}
+                    autoFocus
+                    required
+                  />
+                </div>
 
-            <div className="mt-6 flex flex-col w-full">
-              <Button
-                className="rounded-none text-white font-bold hover:bg-orange bg-orange text-lg"
-                type="submit"
-                disabled={loading}  // Disable button during mutation
-              >
-                {loading ? 'Signing Up...' : 'Sign Up'}
-              </Button>
-            </div>
+                {error && (
+                  <p className="text-red-500 text-sm text-center mt-2.5">{error}</p>
+                )}
 
-            <div className="flex items-center my-4">
-              <div className="flex-grow border-t border-gray-300"></div>
-              <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
-              <div className="flex-grow border-t border-gray-300"></div>
-            </div>
+                <div className="mt-6 flex flex-col w-full">
+                  <Button
+                    type="submit"
+                    className="rounded-none text-white font-bold hover:bg-orange bg-orange text-base sm:text-lg h-12"
+                    disabled={isLoading}
+                  >
+                    Verify & Create Account
+                  </Button>
+                </div>
 
-            <GoogleAuthButton role="visitor" text="signup_with" />
+                <div className="flex items-center justify-between text-xs sm:text-sm mt-5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep(1);
+                      setOtp('');
+                      setError(null);
+                    }}
+                    className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-800 underline"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    Edit email
+                  </button>
 
-            <div className='text-center mt-3'>
-              <label htmlFor="terms" className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Already have an account?{' '}
-                <Link href="/visitor-login" className="text-orange hover:underline">
-                  Sign In
-                </Link>
-              </label>
-            </div>
-
-            <hr className="border-t-2 border-gray-300 my-4" />
-
-            <div className="text-center mt-2">
-              <label
-                htmlFor="terms"
-                className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Are you a wedding service provider?{" "}
-                <Link href="/vendor-signup" className="text-orange hover:underline">
-                  Start from here
-                </Link>
-              </label>
-            </div>
-          </form>
+                  {resendTimer > 0 ? (
+                    <span className="text-gray-400">
+                      Resend in {resendTimer}s
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      className="text-orange font-semibold hover:underline"
+                    >
+                      Resend Code
+                    </button>
+                  )}
+                </div>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -13,6 +13,10 @@ import { VendorEntity } from '../../database/entities/vendor.entity';
 import { PasswordResetOtpEntity } from '../../database/entities/password_reset_otp.entity';
 import { MailService } from '../mail/mail.service';
 import { ResetRole } from './dto/password-reset.dto';
+import {
+  CompleteVisitorSignupDto,
+  CompleteVendorSignupDto,
+} from './dto/signup-otp.dto';
 
 @Injectable()
 export class AuthService {
@@ -380,5 +384,234 @@ export class AuthService {
         isNewUser,
       };
     }
+  }
+
+  /**
+   * Generates and sends a 6-digit OTP code to verify email before registration.
+   */
+  async requestSignupOtp(rawEmail: string, role: 'visitor' | 'vendor') {
+    const email = rawEmail?.trim().toLowerCase();
+    if (!email) {
+      throw new BadRequestException('Email address is required.');
+    }
+
+    // Check if account already exists
+    if (role === 'visitor') {
+      const existing = await this.visitorService.getVisitorByEmail(email);
+      if (existing) {
+        throw new BadRequestException(
+          'An account with this email address already exists. Please log in instead.',
+        );
+      }
+    } else {
+      const existing = await this.vendorService.getVendorByEmail(email);
+      if (existing) {
+        throw new BadRequestException(
+          'A vendor account with this email address already exists. Please log in instead.',
+        );
+      }
+    }
+
+    // Cooldown check (60s)
+    const recentOtp = await this.otpRepository.findOne({
+      where: { email, userType: role, isUsed: false },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (
+      recentOtp &&
+      Date.now() - new Date(recentOtp.createdAt).getTime() < 60 * 1000
+    ) {
+      const secondsLeft = Math.ceil(
+        (60 * 1000 - (Date.now() - new Date(recentOtp.createdAt).getTime())) / 1000,
+      );
+      throw new BadRequestException(
+        `Please wait ${secondsLeft} second${secondsLeft === 1 ? '' : 's'} before requesting another verification code.`,
+      );
+    }
+
+    // Invalidate existing active signup OTPs for this email and role
+    await this.otpRepository.update(
+      { email, userType: role, isUsed: false },
+      { isUsed: true },
+    );
+
+    // Generate secure 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpHash = await bcrypt.hash(otp, 10);
+
+    const otpEntity = this.otpRepository.create({
+      email,
+      userType: role,
+      otpHash,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+      attempts: 0,
+      isUsed: false,
+    });
+    await this.otpRepository.save(otpEntity);
+
+    await this.mailService.sendSignupOtpEmail(email, otp, role);
+
+    return {
+      message: 'Verification code sent to your email address.',
+    };
+  }
+
+  /**
+   * Verifies signup OTP and returns a signed single-use JWT token.
+   */
+  async verifySignupOtp(
+    rawEmail: string,
+    rawOtp: string,
+    role: 'visitor' | 'vendor',
+  ) {
+    const email = rawEmail?.trim().toLowerCase();
+    const otp = rawOtp?.trim();
+
+    if (!email || !otp) {
+      throw new BadRequestException('Email and verification code are required.');
+    }
+
+    const record = await this.otpRepository.findOne({
+      where: { email, userType: role, isUsed: false },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!record) {
+      throw new BadRequestException('The verification code is invalid or has expired.');
+    }
+
+    if (new Date() > new Date(record.expiresAt)) {
+      throw new BadRequestException('The verification code has expired. Please request a new code.');
+    }
+
+    if (record.attempts >= 5) {
+      throw new BadRequestException('Too many incorrect attempts. Please request a new code.');
+    }
+
+    const isValid = await bcrypt.compare(otp, record.otpHash);
+    if (!isValid) {
+      record.attempts += 1;
+      await this.otpRepository.save(record);
+      const remaining = 5 - record.attempts;
+      throw new BadRequestException(
+        remaining > 0
+          ? `Invalid code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`
+          : 'Too many incorrect attempts. Please request a new code.',
+      );
+    }
+
+    // Mark as used
+    record.isUsed = true;
+    await this.otpRepository.save(record);
+
+    // Issue 15-minute signup verification token
+    const signupVerificationToken = this.jwtService.sign(
+      {
+        email,
+        role,
+        purpose: 'signup_verified',
+      },
+      { expiresIn: '15m' },
+    );
+
+    return {
+      message: 'Email verified successfully.',
+      signupVerificationToken,
+    };
+  }
+
+  /**
+   * Completes visitor registration after verifying signup token.
+   */
+  async completeVisitorSignup(dto: CompleteVisitorSignupDto) {
+    let decoded: any;
+    try {
+      decoded = this.jwtService.verify(dto.signupVerificationToken, {
+        secret: jwtSecret,
+      });
+    } catch {
+      throw new BadRequestException(
+        'Your verification session has expired. Please verify your email again.',
+      );
+    }
+
+    if (decoded.purpose !== 'signup_verified' || decoded.role !== 'visitor') {
+      throw new BadRequestException('Invalid verification token.');
+    }
+
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    if (decoded.email !== normalizedEmail) {
+      throw new BadRequestException('Verified email does not match form email.');
+    }
+
+    const existing = await this.visitorService.getVisitorByEmail(normalizedEmail);
+    if (existing) {
+      throw new BadRequestException('An account with this email address already exists.');
+    }
+
+    const visitor = await this.visitorService.create({
+      email: normalizedEmail,
+      password: dto.password,
+    });
+
+    const { access_token } = this.loginVisitor(visitor);
+
+    return {
+      message: 'Registration successful!',
+      access_token,
+      visitorId: visitor.id,
+      visitorEmail: visitor.email,
+    };
+  }
+
+  /**
+   * Completes vendor registration after verifying signup token.
+   */
+  async completeVendorSignup(dto: CompleteVendorSignupDto) {
+    let decoded: any;
+    try {
+      decoded = this.jwtService.verify(dto.signupVerificationToken, {
+        secret: jwtSecret,
+      });
+    } catch {
+      throw new BadRequestException(
+        'Your verification session has expired. Please verify your email again.',
+      );
+    }
+
+    if (decoded.purpose !== 'signup_verified' || decoded.role !== 'vendor') {
+      throw new BadRequestException('Invalid verification token.');
+    }
+
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    if (decoded.email !== normalizedEmail) {
+      throw new BadRequestException('Verified email does not match form email.');
+    }
+
+    const existing = await this.vendorService.getVendorByEmail(normalizedEmail);
+    if (existing) {
+      throw new BadRequestException('A vendor with this email address already exists.');
+    }
+
+    const vendor = await this.vendorService.createVendor({
+      email: normalizedEmail,
+      password: dto.password,
+      fname: dto.fname,
+      lname: dto.lname,
+      busname: dto.busname,
+      phone: dto.phone || '',
+      city: dto.city || '',
+      location: dto.location || '',
+    });
+
+    const { access_token } = this.loginVendor(vendor);
+
+    return {
+      message: 'Vendor registration successful!',
+      access_token,
+      vendorId: vendor.id,
+      vendorEmail: vendor.email,
+    };
   }
 }
