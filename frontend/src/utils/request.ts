@@ -10,4 +10,17 @@ const request = axios.create({
     },
 });
 
+request.interceptors.request.use((config) => {
+    if (typeof document !== 'undefined') {
+        const cookies = document.cookie.split('; ');
+        const vendorCookie = cookies.find((row) => row.startsWith('access_tokenVendor='));
+        const visitorCookie = cookies.find((row) => row.startsWith('access_token='));
+        const token = vendorCookie?.split('=')[1] || visitorCookie?.split('=')[1];
+        if (token && !config.headers.Authorization) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+    }
+    return config;
+});
+
 export default request;

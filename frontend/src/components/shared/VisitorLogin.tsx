@@ -86,7 +86,7 @@ const VisitorLogin: React.FC<VisitorLoginProps> = ({ isVisible, onClose }) => {
       const response = await loginApi(formState.email, formState.password);
 
       if (response) {
-        const token = getStoredToken();
+        const token = response.access_token || getStoredToken();
         
         if (token) {
           login(token);
