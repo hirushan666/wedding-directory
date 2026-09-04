@@ -82,45 +82,49 @@ const VendorProfilePicture: React.FC<VendorProfilePictureProps> = ({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-6 p-4 mb-6 bg-gray-50 border border-gray-200 rounded-xl">
+    <div className="flex items-center gap-5 pb-6 mb-6 border-b border-gray-100">
       <div
-        className="relative group cursor-pointer w-24 h-24 rounded-full overflow-hidden border-2 border-orange shadow-sm flex-shrink-0"
+        className="relative group cursor-pointer w-20 h-20 rounded-full flex-shrink-0"
         onClick={handleContainerClick}
         title="Click to change profile picture"
       >
-        <Image
-          src={profilePic || "/images/visitorPlaceholder.png"}
-          alt="Vendor Profile Picture"
-          width={96}
-          height={96}
-          className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-75"
-        />
+        <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-orange/20 shadow-md">
+          <Image
+            src={profilePic || "/images/visitorPlaceholder.png"}
+            alt="Vendor Profile Picture"
+            width={80}
+            height={80}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
 
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <FiCamera className="text-white text-2xl" />
+        {/* Camera badge */}
+        <div className="absolute -bottom-1 -right-1 bg-orange text-white p-2 rounded-full shadow-md hover:bg-orange/90 transition-colors ring-2 ring-white">
+          <FiCamera className="text-sm" />
         </div>
 
         {isUploading && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-        <h4 className="font-semibold text-gray-800 text-base">Profile Picture</h4>
-        <p className="text-sm text-gray-500 mb-3">
-          JPG, PNG or WEBP (Max 5MB). Click to upload or replace.
-        </p>
-        <button
-          type="button"
-          onClick={handleContainerClick}
-          disabled={isUploading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange hover:bg-orange/90 rounded-md shadow-sm transition-colors disabled:opacity-50"
-        >
-          <FiUploadCloud className="text-base" />
-          {isUploading ? "Updating..." : "Change Picture"}
-        </button>
+      <div className="flex flex-col">
+        <span className="text-xs font-semibold uppercase tracking-wider text-orange">Profile Photo</span>
+        <h4 className="text-base font-medium text-gray-900 mt-0.5">Display Picture</h4>
+        <div className="flex items-center gap-3 mt-2">
+          <button
+            type="button"
+            onClick={handleContainerClick}
+            disabled={isUploading}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-orange bg-orange/10 hover:bg-orange/20 active:scale-95 rounded-lg transition-all disabled:opacity-50"
+          >
+            <FiUploadCloud className="text-sm" />
+            {isUploading ? "Updating..." : "Change Photo"}
+          </button>
+          <span className="text-xs text-gray-400">JPG, PNG, WEBP &bull; Max 5MB</span>
+        </div>
       </div>
 
       <input

@@ -38,13 +38,13 @@ const EditProfile: React.FC = () => {
     }
   }, [vendorData]);
 
-  const [updateVendor] = useMutation(UPDATE_VENDOR, {
+  const [updateVendor, { loading: isUpdating }] = useMutation(UPDATE_VENDOR, {
     onCompleted: () => {
-      toast.success("Updated Successfully!");
+      toast.success("Profile information updated successfully!");
       refetch();
     },
     onError: (error) => {
-      toast.error("Error updating");
+      toast.error("Error updating profile information");
       console.error("Error updating vendor:", error);
     },
   });
@@ -73,59 +73,90 @@ const EditProfile: React.FC = () => {
     });
   };
 
-  if (loading) return <p className="p-4">Loading profile information...</p>;
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex items-center justify-center min-h-[300px]">
+        <div className="flex items-center gap-3 text-gray-500">
+          <div className="w-5 h-5 border-2 border-orange border-t-transparent rounded-full animate-spin"></div>
+          <span>Loading profile information...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Fragment>
-      <div className="bg-white rounded-2xl p-4 px-8 shadow-lg">
-        <h2 className="font-title text-[30px] ">Profile</h2>
-        <hr className="w-[168px] h-px my-4 bg-gray-400 border-0 dark:bg-gray-700"></hr>
-        
-        {vendor?.id && (
-          <VendorProfilePicture
-            vendorId={vendor.id}
-            initialPic={vendorData?.profile_pic_url}
-            onUploadSuccess={() => refetch()}
-          />
-        )}
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+      <div className="pb-6 mb-6 border-b border-gray-100">
+        <h2 className="font-title text-2xl font-bold text-gray-900">Personal Profile</h2>
+        <p className="text-gray-500 font-body text-sm mt-1">
+          Your personal contact details and display picture.
+        </p>
+      </div>
 
-        <form onSubmit={handleSubmit} className="mb-8">
+      {vendor?.id && (
+        <VendorProfilePicture
+          vendorId={vendor.id}
+          initialPic={vendorData?.profile_pic_url}
+          onUploadSuccess={() => refetch()}
+        />
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6 font-body">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="font-body text-[16px] ">First Name</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              First Name <span className="text-orange">*</span>
+            </label>
             <Input
               name="firstName"
               value={profile.firstName}
               onChange={handleInputChange}
-              className="font-body rounded-md mt-2 mb-3"
+              placeholder="Your first name"
+              className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 text-sm"
+              required
             />
           </div>
+
           <div>
-            <label className="font-body text-[16px] ">Last Name</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Last Name <span className="text-orange">*</span>
+            </label>
             <Input
               name="lastName"
               value={profile.lastName}
               onChange={handleInputChange}
-              className="font-body rounded-md mt-2 mb-3"
+              placeholder="Your last name"
+              className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 text-sm"
+              required
             />
           </div>
-          <div>
-            <label className="font-body text-[16px] ">Phone Number</label>
-            <Input
-              name="phone"
-              value={profile.phone}
-              onChange={handleInputChange}
-              className="font-body rounded-md mt-2 mb-3"
-            />
-          </div>
-          <Button
-            variant="signup"
-            className="m-3 w-full"
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Phone Number <span className="text-orange">*</span>
+          </label>
+          <Input
+            name="phone"
+            value={profile.phone}
+            onChange={handleInputChange}
+            placeholder="e.g. +94 77 123 4567"
+            className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 text-sm"
+            required
+          />
+        </div>
+
+        <div className="flex justify-end pt-4 border-t border-gray-100">
+          <button
+            type="submit"
+            disabled={isUpdating}
+            className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm transition-all disabled:opacity-50"
           >
-            Save Profile Information
-          </Button>
-        </form>
-      </div>
-    </Fragment>
+            {isUpdating ? "Saving..." : "Save Profile Information"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
