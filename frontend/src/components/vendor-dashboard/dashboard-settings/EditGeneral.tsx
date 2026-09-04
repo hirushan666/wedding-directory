@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,11 @@ import { GET_VENDOR_BY_ID } from "@/graphql/queries";
 import CityInput from "@/components/vendor-signup/CityInput";
 import { UPDATE_VENDOR } from "@/graphql/mutations";
 import LocationInput from "@/components/vendor-signup/LocationInput";
+import VendorProfilePicture from "./VendorProfilePicture";
 
 const EditGeneral: React.FC = () => {
   const { vendor } = useVendorAuth();
-  const { data, loading, error } = useQuery(GET_VENDOR_BY_ID, {
+  const { data, loading, error, refetch } = useQuery(GET_VENDOR_BY_ID, {
     variables: { id: vendor?.id },
     skip: !vendor?.id,
   });
@@ -22,15 +23,27 @@ const EditGeneral: React.FC = () => {
   const vendorData = data?.findVendorById;
 
   const [general, setGeneral] = useState<GeneralData>({
-    businessName: vendorData?.busname || "Your business name",
+    businessName: vendorData?.busname || "",
     city: vendorData?.city || "",
     location: vendorData?.location || "",
     about: vendorData?.about || "",
   });
 
+  useEffect(() => {
+    if (vendorData) {
+      setGeneral({
+        businessName: vendorData.busname || "",
+        city: vendorData.city || "",
+        location: vendorData.location || "",
+        about: vendorData.about || "",
+      });
+    }
+  }, [vendorData]);
+
   const [updateVendor] = useMutation(UPDATE_VENDOR, {
     onCompleted: () => {
       toast.success("Updated Successfully!");
+      refetch();
     },
     onError: (error) => {
       toast.error("Error updating");
@@ -77,14 +90,22 @@ const EditGeneral: React.FC = () => {
     });
   };
 
-  if (loading) return <p>Loading vendor information...</p>;
-  if (error) return <p>Error loading profile information: {error.message}</p>;
+  if (loading) return <p className="p-4">Loading general information...</p>;
 
   return (
     <Fragment>
       <div className="bg-white rounded-2xl p-4 px-8 shadow-lg">
         <h2 className="font-title text-[30px] ">General</h2>
         <hr className="w-[168px] h-px my-4 bg-gray-400 border-0 dark:bg-gray-700"></hr>
+        
+        {vendor?.id && (
+          <VendorProfilePicture
+            vendorId={vendor.id}
+            initialPic={vendorData?.profile_pic_url}
+            onUploadSuccess={() => refetch()}
+          />
+        )}
+
         <form onSubmit={handleSubmit} className="mb-8">
           <div>
             <label className="font-body text-[16px] ">Business Name</label>

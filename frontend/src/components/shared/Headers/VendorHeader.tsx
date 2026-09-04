@@ -4,13 +4,25 @@ import Link from "next/link";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import Image from "next/image";
 import { useVendorAuth } from "@/contexts/VendorAuthContext"; // Added vendor auth context
-import { BiMessageRounded } from "react-icons/bi";
 import { useChatSocket } from "@/hooks/useChatSocket";
+import { BiMessageRounded } from "react-icons/bi";
+import { useQuery } from "@apollo/client";
+import { GET_VENDOR_BY_ID } from "@/graphql/queries";
 
 const VendorHeader = () => {
   const { logout, vendor } = useVendorAuth(); // Added logout function from vendor auth context
   const [showProfileMenu, setShowProfileMenu] = useState(false); // State for the profile dropdown
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  const { data } = useQuery(GET_VENDOR_BY_ID, {
+    variables: { id: vendor?.id },
+    skip: !vendor?.id,
+    onError: (err) => {
+      console.warn("Failed to load vendor header info:", err.message);
+    },
+  });
+
+  const profilePic = data?.findVendorById?.profile_pic_url || "/images/visitorPlaceholder.png";
 
   // WebSocket hook for unread count
   const { unreadCount } = useChatSocket(vendor?.id, 'vendor');
@@ -84,15 +96,20 @@ const VendorHeader = () => {
             {/* Profile dropdown */}
             <div className="relative" ref={profileMenuRef}>
               <Image
-                src="/images/visitorPlaceholder.png"
+                src={profilePic}
                 alt="vendor-profile-image"
-                className="rounded-full cursor-pointer"
+                className="rounded-full cursor-pointer object-cover w-[50px] h-[50px]"
                 width={50}
                 height={50}
                 onClick={handleProfileClick}
               />
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2 z-50">
+                  <Link href="/vendor-dashboard/settings">
+                    <p className="px-4 py-2 hover:bg-gray-100 cursor-pointer font-title text-lg">
+                      Settings
+                    </p>
+                  </Link>
                   <p
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer font-title text-lg"
                     onClick={handleLogout}

@@ -152,6 +152,7 @@ export const GET_VENDOR_BY_ID = gql`
       phone
       city
       location
+      profile_pic_url
       createdAt
     }
   }

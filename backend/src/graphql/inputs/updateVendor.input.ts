@@ -28,4 +28,7 @@ export class UpdateVendorInput {
 
   @Field({ nullable: true })
   about?: string;
+
+  @Field({ nullable: true })
+  profile_pic_url?: string;
 }
