@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { VendorEntity } from 'src/database/entities/vendor.entity';
 import { DataSource } from 'typeorm';
 import { VendorRepository } from '../../database/repositories/vendor.repository';
@@ -76,12 +76,33 @@ export class VendorService {
   ): Promise<VendorEntity> {
     // Check if a password is provided in the update input
     if (updateVendorInput.password) {
-      // Hash the password before updating
+      if (!updateVendorInput.currentPassword) {
+        throw new BadRequestException('Current password is required to change password');
+      }
+
+      const vendor = await this.vendorRepository.findOne({ where: { id } });
+      if (!vendor) {
+        throw new NotFoundException('Vendor not found');
+      }
+
+      const isCurrentPasswordValid = await bcrypt.compare(
+        updateVendorInput.currentPassword,
+        vendor.password,
+      );
+
+      if (!isCurrentPasswordValid) {
+        throw new BadRequestException('Current password is incorrect');
+      }
+
+      // Hash the new password before updating
       updateVendorInput.password = bcrypt.hashSync(
         updateVendorInput.password,
         12,
       );
     }
+
+    // Remove currentPassword so TypeORM doesn't attempt to update a non-existent column
+    delete updateVendorInput.currentPassword;
 
     await this.vendorRepository.update(id, updateVendorInput);
     return this.vendorRepository.findOne({ where: { id } });

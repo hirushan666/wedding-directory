@@ -9,6 +9,9 @@ export class UpdateVendorInput {
   password?: string;
 
   @Field({ nullable: true })
+  currentPassword?: string;
+
+  @Field({ nullable: true })
   fname?: string;
 
   @Field({ nullable: true })

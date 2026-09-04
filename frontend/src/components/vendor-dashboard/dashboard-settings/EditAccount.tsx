@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { useMutation, useQuery } from "@apollo/client";
@@ -18,20 +18,27 @@ const EditAccount: React.FC = () => {
 
   const vendorData = data?.findVendorById;
 
+  const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
 
   const [updateVendor, { loading: isUpdating }] = useMutation(UPDATE_VENDOR, {
     onCompleted: () => {
       toast.success("Password updated successfully!");
+      setCurrentPassword("");
       setPassword("");
       setRePassword("");
       refetch();
     },
     onError: (error) => {
-      toast.error("Error updating account");
+      const message =
+        error.graphQLErrors?.[0]?.message ||
+        error.message ||
+        "Error updating password";
+      toast.error(message);
       console.error("Error updating vendor:", error);
     },
   });
@@ -40,6 +47,11 @@ const EditAccount: React.FC = () => {
     e.preventDefault();
     if (!vendor?.id) return;
 
+    if (!currentPassword) {
+      toast.error("Please enter your current password");
+      return;
+    }
+
     if (!password) {
       toast.error("Please enter a new password");
       return;
@@ -47,6 +59,11 @@ const EditAccount: React.FC = () => {
 
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters long!");
+      return;
+    }
+
+    if (currentPassword === password) {
+      toast.error("New password must be different from current password!");
       return;
     }
 
@@ -59,6 +76,7 @@ const EditAccount: React.FC = () => {
       variables: {
         id: vendor.id,
         input: {
+          currentPassword,
           password,
         },
       },
@@ -109,56 +127,83 @@ const EditAccount: React.FC = () => {
         </div>
 
         {/* Password Section */}
-        <div className="pt-2">
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Change Password</h3>
-          <p className="text-xs text-gray-400 mb-4">
-            Leave blank if you do not wish to change your password.
+        <div className="pt-2 border-t border-gray-100">
+          <h3 className="text-base font-semibold text-gray-900 mb-1">Change Password</h3>
+          <p className="text-xs text-gray-500 mb-5">
+            To change your password, please provide your current password for verification.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-5">
+            {/* Current Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Password
+                Current Password
               </label>
-              <div className="relative">
+              <div className="relative max-w-md">
                 <Input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 characters"
+                  type={showCurrentPassword ? "text" : "password"}
+                  name="currentPassword"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter your current password"
                   className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 pr-10 text-sm"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                   className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  {showPassword ? <FiEyeOff className="text-base" /> : <FiEye className="text-base" />}
+                  {showCurrentPassword ? <FiEyeOff className="text-base" /> : <FiEye className="text-base" />}
                 </button>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm New Password
-              </label>
-              <div className="relative">
-                <Input
-                  type={showRePassword ? "text" : "password"}
-                  name="rePassword"
-                  value={rePassword}
-                  onChange={(e) => setRePassword(e.target.value)}
-                  placeholder="Re-enter password"
-                  className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 pr-10 text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowRePassword(!showRePassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showRePassword ? <FiEyeOff className="text-base" /> : <FiEye className="text-base" />}
-                </button>
+            {/* New Password & Confirm New Password */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  New Password
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min. 8 characters"
+                    className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 pr-10 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <FiEyeOff className="text-base" /> : <FiEye className="text-base" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showRePassword ? "text" : "password"}
+                    name="rePassword"
+                    value={rePassword}
+                    onChange={(e) => setRePassword(e.target.value)}
+                    placeholder="Re-enter new password"
+                    className="h-11 rounded-lg border-gray-300 focus:border-orange focus:ring-2 focus:ring-orange/20 pr-10 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRePassword(!showRePassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showRePassword ? <FiEyeOff className="text-base" /> : <FiEye className="text-base" />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -179,3 +224,4 @@ const EditAccount: React.FC = () => {
 };
 
 export default EditAccount;
+
