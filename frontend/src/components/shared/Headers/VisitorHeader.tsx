@@ -21,9 +21,12 @@ const VisitorHeader = () => {
   const { unreadCount } = useChatSocket(visitor?.id, 'visitor');
 
   // Fetch visitor data including profile_pic_url on component load
-  const { loading, error } = useQuery(GET_VISITOR_BY_ID, {
+  useQuery(GET_VISITOR_BY_ID, {
     variables: { id: visitor?.id },
     skip: !visitor?.id,
+    onError: (err) => {
+      console.warn("Failed to load visitor profile picture:", err.message);
+    },
     onCompleted: (data) => {
       if (data?.findVisitorById?.profile_pic_url) {
         setProfilePic(data.findVisitorById.profile_pic_url);
@@ -60,9 +63,6 @@ const VisitorHeader = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showProfileMenu]);
-
-  if (loading) return null;  
-  if (error) return <p>Error loading profile picture</p>;
 
   return (
     <Fragment>

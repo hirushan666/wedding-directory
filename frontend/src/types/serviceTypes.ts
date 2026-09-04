@@ -20,6 +20,8 @@ export interface SocialData {
 
 export interface ServicesMenuProps {
   setActiveSection: (section: string) => void;
+  activeSection?: string;
+  vendorInfo?: any;
 }
 
 // New Service Interface

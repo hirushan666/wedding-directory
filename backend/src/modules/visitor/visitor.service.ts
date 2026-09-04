@@ -54,6 +54,29 @@ export class VisitorService {
     return this.findVisitorById(id);
   }
 
+  async updatePassword(id: string, plainPassword: string): Promise<void> {
+    const hashedPassword = bcrypt.hashSync(plainPassword, 12);
+    await this.visitorRepository.update(id, { password: hashedPassword });
+  }
+
+  async createGoogleVisitor(data: {
+    email: string;
+    visitor_fname?: string;
+    visitor_lname?: string;
+    profile_pic_url?: string;
+  }): Promise<VisitorEntity> {
+    const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+    const hashedPassword = bcrypt.hashSync(randomPassword, 12);
+    const visitor = this.visitorRepository.create({
+      email: data.email,
+      visitor_fname: data.visitor_fname,
+      visitor_lname: data.visitor_lname,
+      profile_pic_url: data.profile_pic_url,
+      password: hashedPassword,
+    });
+    return this.visitorRepository.save(visitor);
+  }
+
   async updateProfilePicture(visitorId: string, fileUrl: string): Promise<VisitorEntity> {
     // Find the visitor by ID
     const visitor = await this.visitorRepository.findOne({ where: { id: visitorId } });

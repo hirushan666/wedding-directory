@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { VendorEntity } from 'src/database/entities/vendor.entity';
 import { DataSource } from 'typeorm';
 import { VendorRepository } from '../../database/repositories/vendor.repository';
@@ -76,15 +76,41 @@ export class VendorService {
   ): Promise<VendorEntity> {
     // Check if a password is provided in the update input
     if (updateVendorInput.password) {
-      // Hash the password before updating
+      if (!updateVendorInput.currentPassword) {
+        throw new BadRequestException('Current password is required to change password');
+      }
+
+      const vendor = await this.vendorRepository.findOne({ where: { id } });
+      if (!vendor) {
+        throw new NotFoundException('Vendor not found');
+      }
+
+      const isCurrentPasswordValid = await bcrypt.compare(
+        updateVendorInput.currentPassword,
+        vendor.password,
+      );
+
+      if (!isCurrentPasswordValid) {
+        throw new BadRequestException('Current password is incorrect');
+      }
+
+      // Hash the new password before updating
       updateVendorInput.password = bcrypt.hashSync(
         updateVendorInput.password,
         12,
       );
     }
 
+    // Remove currentPassword so TypeORM doesn't attempt to update a non-existent column
+    delete updateVendorInput.currentPassword;
+
     await this.vendorRepository.update(id, updateVendorInput);
     return this.vendorRepository.findOne({ where: { id } });
+  }
+
+  async updatePassword(id: string, plainPassword: string): Promise<void> {
+    const hashedPassword = bcrypt.hashSync(plainPassword, 12);
+    await this.vendorRepository.update(id, { password: hashedPassword });
   }
 
   async updateVendorProfilePic(
@@ -109,6 +135,28 @@ export class VendorService {
 
   public getVendorByEmail(email: string): Promise<VendorEntity | undefined> {
     return this.vendorRepository.findOne({ where: { email } });
+  }
+
+  async createGoogleVendor(data: {
+    email: string;
+    fname?: string;
+    lname?: string;
+    profile_pic_url?: string;
+  }): Promise<VendorEntity> {
+    const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+    const hashedPassword = await bcrypt.hash(randomPassword, 12);
+    const vendor = this.vendorRepository.create({
+      email: data.email,
+      fname: data.fname || 'Vendor',
+      lname: data.lname || '',
+      busname: `${data.fname || 'Vendor'}'s Services`,
+      phone: '',
+      city: '',
+      location: '',
+      profile_pic_url: data.profile_pic_url,
+      password: hashedPassword,
+    });
+    return await this.vendorRepository.save(vendor);
   }
 
   async findVendorsByOffering(offeringId: string): Promise<VendorEntity[]> {

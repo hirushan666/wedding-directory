@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { loginVendor as loginVendorAPI } from "@/api/auth/vendor.auth.api";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { toast } from 'react-hot-toast';
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 const VendorLoginPage = () => {
     const [email, setEmail] = useState("");
@@ -27,16 +28,16 @@ const VendorLoginPage = () => {
     const response = await loginVendorAPI(email, password);
 
     // Check if login was successful
-    if (response && response.message === 'Login successful') {
-      // Read token from cookie (backend sets it in cookie)
+    if (response && (response.message === 'Login successful' || response.access_token)) {
+      // Prioritize access_token returned directly in response body (supports cross-domain/Vercel)
       const storedToken = document.cookie
         .split('; ')
         .find(row => row.startsWith('access_tokenVendor='));
 
-      if (storedToken) {
-        const token = storedToken.split('=')[1];
-        
-        // Store token and trigger context login
+      const token = response.access_token || (storedToken ? storedToken.split('=')[1] : null);
+
+      if (token) {
+        // Store token and trigger context login (which also sets the first-party cookie)
         login(token);
 
         // Show success message
@@ -47,7 +48,7 @@ const VendorLoginPage = () => {
         // Redirect to dashboard
         router.push('/vendor-dashboard');
       } else {
-        // Token not found in cookie
+        // Token not found
         setError('No token received. Please try again.');
         toast.error('No token received. Please try again.', {
           style: { background: '#333', color: '#fff' },
@@ -130,13 +131,22 @@ const VendorLoginPage = () => {
                               </div>
                           </form>
                           <div className="text-center mt-2">
-                              <label
-                                htmlFor="terms"
-                                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              <Link
+                                href="/forgot-password?role=vendor"
+                                className="text-sm text-gray-700 hover:text-orange hover:underline transition-colors"
                               >
-                                  <Link href="/forgot-password">Forget your password?</Link>
-                              </label>
+                                  Forget your password?
+                              </Link>
                           </div>
+
+                          <div className="flex items-center my-4">
+                              <div className="flex-grow border-t border-gray-300"></div>
+                              <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
+                              <div className="flex-grow border-t border-gray-300"></div>
+                          </div>
+
+                          <GoogleAuthButton role="vendor" text="signin_with" />
+
                           <hr className="border-t-2 border-gray-300 my-4" />
                           <div className="text-center mt-3">
                               <label

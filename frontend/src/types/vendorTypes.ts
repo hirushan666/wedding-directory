@@ -2,6 +2,7 @@ export interface ProfileData {
     firstName: string;
     lastName: string;
     phone: string;
+    profile_pic_url?: string;
 }
 
 export interface GeneralData {
@@ -19,7 +20,8 @@ export interface AccountData {
 
 export interface VendorProps {
   vendor: {
-    profilePic: string,
+    profilePic?: string,
+    profile_pic_url?: string,
     fname: string,
     lname: string,
     city: string,
