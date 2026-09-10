@@ -93,6 +93,8 @@ export const UPDATE_SERVICE_PROFILE = gql`
 export const UPDATE_SERVICE_SOCIALS = gql`
   mutation UpdateOffering($id: String!, $input: UpdateOfferingInput!) {
     updateOffering(id: $id, input: $input) {
+      id
+      website
       facebook
       instagram
       tiktok

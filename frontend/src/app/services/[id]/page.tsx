@@ -14,7 +14,7 @@ import {
 } from "@/graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import SocialIcons from "@/components/vendor-dashboard/dahboard-services/socialIcons";
-import { FiEdit, FiMessageCircle } from "react-icons/fi";
+import { FiEdit, FiMessageCircle, FiMapPin, FiArrowLeft } from "react-icons/fi";
 import Reviews from "@/components/vendor-dashboard/dahboard-services/reviews/Reviews";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import Link from "next/link";
@@ -310,103 +310,138 @@ const Service: React.FC = () => {
     <div className="bg-lightYellow font-body">
       <Header />
       <div className="container mx-auto justify-center py-2">
-        <Link href="/vendor-dashboard">
-          <button className="text-black font-body hover:text-gray-500 mr-2">
-            &larr;
-          </button>
-          back
-        </Link>
+        <div className="mb-4 pt-2">
+          <Link
+            href={isVendorsOffering ? "/vendor-dashboard" : "/"}
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-orange transition-colors group"
+          >
+            <FiArrowLeft className="text-base group-hover:-translate-x-0.5 transition-transform" />
+            <span>{isVendorsOffering ? "Back to Dashboard" : "Back"}</span>
+          </Link>
+        </div>
 
         {/* Replace the Portfolio Image Section with the new component */}
         <PortfolioImages
           banner={offering?.banner}
-          photoShowcase={offering?.photo_showcase?.slice(0, 4) || []}
+          photoShowcase={offering?.photo_showcase || []}
           hasMoreMedia={
-            (offering?.photo_showcase && offering.photo_showcase.length > 4) ||
+            (offering?.photo_showcase && offering.photo_showcase.length > 5) ||
             offering?.video_showcase?.length > 0
           }
           totalMediaCount={
+            (offering?.banner ? 1 : 0) +
             (offering?.photo_showcase?.length || 0) +
             (offering?.video_showcase?.length || 0)
           }
           portfolioLink={`/services/${id}/gallery`}
         />
 
-        {/* Add "See More" button if there are additional media items */}
-        {((offering?.photo_showcase && offering.photo_showcase.length > 4) ||
-          offering?.video_showcase?.length > 0) && (
-            <div className="flex justify-center mt-2 mb-4"></div>
-          )}
+        {/* Vendor Storefront View Mode Banner */}
+        {isVendorsOffering && (
+          <div className="bg-white rounded-2xl shadow-sm border border-orange/20 p-4 sm:p-5 mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-orange/5 via-white to-white">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-orange/10 flex items-center justify-center text-orange flex-shrink-0">
+                <FiEdit className="text-lg" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-title font-bold text-gray-900 text-base">
+                    Vendor Storefront View
+                  </span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange/15 text-orange">
+                    Your Listing
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 font-body mt-0.5">
+                  This is how couples see your service. You can update your service details, media, and pricing packages anytime.
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/services/edit/${offering?.id}`}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all whitespace-nowrap w-full sm:w-auto"
+            >
+              <FiEdit className="text-base" />
+              <span>Edit Service</span>
+            </Link>
+          </div>
+        )}
 
         <div className="flex flex-row gap-x-5 mt-4">
           <div className="w-3/4">
             {/* General Section */}
-            <div className="bg-white rounded-2xl p-4 mb-4">
-              <div className="flex flex-row">
-                <div className="w-8/12 flex flex-col justify-between">
-                  <div className="text-xl">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div className="flex-1">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-orange bg-orange/10 px-2.5 py-1 rounded-md inline-block mb-2">
                     {offering?.vendor.busname || "Vendor name not available"}
+                  </span>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h1 className="text-3xl font-title font-bold text-gray-900">
+                      {offering?.name}
+                    </h1>
+                    {!isVendorsOffering && (
+                      <button
+                        onClick={handleHeartClick}
+                        className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-red-500 transition-colors"
+                        title={isInMyVendors ? "Remove from saved" : "Save to favorites"}
+                      >
+                        {isInMyVendors ? (
+                          <FaHeart className="text-2xl text-red-500 hover:text-red-600 hover:cursor-pointer" />
+                        ) : (
+                          <CiHeart className="text-2xl hover:text-red-500 hover:cursor-pointer" />
+                        )}
+                      </button>
+                    )}
                   </div>
-                  <div className="flex flex-row text-3xl font-bold">
-                    {offering?.name}
-                    <div className="flex flex-row justify-center items-center">
-                      {isVendorsOffering ? (
-                        <Link href={`/services/edit/${offering?.id}`}>
-                          <FiEdit className="text-2xl text-orange hover:text-black ml-1" />
-                        </Link>
-                      ) : (
-                        <button onClick={handleHeartClick}>
-                          {isInMyVendors ? (
-                            <FaHeart className="text-red-500 hover:text-red-600 hover:cursor-pointer" />
-                          ) : (
-                            <CiHeart className="hover:text-red-500 hover:cursor-pointer" />
-                          )}
-                        </button>
-                      )}
-                    </div>
+                  <div className="text-gray-500 text-sm mt-2 flex items-center gap-1.5">
+                    <FiMapPin className="text-gray-400 text-sm flex-shrink-0" />
+                    <span>{offering?.vendor.city || "Location not specified"}</span>
                   </div>
-                  <div>{offering?.vendor.city}</div>
                   
                   {/* Chat Button - Only show for visitors (not vendors viewing their own) */}
                   {!isVendorsOffering && visitor && (
                     <button
                       onClick={() => setIsChatOpen(true)}
-                      className="mt-4 bg-orange text-white px-6 py-2 rounded-lg hover:bg-orange/90 transition-colors flex items-center gap-2 w-fit"
+                      className="mt-4 bg-orange text-white px-5 py-2.5 rounded-xl hover:bg-orange/90 shadow-sm shadow-orange/20 font-semibold text-sm transition-all flex items-center gap-2 w-fit active:scale-[0.99]"
                     >
-                      <FiMessageCircle className="text-xl" />
+                      <FiMessageCircle className="text-lg" />
                       Chat with Vendor
                     </button>
                   )}
                 </div>
-                <SocialIcons offering={offering} />
+                <div className="flex-shrink-0 pt-1">
+                  <SocialIcons offering={offering} />
+                </div>
               </div>
             </div>
 
             {/* Details Section */}
-            <div className="bg-white rounded-2xl p-4 flex flex-col">
-              <div className="mb-3 text-2xl font-bold">About the Vendor</div>
-              <div>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4 flex flex-col">
+              <h2 className="mb-2 text-xl font-bold font-title text-gray-900">About the Vendor</h2>
+              <div className="text-gray-600 font-body leading-relaxed">
                 <p>{offering.vendor.about || "About not available"}</p>
               </div>
-              <hr className="border-t border-gray-300 my-4" />
+              <hr className="border-t border-gray-100 my-6" />
 
-              <div className="mb-3 text-2xl font-bold">Details</div>
-              <div>
+              <h2 className="mb-2 text-xl font-bold font-title text-gray-900">Details</h2>
+              <div className="text-gray-600 font-body leading-relaxed">
                 <p>{offering.description || "Description not available"}</p>
               </div>
-              <hr className="border-t border-gray-300 my-4" />
+              <hr className="border-t border-gray-100 my-6" />
 
               {/* Packages Section */}
               {packagesData?.findPackagesByOffering.some(
                 (pkg: Package) => pkg.visible
               ) && (
                   <>
-                    <div className="mb-6 text-2xl font-bold flex items-center justify-between">
-                      <span>Packages</span>
+                    <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
+                      <h2 className="text-2xl font-bold font-title text-gray-900">Packages</h2>
                       {isVendorsOffering && (
                         <Link href={`/services/edit/${offering?.id}`}>
-                          <button className="bg-orange text-white px-4 py-2 rounded-lg hover:bg-white hover:text-orange hover:border-2 hover:border-orange transition-colors font-bold">
-                            Edit Packages
+                          <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all">
+                            <FiEdit className="text-sm" />
+                            <span>Edit Packages</span>
                           </button>
                         </Link>
                       )}
@@ -568,36 +603,38 @@ const Service: React.FC = () => {
                           </div>
                         ))}
                     </div>
-                    <hr className="border-t border-gray-300 my-6" />
+                    <hr className="border-t border-gray-100 my-6" />
                   </>
                 )}
 
-              <div className="mb-3 text-2xl font-bold">Reviews</div>
+              <h2 className="mb-3 text-xl font-bold font-title text-gray-900">Reviews</h2>
               <div>
                 <Reviews serviceId={offering?.id} />
               </div>
 
               {!isVendorsOffering ? (
-                <div>
+                <div className="mt-4">
                   <WriteReview serviceId={offering?.id} vendorName={offering?.vendor?.busname} />
                 </div>
               ) : null}
 
-              <div>
+              <div className="mt-4">
                 <Comments serviceId={offering?.id} />
               </div>
-              <hr className="border-t border-gray-300 my-4" />
-              <div className="mb-3 text-2xl font-bold">Contact</div>
-              <div className="flex flex-col gap-y-1">
-                <div>Email: {offering.bus_email || "Email not available"}</div>
+              <hr className="border-t border-gray-100 my-6" />
+              <h2 className="mb-3 text-xl font-bold font-title text-gray-900">Contact</h2>
+              <div className="flex flex-col gap-y-1.5 text-sm text-gray-600 font-body">
                 <div>
-                  Phone number:{" "}
+                  <span className="font-semibold text-gray-800">Email:</span> {offering.bus_email || "Email not available"}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-800">Phone number:</span>{" "}
                   {offering.bus_phone || "Phone number not available"}
                 </div>
               </div>
-              <hr className="border-t border-gray-300 my-4" />
-              <div className="mb-3 text-2xl font-bold">Location</div>
-              <div className="mb-3 text-2xl font-bold">
+              <hr className="border-t border-gray-100 my-6" />
+              <h2 className="mb-3 text-xl font-bold font-title text-gray-900">Location</h2>
+              <div>
                 <GoogleMapComponent serviceId={offering?.id} />
               </div>
             </div>

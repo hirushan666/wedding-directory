@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { RiGalleryView2 } from "react-icons/ri";
 
@@ -20,208 +20,126 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
   totalMediaCount = 0,
   portfolioLink,
 }) => {
-  const hasImages = banner || (photoShowcase && photoShowcase.length > 0);
-  const images = hasImages
-    ? [banner, ...(photoShowcase || [])].filter((img): img is string =>
-        Boolean(img)
-      )
-    : ["/images/offeringPlaceholder.webp"];
+  // Filter out any empty/null showcase items
+  const validShowcase = (photoShowcase || []).filter((img): img is string => Boolean(img));
+  const defaultCover = banner || validShowcase[0] || "/images/offeringPlaceholder.webp";
 
-  // Helper function to render the "View more" overlay
-  const renderViewMoreOverlay = (index: number) => {
-    if (hasMoreMedia && portfolioLink && index === images.length - 1) {
-      const moreCount = (totalMediaCount || 0) - images.length;
-      if (moreCount <= 0) return null;
+  // State to track actively viewed image in the main full-width cover slot
+  const [activeImage, setActiveImage] = useState<string>(defaultCover);
 
-      return (
-        <Link
-          href={portfolioLink}
-          className="absolute bottom-0 right-0 m-4 z-10"
-        >
-          <div className="flex border-2 border-slate-700 items-center gap-2 bg-slate-400 hover:bg-orange-600 text-white py-2 px-4 rounded-lg transition-all shadow-lg hover:shadow-xl group-hover:scale-105">
-            <RiGalleryView2 className="text-lg text-slate-900" />
-            <span className="font-title font-bold text-slate-800">See all</span>
-            
-          </div>
-        </Link>
-      );
-    }
-    return null;
-  };
+  useEffect(() => {
+    setActiveImage(defaultCover);
+  }, [defaultCover]);
 
-  if (images.length === 1) {
-    // Single image layout
-    return (
-      <div className="w-full max-w-7xl mx-auto overflow-hidden h-[500px] relative rounded-lg">
+  // Combine cover banner + showcase images for thumbnails
+  const allImages = [
+    ...(banner ? [{ src: banner, label: "Cover Image", isBanner: true }] : []),
+    ...validShowcase.map((src, idx) => ({
+      src,
+      label: `Showcase Photo ${idx + 1}`,
+      isBanner: false,
+    })),
+  ];
+
+  const totalCount = Math.max(totalMediaCount || 0, allImages.length);
+  const maxThumbnails = 6;
+  const visibleThumbnails = allImages.slice(0, maxThumbnails);
+  const remainingCount = Math.max(0, totalCount - visibleThumbnails.length);
+
+  return (
+    <div className="w-full max-w-7xl mx-auto">
+      {/* Cover Image - Full Width */}
+      <div className="relative w-full h-[360px] sm:h-[420px] md:h-[480px] rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-100 group">
         <Image
-          src={images[0]}
-          alt="Service Image"
-          className="w-full h-full object-cover"
+          src={activeImage}
+          alt="Service Cover Image"
+          className="w-full h-full object-cover transition-all duration-300"
           fill
           priority
         />
-        {renderViewMoreOverlay(0)}
-      </div>
-    );
-  }
 
-  if (images.length === 2) {
-    // Two images layout - split in two equal columns
-    return (
-      <div className="w-full max-w-7xl mx-auto overflow-hidden">
-        <div className="grid grid-cols-2 gap-4 h-[500px]">
-          {images.map((photo, index) => (
-            <div
-              key={index}
-              className="relative w-full h-full overflow-hidden rounded-lg"
-            >
-              <Image
-                src={photo}
-                alt={`Portfolio image ${index + 1}`}
-                className="w-full h-full object-cover"
-                fill
-                priority={index === 0}
-              />
-              {renderViewMoreOverlay(index)}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (images.length === 3) {
-    // Three images layout - first image in left column, two images stacked in right column
-    return (
-      <div className="w-full max-w-7xl mx-auto overflow-hidden">
-        <div className="grid grid-cols-2 gap-4 h-[500px]">
-          {/* First image - full height left column */}
-          <div className="relative w-full h-full overflow-hidden rounded-lg">
-            <Image
-              src={images[0]}
-              alt="Main Image"
-              className="w-full h-full object-cover"
-              fill
-              priority
-            />
+        {/* Banner Identification Badge */}
+        {activeImage === banner && (
+          <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/65 backdrop-blur-md text-white text-xs font-semibold shadow-md border border-white/15">
+            <span className="w-2 h-2 rounded-full bg-orange" />
+            <span>Banner Image</span>
           </div>
+        )}
 
-          {/* Right column with two stacked images */}
-          <div className="grid grid-rows-2 gap-4 h-full">
-            {images.slice(1).map((photo, index) => {
-              const actualIndex = index + 1;
+        {/* View all gallery button */}
+        {portfolioLink && (
+          <Link
+            href={portfolioLink}
+            className="absolute bottom-4 right-4 z-10 inline-flex items-center gap-2 bg-black/65 hover:bg-black/85 backdrop-blur-md text-white py-2 px-4 rounded-xl text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-[0.98]"
+          >
+            <RiGalleryView2 className="text-base text-orange" />
+            <span>See all photos ({totalCount})</span>
+          </Link>
+        )}
+      </div>
+
+      {/* Other Images (Showcase) as Small Squares Below */}
+      {allImages.length > 1 && (
+        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4 overflow-x-auto pb-1 scrollbar-thin">
+          {visibleThumbnails.map((item, index) => {
+            const isSelected = activeImage === item.src;
+            const isLastSlot =
+              index === visibleThumbnails.length - 1 &&
+              (hasMoreMedia || remainingCount > 0);
+
+            if (isLastSlot && portfolioLink) {
               return (
-                <div
+                <Link
                   key={index}
-                  className="relative w-full h-full overflow-hidden rounded-lg"
+                  href={portfolioLink}
+                  className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 aspect-square rounded-xl overflow-hidden border-2 border-gray-200 group cursor-pointer"
+                  title="View full gallery"
                 >
                   <Image
-                    src={photo}
-                    alt={`Portfolio image ${actualIndex + 1}`}
-                    className="w-full h-full object-cover"
+                    src={item.src}
+                    alt={item.label}
                     fill
+                    className="object-cover group-hover:scale-105 transition-transform"
                   />
-                  {renderViewMoreOverlay(actualIndex)}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (images.length === 4) {
-    // Four images layout - first image in left column, three images in right column grid
-    return (
-      <div className="w-full max-w-7xl mx-auto overflow-hidden">
-        <div className="grid grid-cols-2 gap-4 h-[500px]">
-          {/* First image - full height left column */}
-          <div className="relative w-full h-full overflow-hidden rounded-lg">
-            <Image
-              src={images[0]}
-              alt="Main Image"
-              className="w-full h-full object-cover"
-              fill
-              priority
-            />
-          </div>
-
-          {/* Right column with one top image and two bottom images */}
-          <div className="grid grid-rows-2 gap-4 h-full">
-            {/* Top image taking full width */}
-            <div className="relative w-full h-full overflow-hidden rounded-lg">
-              <Image
-                src={images[1]}
-                alt="Portfolio image 2"
-                className="w-full h-full object-cover"
-                fill
-              />
-            </div>
-
-            {/* Bottom row with two images */}
-            <div className="grid grid-cols-2 gap-4">
-              {images.slice(2).map((photo, index) => {
-                const actualIndex = index + 2;
-                return (
-                  <div
-                    key={index}
-                    className="relative w-full h-full overflow-hidden rounded-lg"
-                  >
-                    <Image
-                      src={photo}
-                      alt={`Portfolio image ${actualIndex + 1}`}
-                      className="w-full h-full object-cover"
-                      fill
-                    />
-                    {renderViewMoreOverlay(actualIndex)}
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-white p-1 text-center">
+                    <RiGalleryView2 className="text-lg text-orange mb-0.5" />
+                    <span className="text-xs font-bold leading-tight">
+                      +{remainingCount > 0 ? remainingCount : "More"}
+                    </span>
+                    <span className="text-[10px] text-gray-300">View All</span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </Link>
+              );
+            }
+
+            return (
+              <button
+                key={index}
+                type="button"
+                onClick={() => setActiveImage(item.src)}
+                className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 aspect-square rounded-xl overflow-hidden transition-all duration-150 cursor-pointer border-2 ${
+                  isSelected
+                    ? "border-orange shadow-sm opacity-100"
+                    : "border-gray-200 hover:border-orange/50 opacity-70 hover:opacity-100"
+                }`}
+                title={`Click to view ${item.label}`}
+              >
+                <Image
+                  src={item.src}
+                  alt={item.label}
+                  fill
+                  className="object-cover"
+                />
+                {item.isBanner && (
+                  <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider leading-none shadow-sm pointer-events-none whitespace-nowrap border border-white/20">
+                    Banner
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
-      </div>
-    );
-  }
-
-  // More than 4 images - masonry grid layout
-  return (
-    <div className="w-full max-w-7xl mx-auto overflow-hidden">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[50px] sm:auto-rows-[100px] lg:auto-rows-[200px]">
-        {/* Banner Image (Spanning Full Width) */}
-        <div className="relative w-full h-full row-span-2 sm:row-span-2 lg:row-span-2 col-span-2 sm:col-span-2 lg:col-span-2 overflow-hidden rounded-lg">
-          <Image
-            src={images[0]}
-            alt="Banner Image"
-            className="w-full h-full object-cover"
-            fill
-            priority
-          />
-        </div>
-
-        {/* Showcase Images */}
-        {images.slice(1, 5).map((photo, index) => {
-          const actualIndex = index + 1;
-          // Render overlay on the last showcase image (4th one)
-          const isLastShowcaseImage = index === 3;
-
-          return (
-            <div
-              key={index}
-              className="relative w-full h-full overflow-hidden rounded-lg"
-            >
-              <Image
-                src={photo}
-                alt={`Portfolio image ${actualIndex + 1}`}
-                className="w-full h-full object-cover"
-                fill
-              />
-              {isLastShowcaseImage && renderViewMoreOverlay(4)}
-            </div>
-          );
-        })}
-      </div>
+      )}
     </div>
   );
 };

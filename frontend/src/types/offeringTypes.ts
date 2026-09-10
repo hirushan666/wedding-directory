@@ -19,6 +19,7 @@ export type SocialTypes = {
     facebook?: string;
     instagram?: string;
     x?: string;
+    tiktok?: string;
 };
 
 interface Review {

@@ -43,18 +43,30 @@ const EditService = () => {
   };
 
   return (
-    <div className="">
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="bg-lightYellow min-h-screen">
-
-        <div className="container mx-auto flex space-x-10 px-4 py-6">
-          {/* Sidebar (Settings) */}
-          <div className="w-1/4">
-            <ServicesMenu setActiveSection={setActiveSection} />
+      <div className="bg-lightYellow flex-grow">
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-6">
+            <h1 className="font-title text-3xl font-bold text-gray-900">Edit Service</h1>
+            <p className="text-gray-500 font-body text-sm mt-1">
+              Manage your service information, media, packages, and public visibility.
+            </p>
           </div>
 
-          {/* Dynamic Right Section */}
-          <div className="w-3/4">{renderSection()}</div>
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* Sidebar */}
+            <div className="w-full lg:w-72 flex-shrink-0">
+              <ServicesMenu
+                setActiveSection={setActiveSection}
+                activeSection={activeSection}
+                vendorInfo={vendorInfo}
+              />
+            </div>
+
+            {/* Dynamic Right Section */}
+            <div className="w-full flex-grow max-w-4xl">{renderSection()}</div>
+          </div>
         </div>
       </div>
       <Footer />
