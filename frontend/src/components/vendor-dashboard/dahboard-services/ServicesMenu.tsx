@@ -36,7 +36,7 @@ const ServicesMenu: React.FC<ServicesMenuProps> = ({ setActiveSection }) => {
           onClick={() => setActiveSection("portfolio")}
           className="text-left"
         >
-          Portfolio
+          Photos & Media
         </button>
         <button
           onClick={() => setActiveSection("packages")}

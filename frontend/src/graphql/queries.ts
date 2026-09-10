@@ -61,7 +61,6 @@ export const FIND_SERVICE_BY_ID = gql`
       instagram
       x
       tiktok
-      banner
       photo_showcase
       video_showcase
       vendor {
@@ -297,6 +296,7 @@ export const FIND_PACKAGES_BY_OFFERING = gql`
       visible
       requiresReservation
       bookedDates
+      image
     }
   }
 `;

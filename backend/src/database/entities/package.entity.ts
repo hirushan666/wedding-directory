@@ -30,6 +30,9 @@ export class PackageEntity {
     @Column({ name: 'requires_reservation', type: 'boolean', default: false })
     requiresReservation: boolean;
 
+    @Column({ type: 'varchar', length: 500, nullable: true })
+    image?: string;
+
     @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
     createdAt: Date;
   

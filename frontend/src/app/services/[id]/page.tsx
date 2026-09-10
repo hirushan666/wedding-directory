@@ -2,6 +2,7 @@
 
 import Header from "@/components/shared/Headers/Header";
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { CiHeart } from "react-icons/ci";
 import { useParams } from "next/navigation";
 import {
@@ -42,6 +43,7 @@ interface Package {
   visible: boolean;
   requiresReservation: boolean;
   bookedDates?: string[];
+  image?: string | null;
 }
 
 interface PayHerePaymentResponse {
@@ -417,6 +419,16 @@ const Service: React.FC = () => {
                             key={pkg.id}
                             className="bg-white rounded-xl border-2 border-gray-200 shadow-md overflow-hidden transition-all hover:shadow-lg flex flex-col h-full"
                           >
+                            {pkg.image && (
+                              <div className="relative w-full h-44 overflow-hidden border-b border-gray-200">
+                                <Image
+                                  src={pkg.image}
+                                  alt={pkg.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
                             <div className="p-4 text-center bg-gray-50 border-b border-gray-200">
                               <h3 className="text-xl font-bold text-gray-800">
                                 {pkg.name}

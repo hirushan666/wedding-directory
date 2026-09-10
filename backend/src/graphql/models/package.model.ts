@@ -24,6 +24,9 @@ export class PackageModel {
   @Field(() => Boolean)
   requiresReservation: boolean;
 
+  @Field({ nullable: true })
+  image?: string;
+
   @Field()
   createdAt: Date;
 

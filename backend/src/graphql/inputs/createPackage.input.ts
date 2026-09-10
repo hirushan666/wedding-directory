@@ -19,4 +19,7 @@ export class CreatePackageInput {
     
     @Field(() => Boolean, { defaultValue: false })
   requiresReservation: boolean;
+
+    @Field({ nullable: true })
+    image?: string;
 }

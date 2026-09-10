@@ -293,6 +293,7 @@ export const CREATE_PACKAGE = gql`
       features
       visible
       requiresReservation
+      image
     }
   }
 `;
@@ -307,6 +308,7 @@ export const UPDATE_PACKAGE = gql`
       features
       visible
       requiresReservation
+      image
     }
   }
 `;

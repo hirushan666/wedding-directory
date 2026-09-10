@@ -92,6 +92,35 @@ export class UploadController {
     }
   }
 
+  // Upload package image
+  @Post('package-image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPackageImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+          new FileTypeValidator({ fileType: 'image/jpeg|image/png|image/webp' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('File is missing.');
+    }
+
+    const fileName = `package-${Date.now()}-${file.originalname}`;
+
+    try {
+      const fileUrl = await this.uploadService.uploadImage(fileName, file.buffer, file.mimetype);
+      return { fileUrl };
+    } catch (error) {
+      console.error('Upload failed:', error);
+      throw new BadRequestException('Error uploading package image.');
+    }
+  }
+
   //Upload the offering banner image
   @Post('offering-banner')
   @UseInterceptors(FileInterceptor('file'))
@@ -131,6 +160,7 @@ export class UploadController {
   async uploadOfferingShowcase(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body('offeringId') offeringID: string,
+    @Body('index') index?: string,
   ) {
     if (!files || files.length === 0 || !offeringID) {
       throw new BadRequestException('Files or Offering ID is missing.');
@@ -164,7 +194,16 @@ export class UploadController {
       }
     }
 
-    await this.offeringService.updateOfferingShowcaseImages(offeringID, uploadedUrls);
+    const slotIndex =
+      index !== undefined && index !== null && index !== ''
+        ? parseInt(index, 10)
+        : undefined;
+
+    await this.offeringService.updateOfferingShowcaseImages(
+      offeringID,
+      uploadedUrls,
+      Number.isNaN(slotIndex) ? undefined : slotIndex,
+    );
     return { uploadedUrls };
   }
 
