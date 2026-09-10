@@ -20,4 +20,10 @@ export class PayHereController {
   async getPayment(@Query('order_id') orderId: string) {
     return this.payHereService.getPaymentStatus(orderId);
   }
+
+  @Post('cancel')
+  @HttpCode(HttpStatus.OK)
+  async cancelPayment(@Body('order_id') orderId: string) {
+    return this.payHereService.cancelPayment(orderId);
+  }
 }

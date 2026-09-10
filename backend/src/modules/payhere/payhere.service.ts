@@ -147,6 +147,15 @@ export class PayHereService {
     };
   }
 
+  async cancelPayment(rawOrderId: string) {
+    const orderId = typeof rawOrderId === 'string' ? rawOrderId.split(',')[0].trim() : String(rawOrderId || '').trim();
+    if (!orderId) {
+      return { success: false, message: 'Order ID is required' };
+    }
+    await this.paymentService.updatePaymentStatusByReference(orderId, 'failed');
+    return { success: true };
+  }
+
   private getCheckoutUrl() {
     return this.configService.get<string>('PAYHERE_SANDBOX') === 'false'
       ? 'https://www.payhere.lk/pay/checkout'

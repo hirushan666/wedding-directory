@@ -49,6 +49,16 @@ export class PaymentService {
     const package_ = await this.packageRepository.findOneBy({ id: packageId });
     const offering = await this.offeringRepository.findOneBy({ id: offeringId });
 
+    // Mark any previous uncompleted pending payment for this visitor & package as failed
+    await this.paymentRepository.update(
+      {
+        visitor: { id: visitorId },
+        package: { id: packageId },
+        status: 'pending',
+      },
+      { status: 'failed' }
+    );
+
     const payment = this.paymentRepository.create({
       visitor,
       vendor,
@@ -84,18 +94,15 @@ export class PaymentService {
   async findBookedDatesByPackage(packageId: string): Promise<Date[]> {
     const payments = await this.paymentRepository.find({
       where: { 
-        package: { id: packageId }
-        // We want to exclude failed payments.
-        // And maybe include pending?
-        // Let's filter in query if possible or in code.
-        // Repository 'find' with IsNull or Not('failed')
+        package: { id: packageId },
+        status: 'completed'
       },
-      select: ['bookingDate', 'status']
+      select: ['bookingDate']
     });
     
-    // Filter out failed payments and null dates
+    // Only completed payments lock booked dates
     return payments
-      .filter(p => p.bookingDate && p.status !== 'failed')
+      .filter(p => p.bookingDate)
       .map(p => p.bookingDate);
   }
 
@@ -375,16 +382,16 @@ export class PaymentService {
     const nextDay = new Date(dateOnly);
     nextDay.setDate(nextDay.getDate() + 1);
 
-    // Find any completed or pending payments for this vendor on this date
-    const existingBookings = await this.paymentRepository
+    // Find completed payments for this vendor on this date
+    const completedBookings = await this.paymentRepository
       .createQueryBuilder('payment')
       .where('payment.vendorId = :vendorId', { vendorId })
       .andWhere('payment.bookingDate >= :startDate', { startDate: dateOnly })
       .andWhere('payment.bookingDate < :endDate', { endDate: nextDay })
-      .andWhere('payment.status IN (:...statuses)', { statuses: ['pending', 'completed'] })
+      .andWhere('payment.status = :status', { status: 'completed' })
       .getCount();
 
-    return existingBookings > 0;
+    return completedBookings > 0;
   }
 
   // Debug helper to check payment relations

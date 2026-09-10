@@ -26,12 +26,9 @@ export class PaymentResolver {
   async getVendorBookedDates(@Args('vendorId') vendorId: string) {
     const payments = await this.paymentService.findByVendorId(vendorId);
     
-    // Filter completed and pending payments with booking dates
+    // Only completed payments lock booked dates on the calendar
     const bookedDates = payments
-      .filter(p => 
-        (p.status === 'completed' || p.status === 'pending') && 
-        p.bookingDate
-      )
+      .filter(p => p.status === 'completed' && p.bookingDate)
       .map(p => p.bookingDate.toISOString());
     
     return bookedDates;

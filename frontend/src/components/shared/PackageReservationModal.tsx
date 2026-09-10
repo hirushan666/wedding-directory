@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, ShieldCheck, Lock, Loader2 } from "lucide-react";
 import { format, isSameDay, parseISO } from "date-fns";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_CHAT } from "@/graphql/queries";
@@ -19,7 +19,7 @@ interface PackageReservationModalProps {
         pricing: number;
         bookedDates?: string[] | Date[];
     };
-    onPay: (date: Date) => void;
+    onPay: (date: Date) => Promise<void> | void;
     visitorId?: string;
     offeringId?: string;
 }
@@ -34,6 +34,7 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
 }) => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [note, setNote] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { sendMessage: sendSocketMessage } = useChatSocket(visitorId, 'visitor');
 
@@ -53,30 +54,36 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
     };
 
     const handlePay = async () => {
-        if (!selectedDate) return;
+        if (!selectedDate || isSubmitting) return;
 
-        // Send the note to the vendor before redirecting to payment
-        if (note.trim() && visitorId && offeringId) {
-            try {
-                const { data } = await getChat({ variables: { visitorId, offeringId } });
-                const chatId = data?.getChat?.chatId;
-                if (chatId) {
-                    const formattedMessage =
-                        `📦 Payment Note — ${pkg.name} | Booking: ${format(selectedDate, 'MMM d, yyyy')}\n\n${note.trim()}`;
-                    try {
-                        await sendSocketMessage({ chatId, content: formattedMessage, senderId: visitorId, senderType: 'visitor' });
-                    } catch {
-                        await sendMessageMutation({
-                            variables: { chatId, content: formattedMessage, visitorSenderId: visitorId }
-                        });
+        setIsSubmitting(true);
+        try {
+            // Send the note to the vendor before redirecting to payment
+            if (note.trim() && visitorId && offeringId) {
+                try {
+                    const { data } = await getChat({ variables: { visitorId, offeringId } });
+                    const chatId = data?.getChat?.chatId;
+                    if (chatId) {
+                        const formattedMessage =
+                            `📦 Payment Note — ${pkg.name} | Booking: ${format(selectedDate, 'MMM d, yyyy')}\n\n${note.trim()}`;
+                        try {
+                            await sendSocketMessage({ chatId, content: formattedMessage, senderId: visitorId, senderType: 'visitor' });
+                        } catch {
+                            await sendMessageMutation({
+                                variables: { chatId, content: formattedMessage, visitorSenderId: visitorId }
+                            });
+                        }
                     }
+                } catch {
+                    // Note failed silently — don't block payment
                 }
-            } catch {
-                // Note failed silently — don't block payment
             }
-        }
 
-        onPay(selectedDate);
+            await onPay(selectedDate);
+            // Keep isSubmitting = true while browser navigates to PayHere
+        } catch {
+            setIsSubmitting(false);
+        }
     };
 
     const advanceAmount = pkg.pricing * 0.2;
@@ -86,10 +93,38 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 my-8">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 z-10 rounded-full hover:bg-gray-100 transition-colors"
+                    disabled={isSubmitting}
+                    className="absolute top-4 right-4 p-2 z-10 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                     <X className="w-5 h-5 text-gray-500" />
                 </button>
+
+                {/* Redirecting Overlay */}
+                {isSubmitting && (
+                    <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 md:p-8 text-center animate-in fade-in duration-200">
+                        <div className="relative mb-5">
+                            <div className="w-20 h-20 rounded-3xl bg-orange/10 flex items-center justify-center text-orange animate-pulse">
+                                <ShieldCheck className="w-10 h-10 text-orange" />
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center border border-gray-100">
+                                <Loader2 className="w-4 h-4 text-orange animate-spin" />
+                            </div>
+                        </div>
+
+                        <h3 className="text-2xl font-bold font-title text-gray-900 mb-6">
+                            Redirecting to PayHere...
+                        </h3>
+
+                        <div className="inline-flex items-center gap-2 text-xs font-medium text-gray-600 bg-gray-50 px-4 py-2 rounded-full border border-gray-200/80 font-body">
+                            <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>256-bit SSL Encrypted Secure Checkout</span>
+                        </div>
+
+                        <p className="text-xs text-gray-400 mt-5 font-body">
+                            Please do not refresh or close this window...
+                        </p>
+                    </div>
+                )}
 
                 <div className="p-6 md:p-8">
                     <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Package</h2>
@@ -172,13 +207,19 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
 
                                 <Button
                                     onClick={handlePay}
-                                    disabled={!selectedDate}
-                                    className="w-full bg-orange hover:bg-orange-600 text-white font-bold py-6 text-lg rounded-full"
+                                    disabled={!selectedDate || isSubmitting}
+                                    className="w-full bg-orange hover:bg-orange-600 text-white font-bold py-6 text-lg rounded-full flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
                                 >
-                                    {selectedDate ?
-                                        `Pay Advance for ${format(selectedDate, 'MMM d, yyyy')}` :
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            <span>Redirecting to PayHere...</span>
+                                        </>
+                                    ) : selectedDate ? (
+                                        `Pay Advance for ${format(selectedDate, 'MMM d, yyyy')}`
+                                    ) : (
                                         'Select a Date to Continue'
-                                    }
+                                    )}
                                 </Button>
                             </div>
                         </div>

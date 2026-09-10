@@ -32,6 +32,7 @@ import request from "@/utils/request";
 import PackageReservationModal from "@/components/shared/PackageReservationModal";
 import { ensureSessionId } from "@/utils/session";
 import ChatModal from "@/components/chat/ChatModal";
+import { ShieldCheck, Lock, Loader2 } from "lucide-react";
 
 // Add this interface before the Service component
 interface Package {
@@ -64,23 +65,23 @@ const Service: React.FC = () => {
 
   const queryError = useQuery(FIND_SERVICE_BY_ID, { variables: { id } }).error;
 
-  const { data: packagesData } = useQuery(FIND_PACKAGES_BY_OFFERING, {
+  const { data: packagesData, refetch: refetchPackages } = useQuery(FIND_PACKAGES_BY_OFFERING, {
     variables: { offeringId: id },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only",
   });
 
   // Get visitor's payments to check booked packages
-  const { data: paymentsData } = useQuery(GET_VISITOR_PAYMENTS, {
+  const { data: paymentsData, refetch: refetchVisitorPayments } = useQuery(GET_VISITOR_PAYMENTS, {
     variables: { visitorId: visitor?.id },
     skip: !visitor?.id,
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only",
   });
 
   // Get vendor's booked dates for the calendar - MUST be at top level with all hooks
-  const { data: bookedDatesData } = useQuery(GET_VENDOR_BOOKED_DATES, {
+  const { data: bookedDatesData, refetch: refetchBookedDates } = useQuery(GET_VENDOR_BOOKED_DATES, {
     variables: { vendorId: data?.findOfferingById?.vendor?.id },
     skip: !data?.findOfferingById?.vendor?.id,
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only",
   });
 
   // Check if offering is in visitor's my vendors
@@ -103,6 +104,10 @@ const Service: React.FC = () => {
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [clientIp, setClientIp] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [paymentRedirectInfo, setPaymentRedirectInfo] = useState<{
+    packageName?: string;
+    amount?: number;
+  } | null>(null);
 
   // Fetch client IP address on mount
   useEffect(() => {
@@ -146,12 +151,39 @@ const Service: React.FC = () => {
     }
   }, [packagesData, visitor, vendor, trackPackageView, clientIp]);
 
-  // Check if a package is already booked by the visitor
+  // Listen for cancellation return from PayHere (when user clicks 'Cancel' or 'Back to site')
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const isCanceled = searchParams.get("payment_canceled");
+    const orderId = searchParams.get("order_id");
+
+    if (isCanceled === "true") {
+      toast("Payment was canceled. You can select another package or try again.", {
+        icon: "ℹ️",
+      });
+
+      if (orderId) {
+        request.post("/api/payhere/cancel", { order_id: orderId }).catch(console.error);
+      }
+
+      refetchVisitorPayments?.();
+      refetchBookedDates?.();
+      refetchPackages?.();
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment_canceled");
+      url.searchParams.delete("order_id");
+      window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
+    }
+  }, [refetchVisitorPayments, refetchBookedDates, refetchPackages]);
+
+  // Check if a package is already booked by the visitor (only completed payments count)
   const isPackageBooked = (packageId: string) => {
     if (!paymentsData?.visitorPayments) return { booked: false, expired: false, bookingDate: null };
     
     const payment = paymentsData.visitorPayments.find(
-      (p: any) => p.package.id === packageId && (p.status === 'completed' || p.status === 'pending')
+      (p: any) => p.package?.id === packageId && p.status === 'completed'
     );
     
     if (!payment) return { booked: false, expired: false, bookingDate: null };
@@ -161,7 +193,7 @@ const Service: React.FC = () => {
       const bookingDate = new Date(payment.bookingDate);
       const now = new Date();
       const expired = bookingDate < now;
-      return { booked: true, expired, bookingDate: bookingDate };
+      return { booked: true, expired, bookingDate };
     }
     
     // If no booking date (standard package), it's booked and never expires
@@ -268,6 +300,15 @@ const Service: React.FC = () => {
         return;
       }
 
+      const pkgName = packagesData?.findPackagesByOffering?.find(
+        (p: any) => p.id === packageId
+      )?.name;
+
+      setPaymentRedirectInfo({
+        packageName: pkgName,
+        amount,
+      });
+
       const { data } = await request.post<PayHerePaymentResponse>(
         "/api/payhere/create-payment",
         {
@@ -299,10 +340,12 @@ const Service: React.FC = () => {
       document.body.appendChild(form);
       form.submit();
     } catch (error: any) {
+      setPaymentRedirectInfo(null);
       const message =
         error?.response?.data?.message ||
         "Payment processing failed. Please try again.";
       toast.error(Array.isArray(message) ? message[0] : message);
+      throw error;
     }
   };
 
@@ -659,9 +702,9 @@ const Service: React.FC = () => {
             ...selectedPackage,
             bookedDates: bookedDatesData?.getVendorBookedDates || []
           }}
-          onPay={(date) => {
+          onPay={async (date) => {
             const advanceAmount = selectedPackage.pricing * 0.2;
-            handlePayAdvance(advanceAmount, selectedPackage.id, date);
+            await handlePayAdvance(advanceAmount, selectedPackage.id, date);
           }}
           visitorId={visitor?.id}
           offeringId={offering?.id}
@@ -678,6 +721,35 @@ const Service: React.FC = () => {
           vendorName={offering.vendor?.busname || "Vendor"}
           offeringName={offering.name || "Service"}
         />
+      )}
+
+      {/* Payment Gateway Redirect Overlay */}
+      {paymentRedirectInfo && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative inline-block mb-5">
+              <div className="w-20 h-20 rounded-3xl bg-orange/10 flex items-center justify-center text-orange mx-auto">
+                <ShieldCheck className="w-10 h-10 text-orange animate-pulse" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center border border-gray-100">
+                <Loader2 className="w-4 h-4 text-orange animate-spin" />
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold font-title text-gray-900 mb-6">
+              Redirecting to PayHere...
+            </h3>
+
+            <div className="inline-flex items-center gap-2 text-xs font-medium text-gray-600 bg-gray-50 px-4 py-2 rounded-full border border-gray-200 font-body">
+              <Lock className="w-3.5 h-3.5 text-emerald-600" />
+              <span>256-bit SSL Encrypted Secure Checkout</span>
+            </div>
+
+            <p className="text-xs text-gray-400 mt-5 font-body">
+              Please do not close or refresh this page...
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );
