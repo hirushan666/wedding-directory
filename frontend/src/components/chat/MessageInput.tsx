@@ -45,22 +45,23 @@ export default function MessageInput({ chatId, onMessageSent }: MessageInputProp
   };
 
   return (
-    <div className="border-t bg-white py-4">
-      <form onSubmit={handleSubmit} className="px-5 mx-auto">
-        <div className="flex items-center gap-2 bg-gray-50 rounded-full px-4 py-2 border focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20">
+    <div className="border-t border-gray-100 bg-white p-3 sm:p-4 flex-shrink-0">
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="flex items-center gap-2 bg-gray-50/80 rounded-2xl px-4 py-2 border border-gray-200 focus-within:border-orange focus-within:ring-2 focus-within:ring-orange/20 focus-within:bg-white transition-all">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 bg-transparent border-none focus:outline-none text-gray-800 placeholder-gray-400"
+            className="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-800 placeholder-gray-400 font-body"
           />
           <button
             type="submit"
             disabled={!message.trim()}
-            className="p-2 rounded-full bg-accent text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent/90 transition-colors"
+            className="p-2.5 rounded-xl bg-orange hover:bg-orange/90 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs flex-shrink-0"
+            title="Send Message"
           >
-            <IoSend className="text-lg" />
+            <IoSend className="text-sm" />
           </button>
         </div>
       </form>

@@ -13,6 +13,8 @@ import Link from "next/link";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { useChatSocket } from "@/hooks/useChatSocket";
 
+import LoaderJelly from "@/components/shared/Loaders/LoaderJelly";
+
 export default function ChatPage() {
   const { chatId } = useParams();
   const chatIdStr = chatId as string;
@@ -54,11 +56,9 @@ export default function ChatPage() {
   // Mark as read as soon as chatId and vendor.id are both available
   useEffect(() => {
     if (!chatIdStr || !vendor?.id) return;
-    console.log('ChatPage: marking as read for vendor', vendor.id, 'chatId', chatIdStr);
     markChatAsRead({
       variables: { chatId: chatIdStr, userId: vendor.id, userType: 'vendor' }
-    }).then(() => console.log('ChatPage: marked as read successfully'))
-      .catch((err) => console.error('ChatPage: markChatAsRead error:', err.message));
+    }).catch((err) => console.error('ChatPage: markChatAsRead error:', err.message));
   }, [chatIdStr, vendor?.id]);
 
   // Listen for real-time messages and mark as read when they arrive
@@ -81,34 +81,52 @@ export default function ChatPage() {
 
   if (chatLoading || visitorLoading)
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent"></div>
+      <div className="flex-grow flex items-center justify-center p-12">
+        <div className="flex flex-col items-center gap-3">
+          <LoaderJelly />
+          <p className="text-sm font-medium text-gray-500">Loading conversation...</p>
+        </div>
       </div>
     );
 
   if (chatError)
     return (
-      <div className="p-4 text-red-500 bg-red-50 rounded-lg">
-        Error loading chat: {chatError.message}
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="p-5 text-red-700 rounded-2xl bg-red-50 border border-red-200">
+          <p className="font-semibold text-sm">Error loading chat</p>
+          <p className="text-xs text-red-600 mt-1">{chatError.message}</p>
+          <Link
+            href="/vendor-dashboard/chats"
+            className="inline-flex items-center gap-1.5 text-xs text-orange font-semibold mt-3 hover:underline"
+          >
+            <IoArrowBack size={14} /> Back to Conversations
+          </Link>
+        </div>
       </div>
     );
 
   const visitor = visitorData?.findVisitorById;
+  const offeringId = chatData?.getChatHistory?.offeringId;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <div className="bg-white px-6 py-4 shadow-sm">
+    <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-4xl flex-grow flex flex-col">
+      {/* Top Back Nav */}
+      <div className="mb-3">
         <Link
           href="/vendor-dashboard/chats"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-accent transition-colors mb-2"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-orange transition-colors"
         >
-          <IoArrowBack className="text-lg" />
-          <span className="font-body">Back to Conversations</span>
+          <IoArrowBack size={16} />
+          <span>Back to Conversations</span>
         </Link>
       </div>
-      {visitor && <ChatHeader visitor={visitor} />}
-      <MessageList messages={messages} />
-      <MessageInput chatId={chatIdStr} onMessageSent={setMessages} />
+
+      {/* Main Responsive Chat Card Window */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[calc(100vh-210px)] min-h-[500px] flex-grow">
+        {visitor && <ChatHeader visitor={visitor} offeringId={offeringId} />}
+        <MessageList messages={messages} />
+        <MessageInput chatId={chatIdStr} onMessageSent={setMessages} />
+      </div>
     </div>
   );
 }
