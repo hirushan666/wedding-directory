@@ -35,8 +35,8 @@ export class PackageModel {
   
 
 
-  @Field(() => OfferingModel)
-  offering: OfferingModel;
+  @Field(() => OfferingModel, { nullable: true })
+  offering?: OfferingModel;
 
   @Field(() => [Date], { nullable: true })
   bookedDates?: Date[];

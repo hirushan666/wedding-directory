@@ -247,8 +247,10 @@ export class PaymentService {
         package: {
           offering: true
         }
-      
       },
+      order: {
+        createdAt: 'DESC'
+      }
     });
   }
 
@@ -261,6 +263,9 @@ export class PaymentService {
           offering: true
         },
       },
+      order: {
+        createdAt: 'DESC'
+      }
     });
   }
 
@@ -271,6 +276,9 @@ export class PaymentService {
         visitor: true,
         vendor: true,
       },
+      order: {
+        createdAt: 'DESC'
+      }
     });
   }
 

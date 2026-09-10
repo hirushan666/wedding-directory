@@ -542,6 +542,9 @@ export const GET_VENDOR_PAYMENTS = gql`
       status
       createdAt
       bookingDate
+      paymentReference
+      gateway
+      gatewayPaymentId
       visitor {
         id
         visitor_fname
@@ -552,7 +555,7 @@ export const GET_VENDOR_PAYMENTS = gql`
       package {
         id
         name
-        offering{
+        offering {
           id
           name
         }

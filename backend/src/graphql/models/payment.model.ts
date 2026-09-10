@@ -8,14 +8,14 @@ export class PaymentModel {
   @Field()
   id: string;
 
-  @Field(() => VisitorModel)
-  visitor: VisitorModel;
+  @Field(() => VisitorModel, { nullable: true })
+  visitor?: VisitorModel;
 
-  @Field(() => VendorModel)
-  vendor: VendorModel;
+  @Field(() => VendorModel, { nullable: true })
+  vendor?: VendorModel;
 
-  @Field(() => PackageModel)
-  package: PackageModel;
+  @Field(() => PackageModel, { nullable: true })
+  package?: PackageModel;
 
   @Field(() => Float)
   amount: number;
