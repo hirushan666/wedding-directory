@@ -62,7 +62,7 @@ export class PayHereService {
       payment: {
         sandbox: this.configService.get<string>('PAYHERE_SANDBOX') !== 'false',
         merchant_id: merchantId,
-        return_url: `${frontendUrl}/success?order_id=${orderId}`,
+        return_url: `${frontendUrl}/success`,
         cancel_url: `${frontendUrl}/services/${input.offeringId}?payment_canceled=true`,
         notify_url: this.configService.get<string>('PAYHERE_NOTIFY_URL') || `${backendUrl}/api/payhere/notify`,
         order_id: orderId,
@@ -113,19 +113,37 @@ export class PayHereService {
     return { received: true };
   }
 
-  async getPaymentStatus(orderId: string) {
+  async getPaymentStatus(rawOrderId: string) {
+    const orderId = typeof rawOrderId === 'string' ? rawOrderId.split(',')[0].trim() : String(rawOrderId || '').trim();
+
+    if (!orderId) {
+      throw new BadRequestException('Order ID is required');
+    }
+
     const payment = await this.paymentService.findByPaymentReference(orderId);
 
     if (!payment) {
       throw new BadRequestException('Payment not found');
     }
 
+    const vendorName =
+      payment.vendor?.busname ||
+      `${payment.vendor?.fname || ''} ${payment.vendor?.lname || ''}`.trim() ||
+      'Wedding Vendor';
+
     return {
       orderId,
       status: payment.status,
       amount: payment.amount,
+      gateway: payment.gateway || 'payhere',
       gatewayPaymentId: payment.gatewayPaymentId,
       customerEmail: payment.visitor?.email,
+      bookingDate: payment.bookingDate,
+      vendorName,
+      packageName: payment.package?.name || 'Wedding Package',
+      offeringName: payment.package?.offering?.name,
+      offeringId: payment.package?.offering?.id,
+      createdAt: payment.createdAt,
     };
   }
 
