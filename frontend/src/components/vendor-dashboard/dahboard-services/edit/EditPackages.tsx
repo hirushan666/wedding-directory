@@ -10,6 +10,10 @@ import { UPDATE_PACKAGE, DELETE_PACKAGE, CREATE_PACKAGE } from "@/graphql/mutati
 import { useParams } from "next/navigation";
 import { Trash2 } from "lucide-react";
 
+import Image from "next/image";
+import { CiCirclePlus } from "react-icons/ci";
+import { uploadPackageImage } from "@/api/upload/package/package.upload";
+
 interface Package {
   id?: string;
   name: string;
@@ -19,6 +23,7 @@ interface Package {
   offeringId?: string;
   visible: boolean;
   requiresReservation: boolean;
+  image?: string | null;
 }
 
 const EditPackages: React.FC = () => {
@@ -31,6 +36,7 @@ const EditPackages: React.FC = () => {
   });
 
   const [packages, setPackages] = useState<Package[]>([]);
+  const [uploadingPackageIndex, setUploadingPackageIndex] = useState<number | null>(null);
 
   const [createPackage] = useMutation(CREATE_PACKAGE, {
     refetchQueries: [{ query: FIND_PACKAGES_BY_OFFERING, variables: { offeringId } }],
@@ -107,6 +113,40 @@ const EditPackages: React.FC = () => {
     setPackages(updatedPackages);
   };
 
+  const handleImageChange = async (
+    packageIndex: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingPackageIndex(packageIndex);
+    try {
+      const fileUrl = await uploadPackageImage(file);
+      const updatedPackages = [...packages];
+      updatedPackages[packageIndex] = {
+        ...updatedPackages[packageIndex],
+        image: fileUrl,
+      };
+      setPackages(updatedPackages);
+      toast.success("Package image uploaded!");
+    } catch (err) {
+      console.error("Failed to upload package image:", err);
+      toast.error("Failed to upload package image.");
+    } finally {
+      setUploadingPackageIndex(null);
+    }
+  };
+
+  const handleRemoveImage = (packageIndex: number) => {
+    const updatedPackages = [...packages];
+    updatedPackages[packageIndex] = {
+      ...updatedPackages[packageIndex],
+      image: "",
+    };
+    setPackages(updatedPackages);
+  };
+
   const handleSavePackage = async (pkg: Package) => {
     try {
       const validFeatures = pkg.features.filter((f) => f.trim() !== "");
@@ -121,6 +161,7 @@ const EditPackages: React.FC = () => {
               features: validFeatures,
               visible: pkg.visible,
               requiresReservation: pkg.requiresReservation,
+              image: pkg.image || null,
             },
             offeringId,
           },
@@ -141,6 +182,7 @@ const EditPackages: React.FC = () => {
               features: validFeatures,
               visible: pkg.visible,
               requiresReservation: pkg.requiresReservation,
+              image: pkg.image || null,
             },
           },
         });
@@ -183,6 +225,7 @@ const EditPackages: React.FC = () => {
         offeringId,
         visible: false,
         requiresReservation: false,
+        image: "",
       },
     ]);
   };
@@ -226,6 +269,65 @@ const EditPackages: React.FC = () => {
                   </Button>
                 )}
               </div>
+            </div>
+
+            {/* Package Image Section */}
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                Package Image (Optional)
+              </label>
+              {pkg.image ? (
+                <div className="relative w-full sm:w-64 h-40 rounded-xl overflow-hidden border border-gray-200 group bg-gray-50">
+                  <Image
+                    src={pkg.image}
+                    alt={pkg.name}
+                    fill
+                    className="object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-red-500 hover:text-white rounded-full shadow-md text-red-500 transition-colors z-20"
+                    title="Remove image"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                  <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer z-10">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={(e) => handleImageChange(index, e)}
+                      disabled={uploadingPackageIndex === index}
+                    />
+                    <span className="text-white text-xs bg-black/60 px-3 py-1 rounded-full font-medium">
+                      Change Image
+                    </span>
+                  </label>
+                </div>
+              ) : (
+                <div className="w-full sm:w-64 h-32 border-2 border-dashed border-gray-300 hover:border-orange rounded-xl relative flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    onChange={(e) => handleImageChange(index, e)}
+                    disabled={uploadingPackageIndex === index}
+                  />
+                  {uploadingPackageIndex === index ? (
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="animate-spin text-2xl mb-1">⌛</span>
+                      <span className="text-xs text-gray-500 font-medium">Uploading image...</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center text-center p-3 pointer-events-none">
+                      <CiCirclePlus size={28} className="text-orange mb-1" />
+                      <span className="text-xs font-medium text-gray-600">Add 1 Image (Optional)</span>
+                      <span className="text-[10px] text-gray-400 mt-0.5">JPG, PNG or WEBP (Max 5MB)</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <Input
