@@ -6,6 +6,7 @@ import { GET_VENDOR_PAYMENTS } from '@/graphql/queries';
 import { CANCEL_PAYMENT } from '@/graphql/mutations';
 import { useVendorAuth } from '@/contexts/VendorAuthContext';
 import toast from 'react-hot-toast';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 interface Payment {
   id: string;
@@ -136,54 +137,85 @@ const BookingCalendar: React.FC = () => {
 
   const selectedDateBookings = selectedDate ? getBookingsForDate(selectedDate) : [];
 
-  if (loading) return <div className="bg-white p-6 rounded-lg shadow-lg">Loading bookings...</div>;
-  if (error) return <div className="bg-white p-6 rounded-lg shadow-lg text-red-500">Error loading bookings</div>;
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex items-center justify-center min-h-[360px]">
+        <div className="flex flex-col items-center gap-2 text-gray-500 text-sm">
+          <div className="w-6 h-6 border-2 border-orange border-t-transparent rounded-full animate-spin"></div>
+          <span>Loading bookings...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-red-100 p-8 text-center text-red-500 text-sm">
+        Error loading bookings. Please refresh the page.
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg h-full">
-      <h2 className="font-title text-[24px] font-bold mb-2">Booking Calendar</h2>
-      <hr className="w-full h-px my-3 bg-gray-400 border-0" />
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-7 flex flex-col h-full">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
+        <div>
+          <h2 className="font-title text-xl sm:text-2xl font-bold text-gray-900">
+            Booking Calendar
+          </h2>
+          <p className="text-gray-400 text-xs mt-0.5">
+            Monitor client event dates and manage your availability
+          </p>
+        </div>
 
-      {/* Calendar Header */}
-      <div className="flex justify-between items-center mb-3">
+        {/* Legend */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Completed
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium">
+            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+            Pending
+          </span>
+        </div>
+      </div>
+
+      {/* Calendar Header with Navigation */}
+      <div className="flex justify-between items-center mb-4">
         <button
           onClick={goToPreviousMonth}
-          className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm"
+          className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 hover:bg-orange/10 hover:text-orange border border-gray-200 hover:border-orange/30 rounded-xl text-xs font-semibold text-gray-700 transition-colors"
+          title="Previous Month"
         >
-          &lt; Prev
+          <FiChevronLeft size={16} />
+          <span>Prev</span>
         </button>
-        <h3 className="text-lg font-bold">
+        <h3 className="text-base sm:text-lg font-title font-bold text-gray-900">
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h3>
         <button
           onClick={goToNextMonth}
-          className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm"
+          className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 hover:bg-orange/10 hover:text-orange border border-gray-200 hover:border-orange/30 rounded-xl text-xs font-semibold text-gray-700 transition-colors"
+          title="Next Month"
         >
-          Next &gt;
+          <span>Next</span>
+          <FiChevronRight size={16} />
         </button>
       </div>
 
-      {/* Legend */}
-      <div className="flex gap-3 mb-3 text-xs">
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-green-200 border border-green-500 rounded"></div>
-          <span>Completed</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-yellow-200 border border-yellow-500 rounded"></div>
-          <span>Pending</span>
-        </div>
-      </div>
-
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1 mb-4">
+      <div className="grid grid-cols-7 gap-1.5 mb-6">
         {/* Day headers */}
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center font-bold text-gray-600 py-1 text-xs">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+          <div
+            key={day}
+            className="text-center font-semibold text-gray-400 py-1.5 text-xs uppercase tracking-wider"
+          >
             {day}
           </div>
         ))}
-        
+
         {/* Calendar days */}
         {days.map((date, index) => {
           if (!date) {
@@ -195,23 +227,27 @@ const BookingCalendar: React.FC = () => {
           const isSelected = selectedDate?.toDateString() === date.toDateString();
           const dateBookings = getBookingsForDate(date);
 
-          let bgColor = 'bg-white hover:bg-gray-50';
-          if (status === 'completed') bgColor = 'bg-green-200 hover:bg-green-300 border-green-500';
-          if (status === 'pending') bgColor = 'bg-yellow-200 hover:bg-yellow-300 border-yellow-500';
-          if (status === 'mixed') bgColor = 'bg-gradient-to-br from-green-200 to-yellow-200 hover:opacity-90';
+          let cellClass = 'bg-white hover:bg-orange/5 border-gray-200 text-gray-800';
+          if (status === 'completed') {
+            cellClass = 'bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 border-emerald-300 font-semibold';
+          } else if (status === 'pending') {
+            cellClass = 'bg-amber-50/80 hover:bg-amber-100 text-amber-900 border-amber-300 font-semibold';
+          } else if (status === 'mixed') {
+            cellClass = 'bg-gradient-to-br from-emerald-50 to-amber-50 hover:opacity-95 text-gray-900 border-emerald-300 font-semibold';
+          }
 
           return (
             <button
               key={index}
               onClick={() => handleDateClick(date)}
-              className={`aspect-square p-1 border rounded ${bgColor} ${
-                isToday ? 'border-blue-500 border-2 font-bold' : 'border-gray-300'
-              } ${isSelected ? 'ring-2 ring-orange' : ''} transition-all flex flex-col items-center justify-center`}
+              className={`aspect-square p-1 border rounded-xl transition-all flex flex-col items-center justify-center ${cellClass} ${
+                isToday ? 'border-orange ring-1 ring-orange/30 font-bold' : ''
+              } ${isSelected ? 'ring-2 ring-orange border-orange shadow-sm scale-105' : ''}`}
             >
-              <div className="text-sm font-semibold">{date.getDate()}</div>
+              <div className="text-xs sm:text-sm">{date.getDate()}</div>
               {hasBooking(date) && (
-                <div className="text-[10px] mt-0.5 leading-tight text-center">
-                  {dateBookings.length} {dateBookings.length > 1 ? 'bookings' : 'booking'}
+                <div className="text-[9px] sm:text-[10px] mt-0.5 leading-tight font-medium opacity-90 truncate max-w-full px-0.5">
+                  {dateBookings.length} {dateBookings.length > 1 ? 'bkgs' : 'bkg'}
                 </div>
               )}
             </button>
@@ -219,41 +255,61 @@ const BookingCalendar: React.FC = () => {
         })}
       </div>
 
-      {/* Booking Details */}
+      {/* Selected Date Bookings Details */}
       {selectedDate && selectedDateBookings.length > 0 && (
-        <div className="border-t pt-3 max-h-64 overflow-y-auto">
-          <h3 className="font-bold text-base mb-2">
-            {selectedDate.toLocaleDateString()}
-          </h3>
-          <div className="space-y-3">
+        <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/60 mb-6 max-h-72 overflow-y-auto">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-title font-bold text-sm text-gray-900">
+              Bookings for {selectedDate.toLocaleDateString(undefined, { dateStyle: 'medium' })}
+            </h4>
+            <span className="text-xs text-gray-500 font-medium">
+              {selectedDateBookings.length} {selectedDateBookings.length === 1 ? 'booking' : 'bookings'}
+            </span>
+          </div>
+
+          <div className="space-y-2.5">
             {selectedDateBookings.map((booking) => (
-              <div key={booking.id} className="border rounded-lg p-3 bg-gray-50 text-sm">
+              <div
+                key={booking.id}
+                className="bg-white border border-gray-100 rounded-xl p-3 shadow-xs text-xs sm:text-sm"
+              >
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold truncate">
+                    <div className="font-semibold text-gray-900 truncate">
                       {booking.visitor.visitor_fname} {booking.visitor.visitor_lname}
                     </div>
-                    <div className="text-xs text-gray-600 truncate">{booking.visitor.email}</div>
-                    <div className="mt-1 space-y-0.5">
-                      <div className="text-xs"><span className="font-semibold">Service:</span> {booking.package.offering.name}</div>
-                      <div className="text-xs"><span className="font-semibold">Package:</span> {booking.package.name}</div>
-                      <div className="text-xs"><span className="font-semibold">Amount:</span> LKR {booking.amount.toFixed(2)}</div>
-                      <div className="text-xs">
-                        <span className={`px-2 py-0.5 rounded text-xs ${
-                          booking.status === 'completed' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
+                    <div className="text-xs text-gray-500 truncate mt-0.5">
+                      {booking.visitor.email}
+                    </div>
+                    <div className="mt-2 space-y-1 text-xs text-gray-600">
+                      <div>
+                        <span className="font-medium text-gray-700">Service:</span> {booking.package.offering.name}
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Package:</span> {booking.package.name}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-orange/10 text-orange font-semibold text-xs">
+                          LKR {booking.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded-md text-[11px] font-medium capitalize ${
+                            booking.status === 'completed'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-amber-50 text-amber-700 border border-amber-200'
+                          }`}
+                        >
                           {booking.status}
                         </span>
                       </div>
                     </div>
                   </div>
+
                   {booking.status === 'pending' && (
                     <button
                       onClick={() => handleCancelBooking(booking.id)}
                       disabled={cancelLoading}
-                      className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
                     >
                       {cancelLoading ? 'Cancelling...' : 'Cancel'}
                     </button>
@@ -265,49 +321,56 @@ const BookingCalendar: React.FC = () => {
         </div>
       )}
 
-      {/* Summary Section */}
-      <div className="mt-4 border-t pt-3">
-        <h3 className="font-bold text-base mb-2">Summary</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-green-50 p-2 rounded-lg border border-green-200">
-            <div className="text-xl font-bold text-green-700">
-              {payments.filter(p => p.status === 'completed').length}
+      {/* Summary Statistics Section */}
+      <div className="mt-auto pt-4 border-t border-gray-100">
+        <h4 className="font-title text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+          Booking Overview
+        </h4>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-emerald-50/70 border border-emerald-100 rounded-xl p-3.5">
+            <div className="text-2xl font-bold text-emerald-800 font-title leading-none mb-1">
+              {payments.filter((p) => p.status === 'completed').length}
             </div>
-            <div className="text-xs text-gray-600">Completed</div>
+            <div className="text-xs font-medium text-emerald-700">Completed Bookings</div>
           </div>
-          <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-200">
-            <div className="text-xl font-bold text-yellow-700">
-              {payments.filter(p => p.status === 'pending').length}
+          <div className="bg-amber-50/70 border border-amber-100 rounded-xl p-3.5">
+            <div className="text-2xl font-bold text-amber-800 font-title leading-none mb-1">
+              {payments.filter((p) => p.status === 'pending').length}
             </div>
-            <div className="text-xs text-gray-600">Pending</div>
+            <div className="text-xs font-medium text-amber-700">Pending Bookings</div>
           </div>
         </div>
       </div>
 
-      {/* User Details Section */}
+      {/* Recent Bookings List */}
       {bookingsWithDates.length > 0 && (
-        <div className="mt-4 border-t pt-3">
-          <h3 className="font-bold text-base mb-2">Recent Bookings</h3>
+        <div className="mt-5 pt-4 border-t border-gray-100">
+          <h4 className="font-title text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+            Recent Client Bookings
+          </h4>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {bookingsWithDates.slice(0, 5).map((booking) => (
-              <div key={booking.id} className="bg-gray-50 p-2 rounded border border-gray-200 text-xs">
-                <div className="font-semibold">
-                  {booking.visitor.visitor_fname} {booking.visitor.visitor_lname}
+              <div
+                key={booking.id}
+                className="bg-gray-50/70 hover:bg-gray-50 border border-gray-100 rounded-xl p-2.5 text-xs transition-colors flex items-center justify-between gap-3"
+              >
+                <div className="min-w-0">
+                  <div className="font-semibold text-gray-900 truncate">
+                    {booking.visitor.visitor_fname} {booking.visitor.visitor_lname}
+                  </div>
+                  <div className="text-gray-500 truncate text-[11px] mt-0.5">
+                    {booking.package.name} • {new Date(booking.bookingDate!).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                  </div>
                 </div>
-                <div className="text-gray-600 mt-0.5 space-y-0.5">
-                  {booking.visitor.email && (
-                    <div className="truncate">📧 {booking.visitor.email}</div>
-                  )}
-                  {booking.visitor.phone && (
-                    <div>📱 {booking.visitor.phone}</div>
-                  )}
-                  {!booking.visitor.email && !booking.visitor.phone && (
-                    <div className="text-gray-400 italic">No contact info</div>
-                  )}
-                </div>
-                <div className="text-gray-500 mt-1">
-                  {booking.package.name} - {new Date(booking.bookingDate!).toLocaleDateString()}
-                </div>
+                <span
+                  className={`px-2 py-0.5 rounded text-[11px] font-medium capitalize flex-shrink-0 ${
+                    booking.status === 'completed'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border border-amber-200'
+                  }`}
+                >
+                  {booking.status}
+                </span>
               </div>
             ))}
           </div>
