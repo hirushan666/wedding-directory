@@ -417,6 +417,10 @@ export const GET_CHAT = gql`
 export const GET_CHAT_HISTORY = gql`
   query GetChatHistory($chatId: String!) {
     getChatHistory(chatId: $chatId) {
+      chatId
+      offeringId
+      vendorId
+      visitorId
       messages {
         content
         senderId
@@ -572,12 +576,24 @@ export const GET_VISITOR_PAYMENTS = gql`
       status
       createdAt
       bookingDate
+      paymentReference
+      gateway
+      gatewayPaymentId
+      vendor {
+        id
+        busname
+        fname
+        lname
+        city
+      }
       package {
         id
         name
-        offering{
+        offering {
           id
           name
+          category
+          banner
         }
       }
     }
