@@ -1,22 +1,16 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Header from "@/components/shared/Headers/Header";
+import Footer from "@/components/shared/Footer";
 
 const VendorDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Fragment>
-      {/* Container for the header */}
-      <div className="container mx-auto px-4">
-        <Header />
-      </div>
-
-      {/* Main content with background color */}
-      <div className="bg-lightYellow min-h-screen">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Content injected dynamically */}
-          {children}
-        </div>
-      </div>
-    </Fragment>
+    <div className="min-h-screen bg-lightYellow flex flex-col">
+      <Header />
+      <main className="flex-grow flex flex-col">
+        {children}
+      </main>
+      <Footer />
+    </div>
   );
 };
 

@@ -64,9 +64,16 @@ export default function CheckoutPage({
     <button
       onClick={handleCheckout}
       disabled={loading}
-      className="w-full bg-orange text-white py-2 px-4 rounded-md hover:bg-orange transition-colors disabled:bg-gray-400"
+      className="w-full bg-orange text-white py-3 px-4 rounded-xl font-bold hover:bg-orange/90 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
     >
-      {loading ? 'Processing...' : 'Proceed to Payment'}
+      {loading ? (
+        <>
+          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span>Redirecting to PayHere...</span>
+        </>
+      ) : (
+        'Proceed to Payment'
+      )}
     </button>
   );
 }

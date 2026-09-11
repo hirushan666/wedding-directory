@@ -26,7 +26,7 @@ const ChatPage = () => {
           </p>
         </div>
       </div>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <VisitorChatList visitorId={visitorId} />
       </div>
     </div>

@@ -6,11 +6,12 @@ import { MARK_CHAT_AS_READ } from "@/graphql/mutations";
 import { FaStore } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
 import { useAuth } from "@/contexts/VisitorAuthContext";
+import LoaderJelly from "@/components/shared/Loaders/LoaderJelly";
 
 interface Message {
   content: string;
-  senderId: string;
-  senderType: string;
+  senderId?: string;
+  senderType?: string;
   timestamp: string;
 }
 
@@ -38,47 +39,56 @@ const ChatItem = ({ chat, visitorId }: { chat: Chat; visitorId: string }) => {
   const offering = offeringData?.findOfferingById;
   const vendor = offering?.vendor;
 
+  const isPaymentNote =
+    lastMessage?.content?.includes("Payment Note") ||
+    lastMessage?.content?.startsWith("📦");
+
+  const previewText = isPaymentNote
+    ? "📦 Advance Booking Payment Confirmed"
+    : lastMessage?.content || "No messages yet";
+
   return (
     <Link
       href={`/visitor-dashboard/chats/${visitorId}/${chat.chatId}`}
-      className="block hover:bg-gray-50 transition-colors p-4 border-b last:border-b-0"
+      className="flex items-center px-5 py-4 border-l-4 border-transparent hover:border-orange hover:bg-orange/5 transition-all group border-b border-gray-100 last:border-b-0"
       onClick={() => {
         if (visitor?.id) {
           markChatAsRead({
-            variables: { chatId: chat.chatId, userId: visitor.id, userType: 'visitor' }
+            variables: { chatId: chat.chatId, userId: visitor.id, userType: "visitor" },
           }).catch(console.error);
         }
       }}
     >
-      <div className="flex gap-4">
-        <div className="w-12 h-12 flex items-center justify-center bg-accent/10 rounded-full">
-          <FaStore className="text-xl text-accent" />
+      <div className="w-12 h-12 flex items-center justify-center bg-orange/10 text-orange font-bold text-base rounded-full mr-4 flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+        {offering?.name ? offering.name[0].toUpperCase() : <FaStore />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-semibold text-gray-900 font-body text-sm truncate group-hover:text-orange transition-colors">
+            {offering?.name || "Wedding Service"}
+          </h3>
+          {lastMessage && (
+            <span className="text-[11px] text-gray-400 font-body flex-shrink-0">
+              {formatDistanceToNow(new Date(lastMessage.timestamp), {
+                addSuffix: true,
+              })}
+            </span>
+          )}
         </div>
-        <div className="flex-1">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-semibold text-gray-900 font-body">
-                {offering?.name || "Loading..."}
-              </h3>
-              <div className="flex items-center font-body gap-1 text-sm text-gray-500 mt-1">
-                <IoLocationSharp className="text-green-500" />
-                <span>
-                  {vendor?.busname || "Loading..."} • {vendor?.city || ""}
-                </span>
-              </div>
-            </div>
-            {lastMessage && (
-              <span className="text-xs text-gray-500 font-body">
-                {formatDistanceToNow(new Date(lastMessage.timestamp), {
-                  addSuffix: true,
-                })}
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-gray-600 mt-2 line-clamp-1">
-            {lastMessage?.content || "No messages yet"}
-          </p>
+        <div className="flex items-center font-body gap-1.5 text-xs text-gray-500 mt-0.5">
+          <IoLocationSharp className="text-orange shrink-0" />
+          <span className="truncate">
+            {vendor?.busname || "Vendor"}
+            {vendor?.city ? ` • ${vendor.city}` : ""}
+          </span>
         </div>
+        <p
+          className={`text-xs mt-1 truncate font-body ${
+            isPaymentNote ? "text-amber-800 font-medium" : "text-gray-600"
+          }`}
+        >
+          {previewText}
+        </p>
       </div>
     </Link>
   );
@@ -92,33 +102,36 @@ const VisitorChatList = ({ visitorId }: VisitorChatListProps) => {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent mx-auto"></div>
+      <div className="p-10 flex flex-col items-center justify-center gap-3">
+        <LoaderJelly />
+        <p className="text-xs font-medium text-gray-400">Loading conversations...</p>
       </div>
     );
   }
 
-  const chats = data?.getVisitorChats || [];
+  if (!data?.getVisitorChats || data.getVisitorChats.length === 0) {
+    return (
+      <div className="p-12 text-center text-gray-500 font-body">
+        <FaStore className="text-3xl text-gray-300 mx-auto mb-3" />
+        <p className="text-base font-semibold text-gray-800">No conversations yet</p>
+        <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+          When you message a vendor from their service page or book a package, your conversations will appear here.
+        </p>
+        <Link
+          href="/services"
+          className="inline-block mt-4 text-xs font-semibold text-orange hover:underline"
+        >
+          Browse Wedding Services &rarr;
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="divide-y divide-gray-100">
-      <div className="divide-y divide-gray-100">
-        {chats.length === 0 ? (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaStore className="text-2xl text-gray-400" />
-            </div>
-            <p className="text-gray-500 font-medium">No conversations yet</p>
-            <p className="text-sm text-gray-400 mt-1">
-              Your messages with vendors will appear here
-            </p>
-          </div>
-        ) : (
-          chats.map((chat: Chat) => (
-            <ChatItem key={chat.chatId} chat={chat} visitorId={visitorId} />
-          ))
-        )}
-      </div>
+      {data.getVisitorChats.map((chat: Chat) => (
+        <ChatItem key={chat.chatId} chat={chat} visitorId={visitorId} />
+      ))}
     </div>
   );
 };

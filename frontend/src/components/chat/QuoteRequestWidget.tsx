@@ -98,19 +98,24 @@ const QuoteRequestWidget = ({ vendorId,offeringId }: QuoteRequestWidgetProps) =>
   return (
     <>
       {showSuccess && <Confetti />}
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-7 max-w-2xl mx-auto">
         {isVendorsOffering ? (
           // 👇 VENDOR VIEW
-          <div className="text-center space-y-4">
-            <h3 className="text-2xl font-bold font-title text-gray-800">
+          <div className="text-center space-y-3.5">
+            <div className="w-12 h-12 mx-auto rounded-xl bg-orange/10 flex items-center justify-center text-orange">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold font-title text-gray-900">
               View your quotes
             </h3>
-            <p className="text-gray-600">
-              Couples can request quotes here. You can view their messages in your dashboard.
+            <p className="text-gray-500 font-body text-sm leading-relaxed">
+              Couples can request quotes here. You can view and manage their messages in your dashboard inbox.
             </p>
             <Link
               href={`/vendor-dashboard/chats`}
-              className="inline-block bg-orange text-white py-2 px-4 rounded-lg mt-4 hover:bg-white hover:text-orange hover:border-orange border-2 transition"
+              className="inline-flex items-center justify-center w-full bg-orange text-white py-2.5 px-4 rounded-xl font-semibold text-sm hover:bg-orange/90 active:scale-[0.99] shadow-sm shadow-orange/20 transition-all mt-2"
             >
               Go to your Inbox
             </Link>

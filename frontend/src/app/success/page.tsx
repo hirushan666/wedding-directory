@@ -2,15 +2,15 @@ import PaymentSuccess from '@/components/stripe/PaymentSuccess';
 import { Suspense } from 'react';
 import LoaderJelly from '@/components/shared/Loaders/LoaderJelly';
 
-export default async function SuccessPage({
+export default function SuccessPage({
   searchParams,
 }: {
-  searchParams: { order_id?: string; session_id?: string };
+  searchParams?: { order_id?: string | string[]; session_id?: string | string[] };
 }) {
   return (
     <Suspense fallback={<LoaderJelly />}>
-      {/* @ts-expect-error - Async Server Component */}
       <PaymentSuccess searchParams={searchParams} />
     </Suspense>
   );
 }
+

@@ -37,28 +37,32 @@ const ChatRow = ({ chat }: { chat: Chat }) => {
 
   const { data: visitorData } = useQuery(GET_CHAT_VISITOR_DETAILS, {
     variables: { id: chat.visitorId },
+    skip: !chat.visitorId,
   });
 
   const previewMessage = chat.messages[chat.messages.length - 1];
-
   const visitor = visitorData?.findVisitorById;
 
   if (!visitor) {
     return (
-      <div className="animate-pulse flex items-center px-4 py-3 ml-4">
-        <div className="w-9 h-9 bg-gray-200 rounded-full mr-3"></div>
+      <div className="animate-pulse flex items-center px-5 py-4">
+        <div className="w-10 h-10 bg-gray-200 rounded-full mr-3.5"></div>
         <div className="flex-1 space-y-2">
-          <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-3.5 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-2.5 bg-gray-200 rounded w-1/2"></div>
         </div>
       </div>
     );
   }
 
+  const coupleName = `${visitor.visitor_fname || ""}${
+    visitor.partner_fname ? ` & ${visitor.partner_fname}` : ""
+  }`.trim() || "Wedding Couple";
+
   return (
     <Link
       href={`/vendor-dashboard/chats/${chat.chatId}`}
-      className="flex items-center px-4 py-3 ml-4 border-l-2 border-gray-100 hover:bg-gray-50 hover:border-accent transition-all"
+      className="flex items-center px-5 py-4 border-l-3 border-transparent hover:border-orange hover:bg-orange/5 transition-all group"
       onClick={() => {
         if (vendor?.id) {
           markChatAsRead({
@@ -67,24 +71,24 @@ const ChatRow = ({ chat }: { chat: Chat }) => {
         }
       }}
     >
-      <div className="w-9 h-9 flex items-center justify-center bg-accent/10 rounded-full mr-3 flex-shrink-0">
-        <FaUserCircle className="text-accent" size={28} />
+      <div className="w-10 h-10 flex items-center justify-center bg-orange/10 text-orange font-bold text-sm rounded-full mr-3.5 flex-shrink-0 group-hover:scale-105 transition-transform">
+        {coupleName[0]?.toUpperCase() || "C"}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <span className="font-semibold text-gray-900 font-body text-sm truncate">
-            {visitor.visitor_fname} & {visitor.partner_fname}
+          <span className="font-semibold text-gray-900 font-body text-sm truncate group-hover:text-orange transition-colors">
+            {coupleName}
           </span>
           {previewMessage && (
-            <span className="text-xs text-gray-400 font-body flex-shrink-0">
+            <span className="text-[11px] text-gray-400 font-body flex-shrink-0">
               {formatDistanceToNow(new Date(previewMessage.timestamp), { addSuffix: true })}
             </span>
           )}
         </div>
-        <p className="text-xs text-gray-500 mt-0.5 truncate font-body">
+        <p className="text-xs text-gray-600 mt-0.5 truncate font-body">
           {previewMessage?.content || "No messages yet"}
         </p>
-        <p className="text-xs text-gray-400 mt-0.5 font-body">{visitor.email}</p>
+        <p className="text-[11px] text-gray-400 mt-0.5 font-body truncate">{visitor.email}</p>
       </div>
     </Link>
   );
@@ -96,24 +100,25 @@ const OfferingGroup = ({ offeringId, chats }: { offeringId: string; chats: Chat[
 
   const { data: offeringData } = useQuery(GET_OFFERING_DETAILS, {
     variables: { id: offeringId },
+    skip: !offeringId,
   });
 
-  const offeringName = offeringData?.findOfferingById?.name || "Loading...";
+  const offeringName = offeringData?.findOfferingById?.name || "Service Inquiries";
 
   return (
-    <div className="border border-gray-100 rounded-xl overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 bg-gray-50/70 hover:bg-gray-100/70 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-            <FiMessageSquare className="text-accent text-sm" />
+          <div className="w-9 h-9 rounded-xl bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
+            <FiMessageSquare size={16} />
           </div>
           <div className="text-left">
-            <span className="font-semibold text-gray-800 font-body">{offeringName}</span>
-            <span className="ml-2 px-2 py-0.5 text-xs bg-accent/10 text-accent rounded-full font-body">
-              {chats.length} conversation{chats.length !== 1 ? "s" : ""}
+            <span className="font-title font-bold text-gray-900 text-base">{offeringName}</span>
+            <span className="ml-2 px-2.5 py-0.5 text-xs bg-orange/10 text-orange font-semibold rounded-full font-body">
+              {chats.length} {chats.length === 1 ? "conversation" : "conversations"}
             </span>
           </div>
         </div>
@@ -124,7 +129,7 @@ const OfferingGroup = ({ offeringId, chats }: { offeringId: string; chats: Chat[
         )}
       </button>
       {open && (
-        <div className="divide-y divide-gray-50 bg-white">
+        <div className="divide-y divide-gray-100 bg-white">
           {chats.map((chat) => (
             <ChatRow key={chat.chatId} chat={chat} />
           ))}
@@ -137,24 +142,28 @@ const OfferingGroup = ({ offeringId, chats }: { offeringId: string; chats: Chat[
 export default function ChatList({ chats }: ChatListProps) {
   if (chats.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
-        <FaInbox className="mx-auto text-4xl text-gray-300 mb-3" />
-        <p className="text-gray-500 font-medium">No conversations yet</p>
-        <p className="text-sm text-gray-400">Your messages with couples will appear here</p>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-orange/10 text-orange flex items-center justify-center mx-auto mb-3">
+          <FaInbox size={26} />
+        </div>
+        <h3 className="font-title font-bold text-lg text-gray-900 mb-1">No conversations yet</h3>
+        <p className="text-sm text-gray-500 max-w-sm mx-auto">
+          When couples reach out or submit an inquiry on your service pages, your conversations will appear here.
+        </p>
       </div>
     );
   }
 
-  // Group remaining chats by offeringId
+  // Group chats by offeringId
   const grouped = chats.reduce<Record<string, Chat[]>>((acc, chat) => {
-    if (!acc[chat.offeringId]) acc[chat.offeringId] = [];
-    acc[chat.offeringId].push(chat);
+    const key = chat.offeringId || "general";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(chat);
     return acc;
   }, {});
 
   return (
     <div className="space-y-4">
-      {/* Regular offering groups */}
       {Object.entries(grouped).map(([offeringId, groupChats]) => (
         <OfferingGroup key={offeringId} offeringId={offeringId} chats={groupChats} />
       ))}
