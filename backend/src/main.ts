@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { AppModule } from './app.module';
+// main.ts — very top, before other imports
+import * as dns from 'dns';
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const DEFAULT_ALLOWED_ORIGINS = [
   'http://localhost:3000',

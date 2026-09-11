@@ -21,6 +21,7 @@ type RecommendationItem = {
   minPackagePrice: number | null;
   deterministicScore: number;
   reason: string;
+  aiReview?: string;
 };
 
 const categoryOptions = categories;
@@ -34,7 +35,7 @@ const RecommendationPage = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [source, setSource] = useState<'rules' | 'ai+rules' | null>(null);
+  const [source, setSource] = useState<'rules' | 'ai' | 'ai+rules' | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationItem[]>([]);
 
   const canRequest = useMemo(() => isAuthenticated && !!accessToken, [isAuthenticated, accessToken]);
@@ -200,7 +201,7 @@ const RecommendationPage = () => {
                 <h2 className="text-2xl font-title font-semibold">Recommended Vendors</h2>
                 {source && (
                   <span className="text-xs font-semibold px-2 py-1 bg-white border rounded-md">
-                    Source: {source === 'ai+rules' ? 'AI + Rules' : 'Rules'}
+                    Source: {source === 'ai' || source === 'ai+rules' ? 'AI' : 'Rules'}
                   </span>
                 )}
               </div>
@@ -239,6 +240,11 @@ const RecommendationPage = () => {
                         <p>
                           <strong>Flex:</strong> {item.reason}
                         </p>
+                        {source === 'ai' && item.aiReview && (
+                          <p className="mt-1 text-sm text-gray-600">
+                            <strong>AI Review:</strong> {item.aiReview}
+                          </p>
+                        )}
                       </div>
 
                       <Link
