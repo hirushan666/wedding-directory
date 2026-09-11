@@ -64,7 +64,7 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
                 const chatId = data?.getChat?.chatId;
                 if (chatId) {
                     const formattedMessage =
-                        `📦 Payment Note — ${pkg.name} | Booking: ${format(selectedDate, 'MMM d, yyyy')}\n\n${note.trim()}`;
+                        `📦 Payment Note — ${pkg.name} | Booking: ${format(selectedDate, 'MMM d, yyyy')}\n\nNote:\n${note.trim()}`;
                     try {
                         await sendSocketMessage({ chatId, content: formattedMessage, senderId: visitorId, senderType: 'visitor' });
                     } catch {
