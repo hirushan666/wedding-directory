@@ -61,7 +61,6 @@ export const FIND_SERVICE_BY_ID = gql`
       instagram
       x
       tiktok
-      banner
       photo_showcase
       video_showcase
       vendor {
@@ -152,6 +151,7 @@ export const GET_VENDOR_BY_ID = gql`
       phone
       city
       location
+      profile_pic_url
       createdAt
     }
   }
@@ -296,6 +296,7 @@ export const FIND_PACKAGES_BY_OFFERING = gql`
       visible
       requiresReservation
       bookedDates
+      image
     }
   }
 `;

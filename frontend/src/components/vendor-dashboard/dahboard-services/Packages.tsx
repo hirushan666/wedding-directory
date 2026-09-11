@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { useQuery } from '@apollo/client';
 import { FIND_PACKAGES_BY_OFFERING } from '@/graphql/queries';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 
 interface Package {
   id: string;
@@ -11,6 +12,7 @@ interface Package {
   description: string;
   pricing: number;
   features: string[];
+  image?: string | null;
 }
 
 interface PackageDetailsProps {
@@ -18,6 +20,7 @@ interface PackageDetailsProps {
   description: string;
   pricing: number;
   features: string[];
+  image?: string | null;
 }
 
 const Packages = () => {
@@ -28,9 +31,14 @@ const Packages = () => {
     variables: { offeringId },
   });
 
-  const PackageDetails: React.FC<PackageDetailsProps> = ({ name, description, pricing, features }) => (
-    <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+  const PackageDetails: React.FC<PackageDetailsProps> = ({ name, description, pricing, features, image }) => (
+    <div className="space-y-6 bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
       <div>
+        {image && (
+          <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+            <Image src={image} alt={name} fill className="object-cover" />
+          </div>
+        )}
         <h2 className="text-2xl font-bold mb-2">{name}</h2>
         <p className="text-gray-500 mb-4">{description}</p>
         <div className="mb-6">
@@ -66,6 +74,7 @@ const Packages = () => {
             description={pkg.description}
             pricing={pkg.pricing}
             features={pkg.features}
+            image={pkg.image}
           />
         ))}
       </div>

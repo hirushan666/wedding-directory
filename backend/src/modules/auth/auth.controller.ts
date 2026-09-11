@@ -1,70 +1,167 @@
-import { Controller, Post, Req, UseGuards, Res, HttpStatus, UnauthorizedException } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+  Res,
+  HttpStatus,
+  UnauthorizedException,
+  Body,
+} from '@nestjs/common';
 import { RequestWithVisitor } from './request-with-visitor.interface';
 import { RequestWithVendor } from './request-with-vendor.interface';
-import { AuthService } from "./auth.service";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { AuthService } from './auth.service';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CookieOptions, Response } from 'express';
+import {
+  RequestOtpDto,
+  VerifyOtpDto,
+  ResetPasswordDto,
+} from './dto/password-reset.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
+import {
+  RequestSignupOtpDto,
+  VerifySignupOtpDto,
+  CompleteVisitorSignupDto,
+  CompleteVendorSignupDto,
+} from './dto/signup-otp.dto';
 
 const buildCookieOptions = (): CookieOptions => {
-    const configuredDomain = process.env.COOKIE_DOMAIN?.trim();
-    const secure = process.env.COOKIE_SECURE === 'true';
-    const configuredSameSite = process.env.COOKIE_SAMESITE === 'lax' ? 'lax' : 'none';
+  const configuredDomain = process.env.COOKIE_DOMAIN?.trim();
+  const secure = process.env.COOKIE_SECURE === 'true';
+  const configuredSameSite = process.env.COOKIE_SAMESITE === 'lax' ? 'lax' : 'none';
 
-    const cookieOptions: CookieOptions = {
-        httpOnly: false,
-        secure,
-        // Browsers reject SameSite=None when secure=false.
-        sameSite: secure ? configuredSameSite : 'lax',
-        maxAge: 24 * 60 * 60 * 1000,
-    };
+  const cookieOptions: CookieOptions = {
+    httpOnly: false,
+    secure,
+    // Browsers reject SameSite=None when secure=false.
+    sameSite: secure ? configuredSameSite : 'lax',
+    maxAge: 24 * 60 * 60 * 1000,
+  };
 
-    // Domain=localhost breaks LAN access; omit to let browser use request host.
-    if (configuredDomain && configuredDomain !== 'localhost') {
-        cookieOptions.domain = configuredDomain;
-    }
+  // Domain=localhost breaks LAN access; omit to let browser use request host.
+  if (configuredDomain && configuredDomain !== 'localhost') {
+    cookieOptions.domain = configuredDomain;
+  }
 
-    return cookieOptions;
+  return cookieOptions;
 };
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-    @UseGuards(LocalAuthGuard)
-    @Post('loginVisitor')
-    loginVisitor(@Req() req: RequestWithVisitor, @Res() res: Response): void {
-        const visitor = req.visitor;
-        if (!visitor) {
-            throw new UnauthorizedException('Invalid credentials for visitor');
-        }
-
-        const { access_token } = this.authService.loginVisitor(visitor);
-        res.cookie('access_token', access_token, buildCookieOptions());
-
-        res.status(HttpStatus.OK).json({
-            message: 'Login successful',
-            access_token,
-            visitorId: visitor.id,
-            visitorEmail: visitor.email,
-        });
+  @UseGuards(LocalAuthGuard)
+  @Post('loginVisitor')
+  loginVisitor(@Req() req: RequestWithVisitor, @Res() res: Response): void {
+    const visitor = req.visitor;
+    if (!visitor) {
+      throw new UnauthorizedException('Invalid credentials for visitor');
     }
 
-    @UseGuards(LocalAuthGuard)
-    @Post('loginVendor')
-    loginVendor(@Req() req: RequestWithVendor, @Res() res: Response): void {
-        const vendor = req.vendor;
-        if (!vendor) {
-            throw new UnauthorizedException('Invalid credentials for vendor');
-        }
+    const { access_token } = this.authService.loginVisitor(visitor);
+    res.cookie('access_token', access_token, buildCookieOptions());
 
-        const { access_token } = this.authService.loginVendor(vendor);
-        res.cookie('access_tokenVendor', access_token, buildCookieOptions());
+    res.status(HttpStatus.OK).json({
+      message: 'Login successful',
+      access_token,
+      visitorId: visitor.id,
+      visitorEmail: visitor.email,
+    });
+  }
 
-        res.status(HttpStatus.OK).json({
-            message: 'Login successful',
-            access_token,
-            vendorId: vendor.id,
-            vendorEmail: vendor.email,
-        });
+  @UseGuards(LocalAuthGuard)
+  @Post('loginVendor')
+  loginVendor(@Req() req: RequestWithVendor, @Res() res: Response): void {
+    const vendor = req.vendor;
+    if (!vendor) {
+      throw new UnauthorizedException('Invalid credentials for vendor');
     }
+
+    const { access_token } = this.authService.loginVendor(vendor);
+    res.cookie('access_tokenVendor', access_token, buildCookieOptions());
+
+    res.status(HttpStatus.OK).json({
+      message: 'Login successful',
+      access_token,
+      vendorId: vendor.id,
+      vendorEmail: vendor.email,
+    });
+  }
+
+  @Post('forgot-password/request-otp')
+  async requestOtp(@Body() body: RequestOtpDto) {
+    return await this.authService.requestPasswordResetOtp(body.email, body.role);
+  }
+
+  @Post('forgot-password/verify-otp')
+  async verifyOtp(@Body() body: VerifyOtpDto) {
+    return await this.authService.verifyPasswordResetOtp(
+      body.email,
+      body.otp,
+      body.role,
+    );
+  }
+
+  @Post('forgot-password/reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return await this.authService.resetPassword(
+      body.resetToken,
+      body.newPassword,
+      body.role,
+    );
+  }
+
+  @Post('google')
+  async googleAuth(
+    @Body() body: GoogleAuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.googleAuth(body.idToken, body.role);
+
+    const cookieName =
+      result.role === 'vendor' ? 'access_tokenVendor' : 'access_token';
+    res.cookie(cookieName, result.access_token, buildCookieOptions());
+
+    return {
+      message: result.isNewUser
+        ? 'Account created and logged in successfully'
+        : 'Login successful',
+      ...result,
+    };
+  }
+
+  @Post('signup/request-otp')
+  async requestSignupOtp(@Body() body: RequestSignupOtpDto) {
+    return await this.authService.requestSignupOtp(body.email, body.role);
+  }
+
+  @Post('signup/verify-otp')
+  async verifySignupOtp(@Body() body: VerifySignupOtpDto) {
+    return await this.authService.verifySignupOtp(
+      body.email,
+      body.otp,
+      body.role,
+    );
+  }
+
+  @Post('signup/complete-visitor')
+  async completeVisitorSignup(
+    @Body() body: CompleteVisitorSignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.completeVisitorSignup(body);
+    res.cookie('access_token', result.access_token, buildCookieOptions());
+    return result;
+  }
+
+  @Post('signup/complete-vendor')
+  async completeVendorSignup(
+    @Body() body: CompleteVendorSignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.completeVendorSignup(body);
+    res.cookie('access_tokenVendor', result.access_token, buildCookieOptions());
+    return result;
+  }
 }

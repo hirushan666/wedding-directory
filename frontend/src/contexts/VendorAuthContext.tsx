@@ -43,6 +43,10 @@ export const VendorAuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (token: string) => {
     const decoded = jwtDecode<{ sub: string; email: string }>(token); // Expecting sub (vendor id) and email
 
+    // Set access token in first-party cookie so Next.js middleware and browser can read it
+    const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    document.cookie = `access_tokenVendor=${token}; path=/; max-age=${24 * 60 * 60}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
+
     // Set access token and vendor details in state
     setAccessToken(token);
     setVendor({

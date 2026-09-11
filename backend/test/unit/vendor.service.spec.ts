@@ -14,6 +14,7 @@ const mockVendorRepository = {
   remove: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
+  update: jest.fn(),
   extend: jest.fn().mockReturnThis(),
 };
 
@@ -258,6 +259,97 @@ describe('VendorService', () => {
       expect(mockVendorRepository.save).toHaveBeenCalledWith(
         expect.any(Object),
       );
+    });
+  });
+
+  describe('updateVendor', () => {
+    it('should update vendor profile fields without touching password', async () => {
+      const vendorId = 'vendor-123';
+      const updateInput = { fname: 'Updated', busname: 'Updated Co' };
+      const updatedVendor = { ...createVendor(), id: vendorId, ...updateInput };
+
+      mockVendorRepository.update.mockResolvedValue({ affected: 1 });
+      mockVendorRepository.findOne.mockResolvedValue(updatedVendor);
+
+      const result = await service.updateVendor(vendorId, updateInput);
+
+      expect(mockVendorRepository.update).toHaveBeenCalledWith(vendorId, updateInput);
+      expect(result).toEqual(updatedVendor);
+    });
+
+    it('should throw BadRequestException if password is provided without currentPassword', async () => {
+      const vendorId = 'vendor-123';
+      const updateInput = { password: 'newPassword123' };
+
+      await expect(service.updateVendor(vendorId, updateInput)).rejects.toThrow(
+        'Current password is required to change password',
+      );
+    });
+
+    it('should throw NotFoundException if vendor is not found when updating password', async () => {
+      const vendorId = 'vendor-123';
+      const updateInput = {
+        password: 'newPassword123',
+        currentPassword: 'oldPassword123',
+      };
+
+      mockVendorRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.updateVendor(vendorId, updateInput)).rejects.toThrow(
+        'Vendor not found',
+      );
+    });
+
+    it('should throw BadRequestException if currentPassword does not match', async () => {
+      const vendorId = 'vendor-123';
+      const updateInput = {
+        password: 'newPassword123',
+        currentPassword: 'wrongPassword',
+      };
+      const existingVendor = {
+        ...createVendor(),
+        id: vendorId,
+        password: 'hashedOldPassword',
+      };
+
+      mockVendorRepository.findOne.mockResolvedValue(existingVendor);
+      jest.spyOn(bcrypt, 'compare').mockImplementation(async () => false);
+
+      await expect(service.updateVendor(vendorId, updateInput)).rejects.toThrow(
+        'Current password is incorrect',
+      );
+    });
+
+    it('should update password and delete currentPassword before saving when currentPassword is correct', async () => {
+      const vendorId = 'vendor-123';
+      const updateInput = {
+        password: 'newPassword123',
+        currentPassword: 'correctPassword',
+      };
+      const existingVendor = {
+        ...createVendor(),
+        id: vendorId,
+        password: 'hashedOldPassword',
+      };
+
+      mockVendorRepository.findOne
+        .mockResolvedValueOnce(existingVendor)
+        .mockResolvedValueOnce({
+          ...existingVendor,
+          password: 'hashedNewPassword',
+        });
+      jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
+      jest.spyOn(bcrypt, 'hashSync').mockReturnValue('hashedNewPassword');
+      mockVendorRepository.update.mockResolvedValue({ affected: 1 });
+
+      const result = await service.updateVendor(vendorId, updateInput);
+
+      expect(updateInput.currentPassword).toBeUndefined();
+      expect(mockVendorRepository.update).toHaveBeenCalledWith(
+        vendorId,
+        expect.objectContaining({ password: 'hashedNewPassword' }),
+      );
+      expect(result.password).toEqual('hashedNewPassword');
     });
   });
 });

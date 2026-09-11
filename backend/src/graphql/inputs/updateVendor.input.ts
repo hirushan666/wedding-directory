@@ -9,6 +9,9 @@ export class UpdateVendorInput {
   password?: string;
 
   @Field({ nullable: true })
+  currentPassword?: string;
+
+  @Field({ nullable: true })
   fname?: string;
 
   @Field({ nullable: true })
@@ -28,4 +31,7 @@ export class UpdateVendorInput {
 
   @Field({ nullable: true })
   about?: string;
+
+  @Field({ nullable: true })
+  profile_pic_url?: string;
 }

@@ -43,11 +43,15 @@ export class VendorEntity {
   @Column({ type: 'varchar', length: 12 })
   phone: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Field({ nullable: true })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   profile_pic_url: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   about: string;
+
+  @Column({ name: 'expo_push_token', type: 'varchar', length: 255, nullable: true })
+  expoPushToken?: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: false })
   createdAt: Date;

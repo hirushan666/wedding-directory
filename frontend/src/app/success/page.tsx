@@ -5,7 +5,7 @@ import LoaderJelly from '@/components/shared/Loaders/LoaderJelly';
 export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams: { session_id?: string };
+  searchParams: { order_id?: string; session_id?: string };
 }) {
   return (
     <Suspense fallback={<LoaderJelly />}>

@@ -64,11 +64,13 @@ const VisitorSignup: React.FC<VisitorSignupProps> = ({ isVisible, onClose }) => 
 
   const handleSignupSuccess = useCallback(async () => {
     try {
-      await loginApi(formState.email, formState.password);
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('access_token='))
-        ?.split('=')[1];
+      const loginRes = await loginApi(formState.email, formState.password);
+      const token =
+        loginRes?.access_token ||
+        document.cookie
+          .split('; ')
+          .find(row => row.startsWith('access_token='))
+          ?.split('=')[1];
 
       if (token) {
         login(token);
@@ -203,7 +205,7 @@ const VisitorSignup: React.FC<VisitorSignupProps> = ({ isVisible, onClose }) => 
             </p>
             <p>
               Are you a wedding service provider?{' '}
-              <Link href="/sign-up" className="hover:underline text-primary">
+              <Link href="/vendor-signup" className="hover:underline text-primary">
                 Start from here
               </Link>
             </p>

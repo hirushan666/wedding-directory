@@ -66,4 +66,13 @@ export class VendorResolver {
   ): Promise<VendorEntity[]> {
     return this.vendorService.findVendorsByOffering(offeringId);
   }
+
+  @Mutation(() => Boolean)
+  async registerVendorPushToken(
+    @Args('vendorId') vendorId: string,
+    @Args('pushToken') pushToken: string,
+  ): Promise<boolean> {
+    await this.vendorService.registerPushToken(vendorId, pushToken);
+    return true;
+  }
 }

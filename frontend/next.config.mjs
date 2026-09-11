@@ -12,15 +12,33 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "sayido-sl.s3.ap-south-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "multi-vendor-wedding-directory.s3.ap-south-1.amazonaws.com",
         port: "",
-        pathname: "/**", // all paths under this hostname are allowed
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com",
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "http",
         hostname: "localhost",
         port: "5000",
-        pathname: "/**", // all paths under this hostname are allowed
+        pathname: "/**",
       },
       {
         protocol: "http",

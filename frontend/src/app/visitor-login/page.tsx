@@ -11,6 +11,7 @@ import { loginVisitor as loginApi } from '@/api/auth/visitor.auth.api';
 import { useAuth } from "@/contexts/VisitorAuthContext";
 import { toast } from 'react-hot-toast';
 import LoaderJelly from "@/components/shared/Loaders/LoaderJelly";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<string>('');
@@ -60,7 +61,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
   return (
-    <div className="relative w-full min-h-screen h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-hidden">
       {/* Header */}
       <div className="relative z-10">
         <Header />
@@ -79,8 +80,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       </div>
 
       {/* Login Form */}
-      <div className="relative z-20 flex justify-center items-center h-full px-4">
-        <div className="bg-white w-full max-w-[450px] rounded-md p-8 font-body shadow-lg relative">
+      <div className="relative z-20 flex min-h-[calc(100vh-92px)] justify-center items-center px-4 py-10">
+        <div className="bg-white w-full max-w-[450px] rounded-md p-4 sm:p-8 font-body shadow-lg relative">
           {/* Loader */}
           {isLoading && (
             <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-30">
@@ -94,7 +95,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 Start where you left off
               </h1>
               <form onSubmit={handleSubmit}>
-                <div className="mt-12 grid grid-cols-1 w-full items-center gap-x-12 gap-y-5">
+                <div className="mt-8 grid grid-cols-1 w-full items-center gap-x-12 gap-y-5">
                   <div className="border-black border-solid border-2 border-opacity-70 rounded-md flex flex-row space-y-1.5">
                     <Input
                       className="h-12 pl-6 pb-3"
@@ -122,15 +123,27 @@ const handleSubmit = async (e: React.FormEvent) => {
                   <p className="text-red-500 text-sm text-center mt-2">{error}</p>
                 )}
                 <div className="mt-6 flex flex-col w-full">
-                  <Button type="submit" className="rounded-none text-black font-bold hover:bg-primary bg-primary text-lg">
+                  <Button type="submit" className="rounded-none text-white font-bold hover:bg-orange bg-orange text-lg">
                     Log In
                   </Button>
                 </div>
                 <div className="text-center mt-2">
-                  <label className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <Link
+                    href="/forgot-password?role=visitor"
+                    className="text-sm text-gray-700 hover:text-orange hover:underline transition-colors"
+                  >
                     Forget your password?
-                  </label>
+                  </Link>
                 </div>
+
+                <div className="flex items-center my-4">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="flex-shrink mx-3 text-gray-400 text-xs uppercase font-medium">or</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <GoogleAuthButton role="visitor" text="signin_with" />
+
                 <hr className="border-t-2 border-gray-300 my-4" />
                 <div className="text-center mt-3">
                   <label
@@ -138,7 +151,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     Don&apos;t have an account?{" "}
-                    <Link href="/visitor-signup" className="underline">
+                    <Link href="/visitor-signup" className="text-orange hover:underline">
                       Sign Up
                     </Link>
                   </label>
@@ -149,7 +162,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     className="text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     Are you a wedding service provider?{" "}
-                    <Link href="/login" className="underline">
+                    <Link href="/vendor-login" className="text-orange hover:underline">
                       Start from here
                     </Link>
                   </label>

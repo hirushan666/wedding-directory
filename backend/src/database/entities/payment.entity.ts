@@ -20,8 +20,17 @@ export class PaymentEntity {
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
 
-  @Column()
-  stripeSessionId: string;
+  @Column({ nullable: true })
+  stripeSessionId?: string;
+
+  @Column({ nullable: true })
+  paymentReference?: string;
+
+  @Column({ default: 'payhere' })
+  gateway: string;
+
+  @Column({ nullable: true })
+  gatewayPaymentId?: string;
 
   @Column({
     type: 'enum',

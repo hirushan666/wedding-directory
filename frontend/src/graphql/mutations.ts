@@ -64,6 +64,16 @@ export const UPDATE_VENDOR = gql`
       location
       email
       password
+      profile_pic_url
+    }
+  }
+`;
+
+export const UPDATE_VENDOR_PROFILE_PIC = gql`
+  mutation UpdateVendorProfilePic($id: String!, $fileUrl: String!) {
+    updateVendorProfilePic(id: $id, fileUrl: $fileUrl) {
+      id
+      profile_pic_url
     }
   }
 `;
@@ -283,6 +293,7 @@ export const CREATE_PACKAGE = gql`
       features
       visible
       requiresReservation
+      image
     }
   }
 `;
@@ -297,6 +308,7 @@ export const UPDATE_PACKAGE = gql`
       features
       visible
       requiresReservation
+      image
     }
   }
 `;

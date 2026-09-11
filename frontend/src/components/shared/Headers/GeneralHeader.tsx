@@ -2,40 +2,14 @@
 
 import Link from "next/link";
 import { Button } from "../../ui/button";
-import { Fragment, useState, useEffect, useRef } from "react";
+import { Fragment, useState } from "react";
 import { usePathname } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
 import Nav from "../Nav";
-import VisitorLogin from "@/components/shared/VisitorLogin";
-import VisitorSignup from "@/components/shared/VisitorSignup";
 
 const GeneralHeader = () => {
-  const profileMenuRef = useRef<HTMLDivElement>(null);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoginVisible, setLoginVisible] = useState(false);
-  const [isSignupVisible, setSignupVisible] = useState(false);
   const pathname = usePathname();
-
-  // Close the profile dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
-      ) {
-        setShowProfileMenu(false);
-      }
-    };
-
-    if (showProfileMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showProfileMenu]);
 
   return (
     <Fragment>
@@ -68,20 +42,11 @@ const GeneralHeader = () => {
 
           {/* Authentication Buttons Column - Only visible on desktop */}
           <div className="hidden xl:flex justify-end items-center gap-4">
-            <Button
-              variant="login"
-              onClick={() => setLoginVisible(true)}
-              className="w-full sm:w-auto"
-            >
-              Login
+            <Button variant="login" className="w-full sm:w-auto" asChild>
+              <Link href="/visitor-login">Login</Link>
             </Button>
-            {/* Add the sign up component after the waitlist is over */}
-            <Button
-              variant="signup"
-              className="w-full sm:w-auto"
-              onClick={() => setSignupVisible(true)}
-            >
-              Get Started
+            <Button variant="signup" className="w-full sm:w-auto" asChild>
+              <Link href="/visitor-signup">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -131,40 +96,26 @@ const GeneralHeader = () => {
               
               {/* Authentication Buttons */}
               <div className="pt-4 space-y-3">
-                <Button
-                  variant="login"
-                  onClick={() => {
-                    setLoginVisible(true);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full"
-                >
-                  Login
+                <Button variant="login" className="w-full" asChild>
+                  <Link
+                    href="/visitor-login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
                 </Button>
-                <Button
-                  variant="signup"
-                  className="w-full"
-                  onClick={() => {
-                    setSignupVisible(true);
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Get Started
+                <Button variant="signup" className="w-full" asChild>
+                  <Link
+                    href="/visitor-signup"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
                 </Button>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Visitor Login and Signup */}
-        <VisitorLogin
-          isVisible={isLoginVisible}
-          onClose={() => setLoginVisible(false)}
-        />
-        <VisitorSignup
-          isVisible={isSignupVisible}
-          onClose={() => setSignupVisible(false)}
-        />
       </header>
     </Fragment>
   );

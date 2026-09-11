@@ -6,7 +6,7 @@ import { Input } from '../ui/input';
 import { LocationProps } from '@/types/signupInput';
 import { AUTOCOMPLETE_QUERY } from '@/graphql/queries';
 
-const LocationInput: React.FC<LocationProps> = ({ onLocationChange, disabled, placeholder }) => {
+const LocationInput: React.FC<LocationProps> = ({ onLocationChange, disabled, placeholder, className }) => {
     const [input, setInput] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [autocomplete, { data }] = useLazyQuery(AUTOCOMPLETE_QUERY);
@@ -29,9 +29,9 @@ const LocationInput: React.FC<LocationProps> = ({ onLocationChange, disabled, pl
     };
   
     return (
-      <div className="border-black border-solid border-2 rounded-lg flex flex-col relative">
+      <div className={className || "border-black border-solid border-2 rounded-lg flex flex-col relative"}>
         <Input
-          className="h-8"
+          className="h-full border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
           type="text"
           value={input}
           onChange={handleChange}

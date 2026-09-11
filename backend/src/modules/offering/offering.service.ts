@@ -76,17 +76,36 @@ export class OfferingService {
 
   async updateOfferingShowcaseImages(
     id: string,
-    fileUrls: string[]
+    fileUrls: string[],
+    slotIndex?: number,
   ): Promise<OfferingEntity> {
     const offering = await this.offeringRepository.findOne({ where: { id } });
     if (!offering) {
       throw new Error("Offering not found");
     }
-    const existingShowcaseImages = offering.photo_showcase || [];
-    const updatedShowcaseImages = [...existingShowcaseImages, ...fileUrls];
+    const existingShowcaseImages = [...(offering.photo_showcase || [])];
 
-    const newOffering = { ...offering, photo_showcase: updatedShowcaseImages };
-    return await this.offeringRepository.save(newOffering);
+    if (
+      typeof slotIndex === "number" &&
+      slotIndex >= 0 &&
+      slotIndex < 5 &&
+      fileUrls.length === 1
+    ) {
+      if (slotIndex < existingShowcaseImages.length) {
+        existingShowcaseImages[slotIndex] = fileUrls[0];
+      } else {
+        existingShowcaseImages.push(fileUrls[0]);
+      }
+      offering.photo_showcase = existingShowcaseImages.slice(0, 5);
+    } else {
+      const updatedShowcaseImages = [
+        ...existingShowcaseImages,
+        ...fileUrls,
+      ].slice(0, 5);
+      offering.photo_showcase = updatedShowcaseImages;
+    }
+
+    return await this.offeringRepository.save(offering);
   }
 
   async updateOfferingVideos(

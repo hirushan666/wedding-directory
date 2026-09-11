@@ -26,11 +26,11 @@ const VendorBanner = ({ vendor }: VendorProps) => {
 
       {/* Profile Image */}
       <Image
-        src={vendor?.profilePic || '/images/visitorPlaceholder.png'}
+        src={vendor?.profile_pic_url || vendor?.profilePic || '/images/visitorPlaceholder.png'}
         alt='vendor banner'
         width={150}
         height={150}
-        className='rounded-full shadow'
+        className='rounded-full shadow object-cover w-[150px] h-[150px]'
       />
 
       {/* Greeting + Business Name */}

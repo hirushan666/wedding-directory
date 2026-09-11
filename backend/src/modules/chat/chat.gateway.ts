@@ -27,16 +27,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Public method so resolver can emit unread count after GraphQL markChatAsRead
   emitUnreadCount(userId: string, count: number) {
-    console.log(`Emitting unreadCount ${count} to user:${userId}`);
     this.server.to(`user:${userId}`).emit('unreadCount', { count });
   }
 
   handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    // Client connected
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
     // Remove user from map
     for (const [userId, socketId] of this.userSockets.entries()) {
       if (socketId === client.id) {
@@ -52,14 +50,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     this.userSockets.set(data.userId, client.id);
-    console.log(`User ${data.userId} (${data.userType}) registered with socket ${client.id}`);
     
     // Join user-specific room
     client.join(`user:${data.userId}`);
     
     // Get initial unread count and return it
     const unreadCount = await this.chatService.getUnreadCount(data.userId, data.userType);
-    console.log(`Initial unread count for ${data.userId}: ${unreadCount}`);
     
     return { success: true, unreadCount };
   }
@@ -128,7 +124,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     client.join(`chat:${data.chatId}`);
-    console.log(`User ${data.userId} joined chat ${data.chatId}`);
     return { success: true };
   }
 
@@ -147,23 +142,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      console.log('=== MARK AS READ REQUEST ===');
-      console.log('Data:', data);
-      console.log('Client Socket ID:', client.id);
-      console.log('Rooms:', Array.from(client.rooms));
-      
       await this.chatService.markMessagesAsRead(data.chatId, data.userId, data.userType);
 
       // Emit updated unread count
       const unreadCount = await this.chatService.getUnreadCount(data.userId, data.userType);
-      console.log('After marking as read, new unread count:', unreadCount);
-      console.log('Emitting to room:', `user:${data.userId}`);
       
       this.server.to(`user:${data.userId}`).emit('unreadCount', {
         count: unreadCount,
       });
-      
-      console.log('=== MARK AS READ COMPLETE ===');
 
       return { success: true, unreadCount };
     } catch (error) {
