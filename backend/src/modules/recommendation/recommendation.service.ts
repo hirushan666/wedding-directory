@@ -20,6 +20,7 @@ type RankedVendor = {
   minPackagePrice: number | null;
   deterministicScore: number;
   reason: string;
+  aiReview?: string;
 };
 
 const CATEGORY_ALIASES: Record<string, string[]> = {
@@ -49,7 +50,7 @@ export class RecommendationService {
   async recommendForVisitor(input: RecommendationRequestDto) {
     const normalized = this.normalizeInput(input);
     const offerings = await this.findCandidateOfferings(normalized);
-    const aiEnabled = Boolean(this.configService.get<string>('HUGGING_FACE_API_TOKEN'));
+    const aiEnabled = Boolean(this.configService.get<string>('GROQ_API_KEY'));
 
     if (offerings.length === 0) {
       return {
@@ -74,7 +75,7 @@ export class RecommendationService {
       .sort((left, right) => right.deterministicScore - left.deterministicScore)
       .slice(0, 20);
 
-    const aiResult = await this.rankWithHuggingFace(deterministicRanked, normalized);
+    const aiResult = await this.rankWithGroq(deterministicRanked, normalized);
     const aiRanked = aiResult.ranked;
     const finalList = (aiRanked || deterministicRanked).slice(0, normalized.limit);
 
@@ -260,7 +261,7 @@ export class RecommendationService {
     return Math.min(...prices);
   }
 
-  private async rankWithHuggingFace(
+  private async rankWithGroq(
     deterministicRanked: RankedVendor[],
     input: {
       location: string;
@@ -270,93 +271,195 @@ export class RecommendationService {
       limit: number;
     },
   ): Promise<{ ranked: RankedVendor[] | null; reason: string }> {
-    const huggingFaceToken = this.configService.get<string>('HUGGING_FACE_API_TOKEN');
-    const configuredModel =
-      this.configService.get<string>('HUGGING_FACE_RECOMMENDER_MODEL') ||
-      'Qwen/Qwen2.5-7B-Instruct';
-    const fallbackModel = this.configService.get<string>('HUGGING_FACE_RECOMMENDER_FALLBACK_MODEL');
+    const rawGroqKey = this.configService.get<string>('GROQ_API_KEY');
+    const groqKey = rawGroqKey ? rawGroqKey.toString().trim().replace(/^['"]+|['"]+$/g, '') : '';
+    const rawModel = this.configService.get<string>('GROQ_RECOMMENDER_MODEL');
+    const rawEndpoint = this.configService.get<string>('GROQ_RECOMMENDER_ENDPOINT');
 
-    if (!huggingFaceToken) {
-      return { ranked: null, reason: 'missing_hugging_face_token' };
+    const configuredModel = (rawModel || 'openai/gpt-oss-20b')
+      .toString()
+      .trim()
+      .replace(/^['"]+|['"]+$/g, '');
+
+    const endpointUrl = (rawEndpoint || 'https://api.groq.com/openai/v1/chat/completions')
+      .toString()
+      .trim()
+      .replace(/^['"]+|['"]+$/g, '');
+
+    if (!groqKey) {
+      this.logger.warn('Groq ranking disabled: missing GROQ_API_KEY');
+      return { ranked: null, reason: 'missing_groq_api_key' };
     }
 
-    const prompt = this.buildRankingPrompt(deterministicRanked, input);
-    const endpointUrl = 'https://router.huggingface.co/v1/chat/completions';
-    const attempts = [configuredModel, fallbackModel]
-      .filter((modelId): modelId is string => Boolean(modelId))
-      .map((modelId) => this.ensureFastestPolicy(modelId));
+    // Log masked API key info for diagnostics (do NOT log the full key)
+    try {
+      const visible = groqKey.length > 8 ? `${groqKey.slice(0,4)}...${groqKey.slice(-4)}` : '****';
+      this.logger.debug(`Groq API key present (masked): ${visible}, length: ${groqKey.length}`);
+    } catch {}
 
-    for (const model of attempts) {
+    // Fetch recent review comments for candidates so the model can summarize sentiment
+    const offeringIds = deterministicRanked.map((d) => d.offeringId);
+    let commentsRows: Array<{ offeringId: string; comment: string | null }> = [];
+    if (offeringIds.length > 0) {
       try {
-        const response = await firstValueFrom(
-          this.httpService.post(
-            endpointUrl,
-            {
-              model,
-              messages: [
-                {
-                  role: 'system',
-                  content:
-                    'You rank wedding vendors. Return ONLY valid JSON with ranked_ids and reasons.',
-                },
-                {
-                  role: 'user',
-                  content: prompt,
-                },
-              ],
-              stream: false,
-              response_format: {
-                type: 'json_object',
-              },
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${huggingFaceToken}`,
-                'Content-Type': 'application/json',
-              },
-              timeout: 20000,
-            },
-          ),
-        );
-
-        const generatedText = this.extractGeneratedText(response.data);
-        const parsed = this.extractRankedJson(generatedText);
-        if (!parsed) {
-          continue;
-        }
-
-        const rankMap = new Map(deterministicRanked.map((item) => [item.offeringId, item]));
-        const ranked = parsed.ranked_ids
-          .map((id) => rankMap.get(id))
-          .filter((item): item is RankedVendor => Boolean(item))
-          .map((item) => ({
-            ...item,
-            reason: parsed.reasons?.[item.offeringId] || item.reason,
-          }));
-
-        if (ranked.length === 0) {
-          continue;
-        }
-
-        const remaining = deterministicRanked.filter(
-          (item) => !ranked.some((rankedItem) => rankedItem.offeringId === item.offeringId),
-        );
-
-        return {
-          ranked: [...ranked, ...remaining].slice(0, input.limit),
-          reason: `success:${model}`,
-        };
-      } catch (error) {
-        const message =
-          typeof error === 'object' && error && 'message' in error
-            ? String((error as { message: string }).message)
-            : 'unknown_error';
-
-        this.logger.warn(`Hugging Face ranking failed (${model}): ${message}`);
+        commentsRows = await this.reviewRepository
+          .createQueryBuilder('review')
+          .select('review.offering_id', 'offeringId')
+          .addSelect('review.comment', 'comment')
+          .where('review.offering_id IN (:...offeringIds)', { offeringIds })
+          .orderBy('review.created_at', 'DESC')
+          .getRawMany();
+      } catch (e) {
+        this.logger.debug('Failed to load review comments for Groq prompt', String(e));
+        commentsRows = [];
       }
     }
 
-    return { ranked: null, reason: 'hf_request_failed_or_model_unavailable' };
+    const commentsMap = new Map<string, string[]>();
+    for (const r of commentsRows) {
+      if (!r || !r.offeringId) continue;
+      const list = commentsMap.get(r.offeringId) || [];
+      if (typeof r.comment === 'string' && r.comment.trim()) list.push(r.comment.trim());
+      commentsMap.set(r.offeringId, list);
+    }
+
+    const enrichedCandidates = deterministicRanked.map((item) => ({
+      ...item,
+      reviews: commentsMap.get(item.offeringId) || [],
+    }));
+
+    const prompt = this.buildRankingPrompt(enrichedCandidates, input);
+
+    // Log configured endpoint and model for debugging (do not log the API key)
+    this.logger.debug(`Groq endpoint configured: ${endpointUrl}`);
+    this.logger.debug(`Groq model configured: ${configuredModel}`);
+
+    // Prepare endpointToUse and validate URL to avoid unclear errors from undici
+    let endpointToUse = endpointUrl;
+    try {
+      // sanitize further: remove BOM and control whitespace
+      const cleaned = endpointUrl.replace(/^[\uFEFF\u00A0\s]+|[\uFEFF\u00A0\s]+$/g, '').replace(/\s+/g, '');
+
+      // If cleaning changed it, log both forms for diagnostics
+      if (cleaned !== endpointUrl) {
+        this.logger.debug(`Groq endpoint raw: ${JSON.stringify(endpointUrl)}`);
+        this.logger.debug(`Groq endpoint cleaned: ${JSON.stringify(cleaned)}`);
+      }
+
+      // Log length and char codes to catch hidden characters
+      const codes = Array.from(endpointUrl).map((c) => c.charCodeAt(0));
+      this.logger.debug(`Groq endpoint length: ${endpointUrl.length}, codes: ${codes.slice(0,50).join(',')}${codes.length>50?',...':''}`);
+
+      // eslint-disable-next-line no-new
+      new URL(cleaned);
+      endpointToUse = cleaned;
+    } catch (err) {
+      this.logger.warn(`Groq ranking failed: Invalid URL (${endpointUrl})`);
+      // Safely extract stack/message from unknown error
+      let errMessage: string;
+      if (err && typeof err === 'object' && 'stack' in err) {
+        // @ts-ignore - we've checked for 'stack' property presence
+        errMessage = (err as { stack?: string }).stack || String(err);
+      } else {
+        errMessage = String(err);
+      }
+      this.logger.debug('URL validation error', errMessage);
+      this.logger.debug('Invalid endpoint diagnostics', { raw: endpointUrl });
+      return { ranked: null, reason: 'invalid_groq_endpoint' };
+    }
+
+    try {
+      const response = await firstValueFrom(
+  this.httpService.post(
+    endpointUrl,
+    {
+      model: configuredModel,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1500, // bumped up — see reasoning-token note below
+      temperature: 0.0,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${groqKey}`,
+        'Content-Type': 'application/json',
+      },
+      timeout: 20000,
+      proxy: false,
+    },
+  ),
+);
+
+      const generatedText = this.extractGeneratedText(response.data);
+      this.logger.debug(`Groq raw content: [${generatedText}]`);
+      this.logger.debug(`Groq finish_reason: ${response.data?.choices?.[0]?.finish_reason}`);
+
+      const parsed = this.extractRankedJson(generatedText);
+      if (!parsed) {
+        return { ranked: null, reason: 'invalid_groq_response' };
+      }
+
+      const rankMap = new Map(deterministicRanked.map((item) => [item.offeringId, item]));
+
+      // Debug: log candidate IDs and compare with parsed ids
+      const candidateIds = deterministicRanked.map((d) => d.offeringId);
+      this.logger.debug(`Groq candidates count: ${candidateIds.length}`, { candidateIds: candidateIds.slice(0, 50) });
+      this.logger.debug(`Groq parsed ranked_ids: ${parsed.ranked_ids.slice(0, 50)}`);
+
+      const matchedIds = parsed.ranked_ids.filter((id) => rankMap.has(id));
+      const unmatchedIds = parsed.ranked_ids.filter((id) => !rankMap.has(id));
+      this.logger.debug(`Groq matched ids: ${matchedIds}`);
+      if (unmatchedIds.length > 0) {
+        this.logger.debug(`Groq returned unknown ids (not in candidates): ${unmatchedIds.slice(0,50)}`);
+      }
+
+      const ranked = matchedIds
+        .map((id) => rankMap.get(id)!)
+        .map((item) => ({
+          ...item,
+          reason: parsed.reasons?.[item.offeringId] || item.reason,
+          aiReview:
+            (parsed.short_review && parsed.short_review[item.offeringId]) ||
+            parsed.reasons?.[item.offeringId] ||
+            item.reason,
+        }));
+
+      if (ranked.length === 0) {
+        this.logger.debug('Groq returned no candidate matches; falling back to deterministic ranking');
+        return { ranked: null, reason: 'empty_groq_ranking' };
+      }
+
+      const remaining = deterministicRanked.filter(
+        (item) => !ranked.some((rankedItem) => rankedItem.offeringId === item.offeringId),
+      );
+
+      return {
+        ranked: [...ranked, ...remaining].slice(0, input.limit),
+        reason: `success:groq:${configuredModel}`,
+      };
+    } catch (error) {
+      // Try to extract axios/http error details
+      let message = 'unknown_error';
+      try {
+        if (error && typeof error === 'object') {
+          const anyErr = error as any;
+          if (anyErr.response) {
+            const status = anyErr.response.status;
+            const data = anyErr.response.data;
+            message = `Request failed with status code ${status}`;
+            this.logger.debug('Groq response error', { status, data });
+          } else if ('message' in anyErr) {
+            message = String(anyErr.message);
+          } else {
+            message = String(anyErr);
+          }
+        }
+      } catch (e) {
+        message = String(error);
+      }
+
+      this.logger.warn(`Groq ranking failed: ${message}`);
+      return { ranked: null, reason: `groq_request_failed:${message}` };
+    }
   }
 
   private normalizeCategory(value: string) {
@@ -406,7 +509,7 @@ export class RecommendationService {
   }
 
   private buildRankingPrompt(
-    candidates: RankedVendor[],
+    candidates: Array<RankedVendor & { reviews?: string[] }>,
     input: {
       location: string;
       budget: number | null;
@@ -416,25 +519,30 @@ export class RecommendationService {
     },
   ) {
     return `You are ranking wedding vendor offerings.
-Return ONLY valid JSON (no markdown), following this schema:
-{"ranked_ids":["offeringId1","offeringId2"],"reasons":{"offeringId1":"short reason","offeringId2":"short reason"}}
+  Return ONLY valid JSON (no markdown), following this schema:
+  {"ranked_ids":["offeringId1","offeringId2"],"reasons":{"offeringId1":"short reason","offeringId2":"short reason"},"short_review":{"offeringId1":"one-line summary","offeringId2":"one-line summary"}}
 
-User preferences:
-- location: ${input.location || 'not specified'}
-- budget: ${input.budget ?? 'not specified'}
-- categories: ${input.categories.join(', ') || 'not specified'}
-- notes: ${input.notes || 'not specified'}
-- top_limit: ${input.limit}
+  User preferences:
+  - location: ${input.location || 'not specified'}
+  - budget: ${input.budget ?? 'not specified'}
+  - categories: ${input.categories.join(', ') || 'not specified'}
+  - notes: ${input.notes || 'not specified'}
+  - top_limit: ${input.limit}
 
-Candidates:
-${JSON.stringify(candidates, null, 2)}
+  Candidates (each candidate may include 'reviews' - an array of recent review comments):
+  ${JSON.stringify(candidates, null, 2)}
 
-Rules:
-- Prioritize category and location fit.
-- Prefer options within budget.
-- Consider rating.
-- Keep reasons under 20 words.
-- ranked_ids must contain only provided offeringId values.`;
+  Rules:
+  - Prioritize category and location fit.
+  - Prefer options within budget.
+  - Consider rating.
+  - Keep reasons under 20 words.
+  - For each candidate return a separate 'short_review' (one-line, max 20 words) that summarizes overall sentiment and key facts.
+  - You MAY use vendor review comments provided in the 'reviews' field to inform the short_review (for example, if reviews say "bad" summarize as "multiple guests reported poor experience").
+  - Do NOT copy any review text verbatim; always paraphrase and avoid repeating exact reviewer words or punctuation.
+  - If no reviews exist for a candidate, summarize from attributes (category, rating, price, location, and how well it matches preferences).
+  - 'short_review' must be concise and factual; avoid invented details and do not include markdown.
+  - ranked_ids must contain only provided offeringId values.`;
   }
 
   private ensureFastestPolicy(modelId: string) {
@@ -472,6 +580,7 @@ Rules:
   private extractRankedJson(rawText: string): {
     ranked_ids: string[];
     reasons?: Record<string, string>;
+    short_review?: Record<string, string>;
   } | null {
     if (!rawText) {
       return null;
@@ -486,6 +595,7 @@ Rules:
       const parsed = JSON.parse(jsonMatch[0]) as {
         ranked_ids?: string[];
         reasons?: Record<string, string>;
+        short_review?: Record<string, string>;
       };
 
       if (!Array.isArray(parsed.ranked_ids)) {
@@ -495,6 +605,7 @@ Rules:
       return {
         ranked_ids: parsed.ranked_ids,
         reasons: parsed.reasons || {},
+        short_review: parsed.short_review || {},
       };
     } catch {
       return null;
