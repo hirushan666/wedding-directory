@@ -137,6 +137,10 @@ export class PaymentService {
           await this.myVendorsRepository.save(myVendor);
         }
       }
+
+      if (payment) {
+        void this.sendPushNotificationForPurchase(payment.id);
+      }
     }
 
     return this.paymentRepository.update(
@@ -176,6 +180,10 @@ export class PaymentService {
           });
           await this.myVendorsRepository.save(myVendor);
         }
+      }
+
+      if (payment) {
+        void this.sendPushNotificationForPurchase(payment.id);
       }
     }
 
@@ -241,6 +249,8 @@ export class PaymentService {
           await this.myVendorsRepository.save(myVendor);
         }
       }
+
+      void this.sendPushNotificationForPurchase(payment.id);
     }
 
     return payment;
@@ -481,6 +491,75 @@ export class PaymentService {
         return 'Cancelled';
       default:
         return 'Pending';
+    }
+  }
+
+  private async sendPushNotificationForPurchase(paymentId: string): Promise<void> {
+    try {
+      const payment = await this.paymentRepository.findOne({
+        where: { id: paymentId },
+        relations: {
+          vendor: true,
+          visitor: true,
+          package: {
+            offering: true,
+          },
+        },
+      });
+
+      if (!payment) return;
+
+      const pushToken = payment.vendor?.expoPushToken?.trim();
+      if (!pushToken) {
+        console.log(`[PushNotification] No expoPushToken found for vendor ${payment.vendor?.id}`);
+        return;
+      }
+
+      const visitorName = [payment.visitor?.visitor_fname, payment.visitor?.partner_fname]
+        .filter(Boolean)
+        .join(' & ')
+        .trim() || 'A couple';
+
+      const packageName = payment.package?.name || payment.package?.offering?.name || 'Wedding Package';
+      const formattedAmount = Number(payment.amount || 0).toLocaleString();
+      const bookingDateStr = payment.bookingDate
+        ? new Date(payment.bookingDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })
+        : null;
+
+      const title = `🎉 New Booking: ${packageName}!`;
+      const body = bookingDateStr
+        ? `${visitorName} booked "${packageName}" ($${formattedAmount}) for ${bookingDateStr}.`
+        : `${visitorName} booked "${packageName}" ($${formattedAmount}).`;
+
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: pushToken,
+          sound: 'default',
+          title,
+          body,
+          data: {
+            type: 'package_purchase',
+            paymentId: payment.id,
+            packageName,
+            amount: payment.amount,
+            bookingDate: payment.bookingDate ? new Date(payment.bookingDate).toISOString() : null,
+            visitorName,
+          },
+        }),
+      });
+      console.log(`[PushNotification] Successfully sent purchase push notification for payment ${payment.id} to vendor ${payment.vendor?.id}`);
+    } catch (error) {
+      console.error('Failed to send vendor purchase push notification:', error);
     }
   }
 }
