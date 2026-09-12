@@ -11,6 +11,7 @@ import {
   FIND_PACKAGES_BY_OFFERING,
   GET_VISITOR_PAYMENTS,
   GET_VENDOR_BOOKED_DATES,
+  GET_VISITOR_APPROVAL_REQUESTS,
 } from "@/graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import SocialIcons from "@/components/vendor-dashboard/dahboard-services/socialIcons";
@@ -30,9 +31,11 @@ import GoogleMapComponent from "@/components/vendor-dashboard/dahboard-services/
 import PortfolioImages from "@/components/vendor-dashboard/dahboard-services/PortfolioImages";
 import request from "@/utils/request";
 import PackageReservationModal from "@/components/shared/PackageReservationModal";
+import PackageApprovalRequestModal from "@/components/shared/PackageApprovalRequestModal";
 import { ensureSessionId } from "@/utils/session";
 import ChatModal from "@/components/chat/ChatModal";
-import { ShieldCheck, Lock, Loader2 } from "lucide-react";
+import { ShieldCheck, Lock, Loader2, Clock } from "lucide-react";
+import { format } from "date-fns";
 
 // Add this interface before the Service component
 interface Package {
@@ -43,6 +46,7 @@ interface Package {
   features: string[];
   visible: boolean;
   requiresReservation: boolean;
+  requiresApproval?: boolean;
   bookedDates?: string[];
   image?: string | null;
 }
@@ -102,6 +106,17 @@ const Service: React.FC = () => {
   const [trackPackageView] = useMutation(TRACK_PACKAGE_VIEW);
 
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+  const [approvalPackage, setApprovalPackage] = useState<Package | null>(null);
+
+  const { data: visitorApprovalsData, refetch: refetchVisitorApprovals } = useQuery(
+    GET_VISITOR_APPROVAL_REQUESTS,
+    {
+      variables: { visitorId: visitor?.id },
+      skip: !visitor?.id,
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
   const [clientIp, setClientIp] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [paymentRedirectInfo, setPaymentRedirectInfo] = useState<{
@@ -198,6 +213,13 @@ const Service: React.FC = () => {
     
     // If no booking date (standard package), it's booked and never expires
     return { booked: true, expired: false, bookingDate: null };
+  };
+
+  const formatRemaining = (seconds?: number) => {
+    if (!seconds || seconds <= 0) return "Expired";
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
   };
 
   const handleBookingClick = (pkg: Package) => {
@@ -511,6 +533,21 @@ const Service: React.FC = () => {
                               <h3 className="text-xl font-bold text-gray-800">
                                 {pkg.name}
                               </h3>
+                              <div className="mt-2 flex justify-center">
+                                {pkg.requiresApproval ? (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                    Requires Approval
+                                  </span>
+                                ) : pkg.requiresReservation ? (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    Requires Reservation
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Normal Package
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             <div className="p-6 flex flex-col flex-grow">
                               <div className="text-center mb-6">
@@ -547,100 +584,200 @@ const Service: React.FC = () => {
                                 )}
                               </div>
                               <div className="pt-4 border-t border-gray-100 mt-auto">
-                                {(() => {
-                                  const bookingStatus = isPackageBooked(pkg.id);
-                                  
-                                  if (bookingStatus.booked && !bookingStatus.expired) {
-                                    return (
-                                      <div className="w-full py-3 px-4 rounded-[22px] font-bold bg-green-100 text-green-800 border-2 border-green-500 flex flex-col items-center">
-                                        <span className="flex items-center gap-2">
-                                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                          </svg>
-                                          You Booked This Package
-                                        </span>
-                                        {bookingStatus.bookingDate && (
-                                          <span className="text-sm font-normal mt-1">
-                                            Booking Date: {bookingStatus.bookingDate.toLocaleDateString()}
+                                  {(() => {
+                                    const bookingStatus = isPackageBooked(pkg.id);
+                                    
+                                    if (bookingStatus.booked && !bookingStatus.expired) {
+                                      return (
+                                        <div className="w-full py-3 px-4 rounded-[22px] font-bold bg-green-100 text-green-800 border-2 border-green-500 flex flex-col items-center">
+                                          <span className="flex items-center gap-2">
+                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                            </svg>
+                                            You Booked This Package
                                           </span>
-                                        )}
-                                      </div>
-                                    );
-                                  }
-
-                                  if (bookingStatus.expired) {
-                                    return (
-                                      <div className="space-y-2">
-                                        <div className="text-sm text-yellow-600 text-center mb-2">
-                                          Previous booking expired. You can book again.
+                                          {bookingStatus.bookingDate && (
+                                            <span className="text-sm font-normal mt-1">
+                                              Booking Date: {bookingStatus.bookingDate.toLocaleDateString()}
+                                            </span>
+                                          )}
                                         </div>
+                                      );
+                                    }
+
+                                    // Check if package requires prior vendor approval
+                                    if (pkg.requiresApproval) {
+                                      const approvalReq = (visitorApprovalsData?.getVisitorApprovalRequests || []).find(
+                                        (r: any) => r.package?.id === pkg.id
+                                      );
+
+                                      if (approvalReq) {
+                                        if (approvalReq.status === "pending") {
+                                          return (
+                                            <div className="w-full flex flex-col items-center gap-1.5">
+                                              <div className="w-full py-3 px-4 rounded-[22px] font-bold text-amber-800 bg-amber-50 border border-amber-300 flex flex-col items-center text-center">
+                                                <span className="text-sm flex items-center gap-1.5 font-bold">
+                                                  <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
+                                                  Approval Pending
+                                                </span>
+                                                <span className="text-xs font-normal text-amber-700 mt-0.5">
+                                                  Requested for {format(new Date(approvalReq.bookingDate), "MMM d, yyyy")}
+                                                </span>
+                                              </div>
+                                              <span className="text-[11px] text-gray-400 text-center">Awaiting vendor review</span>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (approvalReq.status === "approved" && !approvalReq.isExpired) {
+                                          return (
+                                            <div className="w-full flex flex-col items-center gap-1.5">
+                                              <button
+                                                onClick={() => {
+                                                  const advanceAmount = pkg.pricing * 0.2;
+                                                  handlePayAdvance(advanceAmount, pkg.id, new Date(approvalReq.bookingDate));
+                                                }}
+                                                className="w-full py-3 px-4 rounded-[22px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all flex flex-col items-center shadow-md animate-in fade-in"
+                                              >
+                                                <span className="flex items-center gap-1.5">
+                                                  <ShieldCheck className="w-4 h-4" />
+                                                  Approved! Pay 20% Advance
+                                                </span>
+                                                <span className="font-normal text-xs text-emerald-100">
+                                                  LKR {(pkg.pricing * 0.2).toLocaleString()} • For {format(new Date(approvalReq.bookingDate), "MMM d, yyyy")}
+                                                </span>
+                                              </button>
+                                              <div className="text-[11px] font-semibold text-amber-600 flex items-center gap-1">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                <span>Expires in: {formatRemaining(approvalReq.secondsRemaining)}</span>
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (approvalReq.status === "rejected") {
+                                          return (
+                                            <div className="w-full flex flex-col items-center gap-1.5">
+                                              <div className="w-full p-2.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 text-center">
+                                                <span className="font-semibold block">Request Declined</span>
+                                                {approvalReq.vendorMessage && (
+                                                  <span className="text-[11px] text-gray-600 block mt-0.5 italic">"{approvalReq.vendorMessage}"</span>
+                                                )}
+                                              </div>
+                                              <button
+                                                onClick={() => {
+                                                  if (!visitor) {
+                                                    toast.error("Please login as a user to request approval");
+                                                    return;
+                                                  }
+                                                  setApprovalPackage(pkg);
+                                                }}
+                                                className="w-full py-2.5 px-4 rounded-[22px] font-bold text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-xs flex items-center justify-center gap-1.5"
+                                              >
+                                                Request with Another Date
+                                              </button>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (approvalReq.status === "expired") {
+                                          return (
+                                            <div className="w-full flex flex-col items-center gap-1.5">
+                                              <div className="w-full p-2 rounded-xl bg-gray-100 text-xs text-gray-600 text-center">
+                                                Previous 24-hour approval expired
+                                              </div>
+                                              <button
+                                                onClick={() => {
+                                                  if (!visitor) {
+                                                    toast.error("Please login as a user to request approval");
+                                                    return;
+                                                  }
+                                                  setApprovalPackage(pkg);
+                                                }}
+                                                className="w-full py-2.5 px-4 rounded-[22px] font-bold text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-xs flex items-center justify-center gap-1.5"
+                                              >
+                                                Request Approval Again
+                                              </button>
+                                            </div>
+                                          );
+                                        }
+                                      }
+
+                                      return (
                                         <button
                                           onClick={() => {
                                             if (!visitor) {
-                                              toast.error("Please login as a user to pay advance");
+                                              toast.error("Please login as a user to request vendor approval");
                                               return;
                                             }
-
-                                            if (pkg.requiresReservation) {
-                                              handleBookingClick(pkg);
-                                            } else {
-                                              const advanceAmount: number = pkg.pricing * 0.2;
-                                              handlePayAdvance(advanceAmount, pkg.id);
-                                            }
+                                            setApprovalPackage(pkg);
                                           }}
-                                          className={`w-full py-3 px-4 rounded-[22px] font-bold text-white hover:border-2 transition-colors flex flex-col items-center ${pkg.requiresReservation
-                                            ? "bg-blue-600 hover:bg-white hover:text-blue-600 hover:border-blue-600"
-                                            : "bg-orange hover:bg-white hover:text-orange hover:border-orange"
-                                          }`}
+                                          className="w-full py-3 px-4 rounded-[22px] font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors flex flex-col items-center shadow-sm"
                                         >
-                                          {pkg.requiresReservation ? (
-                                            <span>Book Again</span>
-                                          ) : (
-                                            <>
-                                              <span>Pay 20% Advance</span>
-                                              <span className="font-normal">
-                                                LKR {(pkg.pricing * 0.2).toLocaleString()}
-                                              </span>
-                                            </>
-                                          )}
-                                        </button>
-                                      </div>
-                                    );
-                                  }
-
-                                  return (
-                                    <button
-                                      onClick={() => {
-                                        if (!visitor) {
-                                          toast.error("Please login as a user to pay advance");
-                                          return;
-                                        }
-
-                                        if (pkg.requiresReservation) {
-                                          handleBookingClick(pkg);
-                                        } else {
-                                          const advanceAmount: number = pkg.pricing * 0.2;
-                                          handlePayAdvance(advanceAmount, pkg.id);
-                                        }
-                                      }}
-                                      className={`w-full py-3 px-4 rounded-[22px] font-bold text-white hover:border-2 transition-colors flex flex-col items-center ${pkg.requiresReservation
-                                        ? "bg-blue-600 hover:bg-white hover:text-blue-600 hover:border-blue-600"
-                                        : "bg-orange hover:bg-white hover:text-orange hover:border-orange"
-                                      }`}
-                                    >
-                                      {pkg.requiresReservation ? (
-                                        <span>See Details & Book</span>
-                                      ) : (
-                                        <>
-                                          <span>Pay 20% Advance</span>
-                                          <span className="font-normal">
-                                            LKR {(pkg.pricing * 0.2).toLocaleString()}
+                                          <span className="flex items-center gap-1.5">
+                                            <ShieldCheck className="w-4 h-4" />
+                                            Request Vendor Approval
                                           </span>
-                                        </>
-                                      )}
-                                    </button>
-                                  );
-                                })()}
+                                          <span className="font-normal text-xs opacity-90">
+                                            Advance: LKR {(pkg.pricing * 0.2).toLocaleString()}
+                                          </span>
+                                        </button>
+                                      );
+                                    }
+
+                                    if (bookingStatus.expired) {
+                                      return (
+                                        <div className="space-y-2">
+                                          <div className="text-sm text-yellow-600 text-center mb-2">
+                                            Previous booking expired. You can book again.
+                                          </div>
+                                          <button
+                                            onClick={() => {
+                                              if (!visitor) {
+                                                toast.error("Please login as a user to pay advance");
+                                                return;
+                                              }
+
+                                              handleBookingClick(pkg);
+                                            }}
+                                            className={`w-full py-3 px-4 rounded-[22px] font-bold text-white hover:border-2 transition-colors flex flex-col items-center ${pkg.requiresReservation
+                                              ? "bg-blue-600 hover:bg-white hover:text-blue-600 hover:border-blue-600"
+                                              : "bg-orange hover:bg-white hover:text-orange hover:border-orange"
+                                            }`}
+                                          >
+                                            <span>Book Again</span>
+                                            <span className="font-normal text-xs">
+                                              20% Advance: LKR {(pkg.pricing * 0.2).toLocaleString()}
+                                            </span>
+                                          </button>
+                                        </div>
+                                      );
+                                    }
+
+                                    return (
+                                      <button
+                                        onClick={() => {
+                                          if (!visitor) {
+                                            toast.error("Please login as a user to pay advance");
+                                            return;
+                                          }
+
+                                          handleBookingClick(pkg);
+                                        }}
+                                        className={`w-full py-3 px-4 rounded-[22px] font-bold text-white hover:border-2 transition-colors flex flex-col items-center ${pkg.requiresReservation
+                                          ? "bg-blue-600 hover:bg-white hover:text-blue-600 hover:border-blue-600"
+                                          : "bg-orange hover:bg-white hover:text-orange hover:border-orange"
+                                        }`}
+                                      >
+                                        <span>
+                                          {pkg.requiresReservation ? "See Details & Book" : "Select Date & Book"}
+                                        </span>
+                                        <span className="font-normal text-xs">
+                                          20% Advance: LKR {(pkg.pricing * 0.2).toLocaleString()}
+                                        </span>
+                                      </button>
+                                    );
+                                  })()}
                               </div>
                             </div>
                           </div>
@@ -700,7 +837,9 @@ const Service: React.FC = () => {
           onClose={() => setSelectedPackage(null)}
           pkg={{
             ...selectedPackage,
-            bookedDates: bookedDatesData?.getVendorBookedDates || []
+            bookedDates: selectedPackage.requiresReservation
+              ? (bookedDatesData?.getVendorBookedDates || [])
+              : []
           }}
           onPay={async (date) => {
             const advanceAmount = selectedPackage.pricing * 0.2;
@@ -708,6 +847,19 @@ const Service: React.FC = () => {
           }}
           visitorId={visitor?.id}
           offeringId={offering?.id}
+        />
+      )}
+
+      {approvalPackage && (
+        <PackageApprovalRequestModal
+          isOpen={!!approvalPackage}
+          onClose={() => setApprovalPackage(null)}
+          pkg={approvalPackage}
+          visitorId={visitor?.id}
+          offeringId={offering?.id}
+          onSuccess={() => {
+            refetchVisitorApprovals?.();
+          }}
         />
       )}
 

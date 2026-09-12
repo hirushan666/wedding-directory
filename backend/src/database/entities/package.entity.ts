@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { OfferingEntity } from "./offering.entity";
 import { PaymentEntity } from './payment.entity';
+import { PackageApprovalRequestEntity } from './package-approval-request.entity';
 
 @Entity({ name: 'package' })
 export class PackageEntity {
@@ -30,6 +31,9 @@ export class PackageEntity {
     @Column({ name: 'requires_reservation', type: 'boolean', default: false })
     requiresReservation: boolean;
 
+    @Column({ name: 'requires_approval', type: 'boolean', default: false })
+    requiresApproval: boolean;
+
     @Column({ type: 'varchar', length: 500, nullable: true })
     image?: string;
 
@@ -46,4 +50,7 @@ export class PackageEntity {
 
     @OneToMany(() => PaymentEntity, payment => payment.package)
     payments: PaymentEntity[];
+
+    @OneToMany(() => PackageApprovalRequestEntity, req => req.package)
+    approvalRequests: PackageApprovalRequestEntity[];
 }

@@ -295,6 +295,7 @@ export const FIND_PACKAGES_BY_OFFERING = gql`
       features
       visible
       requiresReservation
+      requiresApproval
       bookedDates
       image
     }
@@ -553,6 +554,7 @@ export const GET_VENDOR_PAYMENTS = gql`
         id
         visitor_fname
         visitor_lname
+        partner_fname
         email
         phone
       }
@@ -653,6 +655,92 @@ export const GET_VISITOR_BOOKINGS = gql`
       packageName
       offeringName
       amount
+      createdAt
+    }
+  }
+`;
+
+export const GET_VENDOR_APPROVAL_REQUESTS = gql`
+  query GetVendorApprovalRequests($vendorId: String!) {
+    getVendorApprovalRequests(vendorId: $vendorId) {
+      id
+      bookingDate
+      userNote
+      status
+      vendorMessage
+      approvedAt
+      expiresAt
+      isExpired
+      secondsRemaining
+      createdAt
+      updatedAt
+      visitor {
+        id
+        email
+        visitor_fname
+        visitor_lname
+        partner_fname
+        phone
+        profile_pic_url
+      }
+      package {
+        id
+        name
+        pricing
+        offering {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const GET_VISITOR_APPROVAL_REQUESTS = gql`
+  query GetVisitorApprovalRequests($visitorId: String!) {
+    getVisitorApprovalRequests(visitorId: $visitorId) {
+      id
+      bookingDate
+      userNote
+      status
+      vendorMessage
+      approvedAt
+      expiresAt
+      isExpired
+      secondsRemaining
+      createdAt
+      updatedAt
+      package {
+        id
+        name
+        pricing
+        offering {
+          id
+          name
+          vendor {
+            id
+            busname
+            phone
+            email
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PACKAGE_APPROVAL_REQUEST_STATUS = gql`
+  query GetPackageApprovalRequestStatus($visitorId: String!, $packageId: String!) {
+    getPackageApprovalRequestStatus(visitorId: $visitorId, packageId: $packageId) {
+      id
+      bookingDate
+      userNote
+      status
+      vendorMessage
+      approvedAt
+      expiresAt
+      isExpired
+      secondsRemaining
       createdAt
     }
   }

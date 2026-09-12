@@ -19,7 +19,10 @@ export class UpdatePackageInput {
     features: string[];
 
     @Field(() => Boolean, { nullable: true })
-  requiresReservation?: boolean;
+    requiresReservation?: boolean;
+
+    @Field(() => Boolean, { nullable: true })
+    requiresApproval?: boolean;
 
     @Field(() => Boolean, { defaultValue: false })
     visible: boolean;

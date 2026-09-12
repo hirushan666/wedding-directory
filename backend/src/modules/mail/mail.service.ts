@@ -159,4 +159,110 @@ export class MailService {
       return true;
     }
   }
+
+  async sendApprovalDecisionEmail(options: {
+    to: string;
+    visitorName: string;
+    packageName: string;
+    vendorName: string;
+    bookingDate: Date;
+    action: 'approved' | 'rejected';
+    vendorMessage?: string;
+    expiresAt?: Date;
+  }): Promise<boolean> {
+    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
+    const isApproved = options.action === 'approved';
+    const subject = isApproved
+      ? `🎉 Booking Request Approved: ${options.packageName} - Say I Do`
+      : `Booking Request Update: ${options.packageName} - Say I Do`;
+
+    const formattedDate = new Date(options.bookingDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const formattedExpiry = options.expiresAt
+      ? new Date(options.expiresAt).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZoneName: 'short',
+        })
+      : '24 hours';
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h2 style="color: #ff6b35; margin: 0; font-size: 26px;">Say I Do</h2>
+          <p style="color: #666666; font-size: 14px; margin-top: 4px;">Sri Lanka Wedding Directory</p>
+        </div>
+        
+        <h3 style="color: #222222; font-size: 20px; margin-bottom: 12px;">
+          ${isApproved ? '🎉 Great news! Your request was approved.' : 'Booking Request Update'}
+        </h3>
+        
+        <p style="color: #444444; font-size: 15px; line-height: 1.5;">
+          Hello ${options.visitorName || 'there'},<br/><br/>
+          ${
+            isApproved
+              ? `<strong>${options.vendorName}</strong> has approved your request for package <strong>${options.packageName}</strong> on <strong>${formattedDate}</strong>!`
+              : `<strong>${options.vendorName}</strong> was unable to accept your request for package <strong>${options.packageName}</strong> on <strong>${formattedDate}</strong>.`
+          }
+        </p>
+        
+        ${
+          options.vendorMessage
+            ? `<div style="background-color: #f8f9fa; border-left: 4px solid #ff6b35; padding: 12px 16px; margin: 18px 0; border-radius: 4px;">
+                <p style="margin: 0; font-size: 14px; color: #555555; font-style: italic;">
+                  "${options.vendorMessage}"
+                </p>
+                <span style="font-size: 12px; color: #888888; display: block; margin-top: 6px;">— Message from vendor</span>
+              </div>`
+            : ''
+        }
+
+        ${
+          isApproved
+            ? `<div style="background-color: #fff8f5; border: 1px dashed #ff6b35; border-radius: 6px; padding: 18px; text-align: center; margin: 24px 0;">
+                <span style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #ff6b35; display: block; margin-bottom: 6px; font-weight: bold;">
+                  Payment Window: 24 Hours
+                </span>
+                <p style="font-size: 14px; color: #444444; margin: 6px 0;">
+                  Please complete your advance payment within 24 hours (before ${formattedExpiry}) to confirm your booking date. Otherwise, your reservation hold will be automatically released.
+                </p>
+              </div>`
+            : ''
+        }
+
+        <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px;">
+          © ${new Date().getFullYear()} Say I Do. All rights reserved.
+        </div>
+      </div>
+    `;
+
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({
+          from,
+          to: options.to,
+          subject,
+          html,
+          text: `${subject}\n\nVendor: ${options.vendorName}\nPackage: ${options.packageName}\nDate: ${formattedDate}\n${
+            options.vendorMessage ? `Note: ${options.vendorMessage}` : ''
+          }`,
+        });
+        this.logger.log(`Approval decision email sent successfully to ${options.to}`);
+        return true;
+      } catch (error) {
+        this.logger.error(`Failed to send approval decision email to ${options.to}:`, error);
+        return false;
+      }
+    } else {
+      this.logger.log(
+        `\n[MAIL FALLBACK] Approval email to ${options.to}:\nSubject: ${subject}\nStatus: ${options.action}\nVendor: ${options.vendorName}\n`,
+      );
+      return true;
+    }
+  }
 }

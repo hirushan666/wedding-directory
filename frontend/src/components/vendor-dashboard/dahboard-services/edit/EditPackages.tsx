@@ -20,6 +20,7 @@ import {
   FiPackage,
   FiX,
   FiCheck,
+  FiShield,
 } from "react-icons/fi";
 
 interface Package {
@@ -31,6 +32,7 @@ interface Package {
   offeringId?: string;
   visible: boolean;
   requiresReservation: boolean;
+  requiresApproval?: boolean;
   image?: string | null;
 }
 
@@ -137,6 +139,20 @@ const EditPackages: React.FC = () => {
     updatedPackages[packageIndex] = {
       ...updatedPackages[packageIndex],
       requiresReservation,
+      ...(requiresReservation ? { requiresApproval: false } : {}),
+    };
+    setPackages(updatedPackages);
+  };
+
+  const handleRequiresApprovalChange = (
+    packageIndex: number,
+    requiresApproval: boolean
+  ) => {
+    const updatedPackages = [...packages];
+    updatedPackages[packageIndex] = {
+      ...updatedPackages[packageIndex],
+      requiresApproval,
+      ...(requiresApproval ? { requiresReservation: false } : {}),
     };
     setPackages(updatedPackages);
   };
@@ -195,6 +211,7 @@ const EditPackages: React.FC = () => {
               features: validFeatures,
               visible: pkg.visible,
               requiresReservation: pkg.requiresReservation,
+              requiresApproval: Boolean(pkg.requiresApproval),
               image: pkg.image || null,
             },
             offeringId,
@@ -216,6 +233,7 @@ const EditPackages: React.FC = () => {
               features: validFeatures,
               visible: pkg.visible,
               requiresReservation: pkg.requiresReservation,
+              requiresApproval: Boolean(pkg.requiresApproval),
               image: pkg.image || null,
             },
           },
@@ -263,6 +281,7 @@ const EditPackages: React.FC = () => {
         offeringId,
         visible: true,
         requiresReservation: false,
+        requiresApproval: false,
         image: "",
       },
     ]);
@@ -534,7 +553,9 @@ const EditPackages: React.FC = () => {
                 </div>
 
                 {/* Requires Date Reservation card */}
-                <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50/80 border border-gray-200">
+                <div className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                  pkg.requiresApproval ? "bg-gray-100/60 border-gray-200 opacity-60" : "bg-gray-50/80 border-gray-200"
+                }`}>
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg bg-orange/10 flex items-center justify-center text-orange flex-shrink-0">
                       <FiCalendar className="text-lg" />
@@ -544,14 +565,45 @@ const EditPackages: React.FC = () => {
                         Requires Date Reservation
                       </div>
                       <div className="text-xs text-gray-500">
-                        Couples must select an available date on your calendar to book this package.
+                        {pkg.requiresApproval
+                          ? "Disabled because Vendor Approval is enabled for this package."
+                          : "Couples must select an available date on your calendar to book this package."}
                       </div>
                     </div>
                   </div>
                   <Switch
                     checked={pkg.requiresReservation}
+                    disabled={pkg.requiresApproval}
                     onCheckedChange={(checked) =>
                       handleRequiresReservationChange(index, checked)
+                    }
+                  />
+                </div>
+
+                {/* Requires Vendor Approval card */}
+                <div className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                  pkg.requiresReservation ? "bg-gray-100/60 border-gray-200 opacity-60" : "bg-gray-50/80 border-gray-200"
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                      <FiShield className="text-lg" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-gray-800">
+                        Requires Prior Vendor Approval
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {pkg.requiresReservation
+                          ? "Disabled because Date Reservation is enabled for this package."
+                          : "Couples select a date & submit a request for your approval before they can pay."}
+                      </div>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={Boolean(pkg.requiresApproval)}
+                    disabled={pkg.requiresReservation}
+                    onCheckedChange={(checked) =>
+                      handleRequiresApprovalChange(index, checked)
                     }
                   />
                 </div>

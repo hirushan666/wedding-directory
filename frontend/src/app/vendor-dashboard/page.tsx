@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Header from "@/components/shared/Headers/Header";
 import VendorBanner from "@/components/vendor-dashboard/VendorBanner";
 import OfferingCard from "@/components/vendor-search/OfferingCard";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { GET_VENDOR_BY_ID, FIND_SERVICES_BY_VENDOR } from "@/graphql/queries";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { useQuery } from "@apollo/client";
@@ -12,12 +13,26 @@ import { MdAdd } from "react-icons/md";
 import Footer from "@/components/shared/Footer";
 import LoaderJelly from "@/components/shared/Loaders/LoaderJelly";
 import { Service } from "@/types/serviceTypes";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiCalendar, FiShield } from "react-icons/fi";
 import BookingCalendar from "@/components/vendor-dashboard/BookingCalendar";
+import VendorApprovalRequests from "@/components/vendor-dashboard/VendorApprovalRequests";
 
-const VendorDashBoard: React.FC = () => {
+const VendorDashBoardContent: React.FC = () => {
   const { vendor } = useVendorAuth();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
   const [services, setServices] = useState<Service[]>([]);
+  const [dashboardTab, setDashboardTab] = useState<"calendar" | "approvals">(
+    tabParam === "approvals" ? "approvals" : "calendar"
+  );
+
+  useEffect(() => {
+    if (tabParam === "approvals") {
+      setDashboardTab("approvals");
+    } else if (tabParam === "calendar") {
+      setDashboardTab("calendar");
+    }
+  }, [tabParam]);
 
   const {
     data: vendorData,
@@ -103,8 +118,43 @@ const VendorDashBoard: React.FC = () => {
           <div className="lg:col-span-4">
             <VendorBanner vendor={vendorInfo} />
           </div>
-          <div className="lg:col-span-8">
-            <BookingCalendar />
+          <div className="lg:col-span-8 flex flex-col gap-4">
+            <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 w-fit self-start">
+              <button
+                onClick={() => {
+                  setDashboardTab("calendar");
+                  window.history.replaceState(null, "", "/vendor-dashboard?tab=calendar");
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  dashboardTab === "calendar"
+                    ? "bg-orange text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <FiCalendar size={14} />
+                <span>Booking Calendar</span>
+              </button>
+              <button
+                onClick={() => {
+                  setDashboardTab("approvals");
+                  window.history.replaceState(null, "", "/vendor-dashboard?tab=approvals");
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  dashboardTab === "approvals"
+                    ? "bg-orange text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <FiShield size={14} />
+                <span>Approval Requests</span>
+              </button>
+            </div>
+
+            {dashboardTab === "calendar" ? (
+              <BookingCalendar />
+            ) : (
+              <VendorApprovalRequests />
+            )}
           </div>
         </div>
 
@@ -184,4 +234,18 @@ const VendorDashBoard: React.FC = () => {
   );
 };
 
-export default VendorDashBoard;
+const VendorDashboardPage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-lightYellow flex flex-col items-center justify-center">
+          <LoaderJelly />
+        </div>
+      }
+    >
+      <VendorDashBoardContent />
+    </Suspense>
+  );
+};
+
+export default VendorDashboardPage;

@@ -24,6 +24,9 @@ export class PackageModel {
   @Field(() => Boolean)
   requiresReservation: boolean;
 
+  @Field(() => Boolean, { defaultValue: false })
+  requiresApproval: boolean;
+
   @Field({ nullable: true })
   image?: string;
 

@@ -29,6 +29,7 @@ import {
   FiFilter,
 } from "react-icons/fi";
 import { FaMoneyBillWave, FaFileExcel } from "react-icons/fa";
+import { formatCoupleName } from "@/utils/formatCoupleName";
 
 interface Payment {
   id: string;
@@ -43,6 +44,7 @@ interface Payment {
     id: string;
     visitor_fname: string;
     visitor_lname?: string;
+    partner_fname?: string;
     email: string;
     phone?: string;
   } | null;
@@ -122,9 +124,7 @@ const PaymentsPage = () => {
       if (!searchTerm.trim()) return true;
 
       const term = searchTerm.toLowerCase();
-      const customerName = `${payment.visitor?.visitor_fname || ""} ${
-        payment.visitor?.visitor_lname || ""
-      }`.toLowerCase();
+      const customerName = formatCoupleName(payment.visitor, "").toLowerCase();
       const email = (payment.visitor?.email || "").toLowerCase();
       const phone = (payment.visitor?.phone || "").toLowerCase();
       const serviceName = (payment.package?.offering?.name || "").toLowerCase();
@@ -566,9 +566,7 @@ const PaymentsPage = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-sm">
                   {filteredPayments.map((payment) => {
-                    const customerName = `${payment.visitor?.visitor_fname || ""} ${
-                      payment.visitor?.visitor_lname || ""
-                    }`.trim() || "Wedding Couple";
+                    const customerName = formatCoupleName(payment.visitor, "Wedding Couple");
 
                     return (
                       <tr key={payment.id} className="hover:bg-orange/5 transition-colors">
@@ -669,9 +667,7 @@ const PaymentsPage = () => {
             {/* Mobile Card List View */}
             <div className="md:hidden divide-y divide-gray-100">
               {filteredPayments.map((payment) => {
-                const customerName = `${payment.visitor?.visitor_fname || ""} ${
-                  payment.visitor?.visitor_lname || ""
-                }`.trim() || "Wedding Couple";
+                const customerName = formatCoupleName(payment.visitor, "Wedding Couple");
 
                 return (
                   <div key={payment.id} className="p-4 flex flex-col gap-3">
@@ -831,9 +827,7 @@ const PaymentsPage = () => {
                 <div className="flex justify-between py-1.5 border-b border-gray-100">
                   <span className="text-gray-400">Customer Name</span>
                   <span className="font-semibold text-gray-800 text-right">
-                    {`${selectedPayment.visitor?.visitor_fname || ""} ${
-                      selectedPayment.visitor?.visitor_lname || ""
-                    }`.trim() || "Wedding Couple"}
+                    {formatCoupleName(selectedPayment.visitor, "Wedding Couple")}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-gray-100">

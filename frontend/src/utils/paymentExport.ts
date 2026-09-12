@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { formatCoupleName } from "./formatCoupleName";
 
 export interface ExportPaymentItem {
   id: string;
@@ -12,6 +13,7 @@ export interface ExportPaymentItem {
   visitor?: {
     visitor_fname?: string;
     visitor_lname?: string;
+    partner_fname?: string;
     email?: string;
     phone?: string;
   } | null;
@@ -211,7 +213,7 @@ export const exportPaymentPDF = (
 
   // --- 6. AutoTable: Itemized Ledger ---
   const tableData = payments.map((p, idx) => {
-    const customer = `${p.visitor?.visitor_fname || ""} ${p.visitor?.visitor_lname || ""}`.trim() || "Client";
+    const customer = formatCoupleName(p.visitor, "Client");
     const service = p.package?.offering?.name || "Service";
     const pkg = p.package?.name || "Package";
     const ref = p.paymentReference || p.id.slice(0, 12).toUpperCase();
@@ -373,7 +375,7 @@ export const exportPaymentExcel = (
   ];
 
   const dataRows = payments.map((p, idx) => {
-    const customer = `${p.visitor?.visitor_fname || ""} ${p.visitor?.visitor_lname || ""}`.trim() || "Client";
+    const customer = formatCoupleName(p.visitor, "Client");
     const ref = p.paymentReference || p.id;
     const date = new Date(p.createdAt).toLocaleDateString("en-US");
     const bookingDate = p.bookingDate ? new Date(p.bookingDate).toLocaleDateString("en-US") : "N/A";
