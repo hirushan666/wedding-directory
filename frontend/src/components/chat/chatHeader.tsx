@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { GET_OFFERING_DETAILS } from "@/graphql/queries";
+import { formatCoupleName } from "@/utils/formatCoupleName";
 
 interface ChatHeaderProps {
   visitor: {
@@ -18,9 +19,7 @@ export default function ChatHeader({ visitor, offeringId }: ChatHeaderProps) {
   });
 
   const offering = offeringData?.findOfferingById;
-  const coupleName = `${visitor?.visitor_fname || ""}${
-    visitor?.partner_fname ? ` & ${visitor.partner_fname}` : ""
-  }`.trim() || "Wedding Couple";
+  const coupleName = formatCoupleName(visitor, "Wedding Couple");
 
   return (
     <div className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3 flex-shrink-0">

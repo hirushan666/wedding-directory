@@ -7,6 +7,7 @@ import { CANCEL_PAYMENT } from '@/graphql/mutations';
 import { useVendorAuth } from '@/contexts/VendorAuthContext';
 import toast from 'react-hot-toast';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { formatCoupleName } from '@/utils/formatCoupleName';
 
 interface Payment {
   id: string;
@@ -17,7 +18,8 @@ interface Payment {
   visitor: {
     id: string;
     visitor_fname: string;
-    visitor_lname: string;
+    visitor_lname?: string;
+    partner_fname?: string;
     email: string;
     phone?: string;
   };
@@ -276,7 +278,7 @@ const BookingCalendar: React.FC = () => {
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-gray-900 truncate">
-                      {booking.visitor.visitor_fname} {booking.visitor.visitor_lname}
+                      {formatCoupleName(booking.visitor, "Couple")}
                     </div>
                     <div className="text-xs text-gray-500 truncate mt-0.5">
                       {booking.visitor.email}
@@ -356,7 +358,7 @@ const BookingCalendar: React.FC = () => {
               >
                 <div className="min-w-0">
                   <div className="font-semibold text-gray-900 truncate">
-                    {booking.visitor.visitor_fname} {booking.visitor.visitor_lname}
+                    {formatCoupleName(booking.visitor, "Couple")}
                   </div>
                   <div className="text-gray-500 truncate text-[11px] mt-0.5">
                     {booking.package.name} • {new Date(booking.bookingDate!).toLocaleDateString(undefined, { dateStyle: 'medium' })}

@@ -21,10 +21,16 @@ export class PackageService {
   }
 
   async createPackage(input: Partial<PackageEntity>, offeringId: string): Promise<PackageEntity> {
+    if (input.requiresReservation && input.requiresApproval) {
+      throw new Error('A package cannot have both Date Reservation and Vendor Approval enabled simultaneously.');
+    }
     return this.packageRepository.createPackage(input, offeringId);
   }
 
   async updatePackage(input: Partial<PackageEntity>): Promise<PackageEntity> {
+    if (input.requiresReservation && input.requiresApproval) {
+      throw new Error('A package cannot have both Date Reservation and Vendor Approval enabled simultaneously.');
+    }
     return this.packageRepository.updatePackage(input);
   }
 

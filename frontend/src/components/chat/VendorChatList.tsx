@@ -13,6 +13,7 @@ import { FaInbox } from "react-icons/fa6";
 import { FiChevronDown, FiChevronUp, FiMessageSquare } from "react-icons/fi";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { useState } from "react";
+import { formatCoupleName } from "@/utils/formatCoupleName";
 
 interface Message {
   content: string;
@@ -55,9 +56,7 @@ const ChatRow = ({ chat }: { chat: Chat }) => {
     );
   }
 
-  const coupleName = `${visitor.visitor_fname || ""}${
-    visitor.partner_fname ? ` & ${visitor.partner_fname}` : ""
-  }`.trim() || "Wedding Couple";
+  const coupleName = formatCoupleName(visitor, "Wedding Couple");
 
   return (
     <Link

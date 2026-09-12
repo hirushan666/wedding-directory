@@ -17,6 +17,7 @@ interface PackageReservationModalProps {
     description?: string;
     features?: string[];
     pricing: number;
+    requiresReservation?: boolean;
     bookedDates?: string[] | Date[];
   };
   onPay: (date: Date) => Promise<void> | void;
@@ -52,7 +53,10 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
   );
 
   const isDateDisabled = (date: Date) => {
+    // Past dates are always disabled
     if (date < new Date(new Date().setHours(0, 0, 0, 0))) return true;
+    // For normal packages, do not block any booked dates
+    if (!pkg.requiresReservation) return false;
     return bookedDates.some((bookedDate) => isSameDay(bookedDate, date));
   };
 
@@ -142,9 +146,20 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
         )}
 
         <div className="p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Book Package
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {pkg.requiresReservation ? "Book Reservation Package" : "Book Package"}
+            </h2>
+            <span
+              className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                pkg.requiresReservation
+                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                  : "bg-emerald-50 text-emerald-700 border-emerald-200"
+              }`}
+            >
+              {pkg.requiresReservation ? "Requires Reservation" : "Normal Package"}
+            </span>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Package Details */}
@@ -204,10 +219,16 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
 
             {/* Right Column - Calendar & Payment */}
             <div className="flex flex-col h-full">
-              <p className="text-gray-600 mb-4">
-                Select a date for{" "}
+              <p className="text-gray-600 mb-2">
+                Select your event date for{" "}
                 <span className="font-semibold text-orange">{pkg.name}</span>
               </p>
+              {!pkg.requiresReservation && (
+                <p className="text-xs text-emerald-700 mb-3 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                  <span>✨</span>
+                  <span>Normal package: No blackout dates — pick any upcoming date for your event.</span>
+                </p>
+              )}
 
               <div className="flex justify-center border rounded-lg p-4 mb-6 bg-gray-50">
                 <Calendar
