@@ -295,6 +295,7 @@ export const CREATE_PACKAGE = gql`
       features
       visible
       requiresReservation
+      requiresApproval
       image
     }
   }
@@ -310,6 +311,7 @@ export const UPDATE_PACKAGE = gql`
       features
       visible
       requiresReservation
+      requiresApproval
       image
     }
   }
@@ -379,5 +381,31 @@ export const TRACK_PACKAGE_VIEW = gql`
       sessionId: $sessionId
       ipAddress: $ipAddress
     )
+  }
+`;
+
+export const CREATE_PACKAGE_APPROVAL_REQUEST = gql`
+  mutation CreatePackageApprovalRequest($input: CreateApprovalRequestInput!) {
+    createPackageApprovalRequest(input: $input) {
+      id
+      bookingDate
+      userNote
+      status
+      createdAt
+    }
+  }
+`;
+
+export const RESPOND_PACKAGE_APPROVAL_REQUEST = gql`
+  mutation RespondPackageApprovalRequest($input: RespondApprovalRequestInput!) {
+    respondPackageApprovalRequest(input: $input) {
+      id
+      status
+      vendorMessage
+      approvedAt
+      expiresAt
+      isExpired
+      secondsRemaining
+    }
   }
 `;

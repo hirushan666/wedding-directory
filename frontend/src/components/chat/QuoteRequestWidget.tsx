@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Confetti } from "@/components/ui/confetti";
 import toast from "react-hot-toast";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
+import { formatCoupleName } from "@/utils/formatCoupleName";
 
 interface QuoteRequestWidgetProps {
   vendorId: string;
@@ -84,9 +85,7 @@ const QuoteRequestWidget = ({ vendorId,offeringId }: QuoteRequestWidgetProps) =>
 
 
   const visitorInfo = visitorData?.findVisitorById;
-  const fullName = `${visitorInfo?.visitor_fname || "he"} & ${
-    visitorInfo?.partner_fname || "she"
-  }`;
+  const fullName = formatCoupleName(visitorInfo, "Couple");
   const weddingDate = visitorInfo?.wed_date
     ? new Date(visitorInfo.wed_date).toLocaleDateString("en-US", {
         year: "numeric",

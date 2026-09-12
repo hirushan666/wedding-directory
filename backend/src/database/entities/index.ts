@@ -11,6 +11,7 @@ import { VendorEntity } from './vendor.entity';
 import { VisitorEntity } from './visitor.entity';
 
 import { PasswordResetOtpEntity } from './password_reset_otp.entity';
+import { PackageApprovalRequestEntity } from './package-approval-request.entity';
 
 export function getEntities() {
   return [
@@ -26,5 +27,6 @@ export function getEntities() {
     PaymentEntity,
     VendorEntity,
     PasswordResetOtpEntity,
+    PackageApprovalRequestEntity,
   ];
 }

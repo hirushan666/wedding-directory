@@ -7,6 +7,10 @@ import { VendorEntity } from '../../database/entities/vendor.entity';
 import { PackageEntity } from '../../database/entities/package.entity';
 import { MyVendorsEntity } from '../../database/entities/myVendors.entity';
 import { OfferingEntity } from '../../database/entities/offering.entity';
+import {
+  ApprovalRequestStatus,
+  PackageApprovalRequestEntity,
+} from '../../database/entities/package-approval-request.entity';
 
 @Injectable()
 export class PaymentService {
@@ -23,6 +27,8 @@ export class PaymentService {
     private myVendorsRepository: Repository<MyVendorsEntity>,
     @InjectRepository(OfferingEntity)
     private offeringRepository: Repository<OfferingEntity>,
+    @InjectRepository(PackageApprovalRequestEntity)
+    private approvalRequestRepository: Repository<PackageApprovalRequestEntity>,
   ) {}
 
   async createPayment(
@@ -48,6 +54,35 @@ export class PaymentService {
     const vendor = await this.vendorRepository.findOneBy({ id: vendorId });
     const package_ = await this.packageRepository.findOneBy({ id: packageId });
     const offering = await this.offeringRepository.findOneBy({ id: offeringId });
+
+    if (package_?.requiresApproval) {
+      const activeApproval = await this.approvalRequestRepository.findOne({
+        where: {
+          visitor: { id: visitorId },
+          package: { id: packageId },
+          status: ApprovalRequestStatus.APPROVED,
+        },
+        order: { createdAt: 'DESC' },
+      });
+
+      if (!activeApproval) {
+        throw new Error(
+          'This package requires vendor approval. Please submit an approval request first.',
+        );
+      }
+
+      if (activeApproval.expiresAt && new Date(activeApproval.expiresAt) < new Date()) {
+        activeApproval.status = ApprovalRequestStatus.EXPIRED;
+        await this.approvalRequestRepository.save(activeApproval);
+        throw new Error(
+          'Your 24-hour payment window for this approval request has expired. Please request approval again.',
+        );
+      }
+
+      if (!bookingDate && activeApproval.bookingDate) {
+        bookingDate = activeApproval.bookingDate;
+      }
+    }
 
     // Mark any previous uncompleted pending payment for this visitor & package as failed
     await this.paymentRepository.update(
@@ -175,6 +210,21 @@ export class PaymentService {
             offering: payment.package.offering
           });
           await this.myVendorsRepository.save(myVendor);
+        }
+
+        if (payment.package?.requiresApproval && payment.visitor) {
+          const approval = await this.approvalRequestRepository.findOne({
+            where: {
+              visitor: { id: payment.visitor.id },
+              package: { id: payment.package.id },
+              status: ApprovalRequestStatus.APPROVED,
+            },
+            order: { createdAt: 'DESC' },
+          });
+          if (approval) {
+            approval.status = ApprovalRequestStatus.PURCHASED;
+            await this.approvalRequestRepository.save(approval);
+          }
         }
       }
     }

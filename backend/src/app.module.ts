@@ -24,6 +24,7 @@ import { ChatbotModule } from './modules/ai/chatbot.module';
 import { VectorSearchModule } from './modules/ai/vector-search.module';
 import { EmbeddingsModule } from './modules/ai/embeddings.module';
 import { RecommendationModule } from './modules/recommendation/recommendation.module';
+import { PackageApprovalModule } from './modules/package-approval/package-approval.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { RecommendationModule } from './modules/recommendation/recommendation.mo
     VectorSearchModule,
     EmbeddingsModule,
     RecommendationModule,
+    PackageApprovalModule,
   ],
 })
 export class AppModule {}
