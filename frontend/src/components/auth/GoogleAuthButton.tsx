@@ -109,7 +109,7 @@ export default function GoogleAuthButton({
       */}
       <div
         ref={containerRef}
-        className={`w-full flex justify-center items-center rounded-xl overflow-hidden transition-all ${
+        className={`w-full flex justify-center items-center min-h-[44px] transition-all ${
           loading ? 'opacity-50 pointer-events-none' : ''
         }`}
         style={{ colorScheme: 'light' }}
@@ -123,6 +123,15 @@ export default function GoogleAuthButton({
           size="large"
           shape="rectangular"
           width={buttonWidth}
+          containerProps={{
+            style: {
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              minHeight: '44px',
+              height: 'auto',
+            },
+          }}
         />
       </div>
     </div>
