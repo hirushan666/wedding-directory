@@ -110,14 +110,6 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
       <div className="bg-white dark:bg-darkSurface rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative border border-transparent dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 my-8">
-        <button
-          onClick={onClose}
-          disabled={isSubmitting}
-          className="absolute top-4 right-4 p-2 z-10 rounded-full hover:bg-gray-100 dark:hover:bg-darkElevated transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          <X className="w-5 h-5 text-gray-500 dark:text-zinc-400" />
-        </button>
-
         {/* Redirecting Overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-white/95 dark:bg-darkSurface/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 md:p-8 text-center animate-in fade-in duration-200">
@@ -146,19 +138,18 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
         )}
 
         <div className="p-6 md:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="flex items-center justify-between gap-3 mb-6">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-zinc-100 font-title">
               {pkg.requiresReservation ? "Book Reservation Package" : "Book Package"}
             </h2>
-            <span
-              className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                pkg.requiresReservation
-                  ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
-                  : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
-              }`}
+            <button
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-darkElevated text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label="Close"
             >
-              {pkg.requiresReservation ? "Requires Reservation" : "Normal Package"}
-            </span>
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -168,6 +159,17 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
                 <h3 className="text-xl font-bold text-gray-800 dark:text-zinc-100 mb-2 font-title">
                   {pkg.name}
                 </h3>
+                <div className="mb-3">
+                  <span
+                    className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border whitespace-nowrap ${
+                      pkg.requiresReservation
+                        ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                        : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                    }`}
+                  >
+                    {pkg.requiresReservation ? "Requires Reservation" : "Normal Package"}
+                  </span>
+                </div>
                 {pkg.description && (
                   <p className="text-gray-600 dark:text-zinc-300 leading-relaxed mb-4 text-sm font-body">
                     {pkg.description}
@@ -219,24 +221,30 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
 
             {/* Right Column - Calendar & Payment */}
             <div className="flex flex-col h-full">
-              <p className="text-gray-600 dark:text-zinc-300 mb-2 font-body">
-                Select your event date for{" "}
-                <span className="font-semibold text-orange">{pkg.name}</span>
+              <p className="text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-3 font-body">
+                Select Event Date
               </p>
-              {!pkg.requiresReservation && (
-                <p className="text-xs text-emerald-700 dark:text-emerald-300 mb-3 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-body">
-                  <span>✨</span>
-                  <span>Normal package: No blackout dates — pick any upcoming date for your event.</span>
-                </p>
-              )}
 
-              <div className="flex justify-center border border-gray-200 dark:border-zinc-700 rounded-lg p-4 mb-6 bg-gray-50 dark:bg-darkElevated">
+              <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 mb-6 bg-white dark:bg-darkElevated shadow-sm">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   disabled={isDateDisabled}
-                  className="rounded-md border border-gray-200 dark:border-zinc-700 bg-white dark:bg-darkSurface shadow-sm"
+                  className="w-full p-0"
+                  classNames={{
+                    months: "w-full",
+                    month: "w-full space-y-4",
+                    table: "w-full border-collapse space-y-1",
+                    head_row: "flex w-full",
+                    head_cell: "text-gray-500 dark:text-zinc-400 rounded-md flex-1 font-normal text-xs text-center",
+                    row: "flex w-full mt-2",
+                    cell: "flex-1 text-center text-sm p-0 relative flex items-center justify-center bg-transparent focus-within:relative focus-within:z-20",
+                    day: "h-9 w-9 md:h-10 md:w-10 p-0 font-normal rounded-lg text-gray-800 dark:text-zinc-100 transition-colors [&:not([aria-selected])]:hover:bg-gray-100 dark:[&:not([aria-selected])]:hover:bg-zinc-800/80 cursor-pointer aria-selected:opacity-100",
+                    day_selected: "!bg-orange !text-white font-bold hover:!bg-orange-600 hover:!text-white focus:!bg-orange focus:!text-white dark:!bg-orange dark:!text-white dark:hover:!bg-orange-600 shadow-sm",
+                    day_today: "border-2 border-orange/80 dark:border-orange font-bold text-orange dark:text-orange bg-orange/5 dark:bg-orange/10 aria-selected:!bg-orange aria-selected:!text-white aria-selected:!border-orange",
+                    day_disabled: "text-gray-300 dark:text-zinc-600 opacity-40 hover:bg-transparent dark:hover:bg-transparent cursor-not-allowed pointer-events-none",
+                  }}
                 />
               </div>
 

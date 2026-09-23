@@ -201,7 +201,7 @@ const VisitorHeader = () => {
 
   return (
     <Fragment>
-      <header className="py-4 xl:py-5 text-black dark:text-white bg-lightYellow dark:bg-darkBg border-b border-orange/15 dark:border-orange/20 transition-colors duration-200">
+      <header className="sticky top-0 z-30 py-3.5 xl:py-4 text-black dark:text-white bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 transition-all duration-200 shadow-xs">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full">
           {/* Logo - click disabled for logged-in visitor */}
           <div className="flex items-center select-none cursor-default">

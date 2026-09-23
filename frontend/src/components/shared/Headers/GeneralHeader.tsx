@@ -16,7 +16,7 @@ const GeneralHeader = () => {
 
   return (
     <Fragment>
-      <header className="py-4 xl:py-5 text-black dark:text-zinc-100 bg-lightYellow dark:bg-darkBg border-b border-orange/15 dark:border-orange/20 relative transition-colors duration-200">
+      <header className="sticky top-0 z-30 py-3.5 xl:py-4 text-black dark:text-zinc-100 bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 transition-all duration-200 shadow-xs">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full gap-4">
           {/* Mobile Menu Button - Only visible on mobile */}
           <div className="xl:hidden flex justify-start items-center">
@@ -84,7 +84,7 @@ const GeneralHeader = () => {
         <div className={`${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
           {/* Overlay */}
           <div
-            className={`fixed inset-0 bg-black z-30 transition-all duration-300 ease-in-out ${
+            className={`fixed inset-0 bg-black z-40 transition-all duration-300 ease-in-out ${
               isMobileMenuOpen ? 'opacity-40' : 'opacity-0'
             }`}
             onClick={() => setIsMobileMenuOpen(false)}
@@ -92,7 +92,7 @@ const GeneralHeader = () => {
 
           {/* Slide-in Menu */}
           <div
-            className="fixed inset-y-0 left-0 w-3/4 max-w-xs bg-white dark:bg-darkSurface border-r border-gray-100 dark:border-zinc-800 shadow-2xl z-40 transition-transform duration-300 ease-in-out flex flex-col justify-between"
+            className="fixed inset-y-0 left-0 w-3/4 max-w-xs bg-white dark:bg-darkSurface border-r border-gray-100 dark:border-zinc-800 shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col justify-between"
             style={{
               transform: isMobileMenuOpen ? "translateX(0)" : "translateX(-100%)",
             }}
