@@ -7,6 +7,7 @@ import PageTransition from "@/components/PageTransition";
 import { VendorAuthProvider } from "@/contexts/VendorAuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "react-hot-toast";
+import ScrollToTop from "@/components/shared/ScrollToTop";
 import GoogleAuthProviderWrapper from "@/components/auth/GoogleAuthProviderWrapper";
 import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -223,6 +224,7 @@ export default function RootLayout({
                   <PageTransition>
                     {children}
                     <Toaster reverseOrder={false} />
+                    <ScrollToTop />
                   </PageTransition>
                 </ThemeProvider>
               </VendorAuthProvider>
