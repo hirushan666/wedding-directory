@@ -131,7 +131,7 @@ const PortfolioPage: React.FC = () => {
         <Link
           href={
             vendor
-              ? "/vendor-dashboard"
+              ? "/vendor-dashboard/services"
               : visitor
                 ? "/visitor-dashboard"
                 : `/services/${id}`
@@ -139,9 +139,11 @@ const PortfolioPage: React.FC = () => {
           className="flex items-center mb-6 text-gray-700 dark:text-zinc-300 hover:text-orange dark:hover:text-orange"
         >
           <FaArrowLeft className="mr-2" />
-          {vendor || visitor
-            ? "Back to Dashboard"
-            : `Back to ${offering?.name}`}
+          {vendor
+            ? "Back to My Services"
+            : visitor
+              ? "Back to Dashboard"
+              : `Back to ${offering?.name}`}
         </Link>
 
         <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-zinc-100">

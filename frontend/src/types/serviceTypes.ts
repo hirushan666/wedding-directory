@@ -28,6 +28,7 @@ export interface ServicesMenuProps {
 export interface Service {
   id: string;
   name: string;
+  category?: string;
   description: string;
   reviews: Review[];
   vendor?: {

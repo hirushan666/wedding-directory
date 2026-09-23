@@ -32,6 +32,14 @@ const VendorHeader = () => {
       isActive: (path: string) => path === "/vendor-dashboard",
     },
     {
+      name: "My Services",
+      href: "/vendor-dashboard/services",
+      isActive: (path: string) =>
+        path.startsWith("/vendor-dashboard/services") ||
+        path.startsWith("/vendor-dashboard/new-service") ||
+        path.startsWith("/services/edit"),
+    },
+    {
       name: "Analytics",
       href: "/vendor-dashboard/analytics",
       isActive: (path: string) => path.startsWith("/vendor-dashboard/analytics"),
@@ -40,11 +48,6 @@ const VendorHeader = () => {
       name: "Payments",
       href: "/vendor-dashboard/payments",
       isActive: (path: string) => path.startsWith("/vendor-dashboard/payments"),
-    },
-    {
-      name: "Services",
-      href: "/services",
-      isActive: (path: string) => path.startsWith("/services") || path.startsWith("/vendor-search"),
     },
     {
       name: "Settings",
@@ -168,9 +171,9 @@ const VendorHeader = () => {
   return (
     <Fragment>
       <header className="sticky top-0 z-30 py-3.5 xl:py-4 text-black dark:text-white bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 transition-all duration-200 shadow-xs">
-        <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full">
+        <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full gap-4">
           {/* Left section: Logo - click disabled for logged-in vendor */}
-          <div className="flex items-start justify-start flex-1 select-none cursor-default">
+          <div className="flex items-start justify-start select-none cursor-default shrink-0">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100 font-title">
                 Say I Do
@@ -180,14 +183,14 @@ const VendorHeader = () => {
           </div>
 
           {/* Center section: Navigation */}
-          <nav className="flex-1 hidden md:flex justify-center items-center gap-1.5 lg:gap-2.5 font-title">
+          <nav className="hidden md:flex justify-center items-center gap-1 lg:gap-2 font-title">
             {navLinks.map((link) => {
               const active = link.isActive(pathname);
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-4 py-2 rounded-xl text-base lg:text-[17px] tracking-wide transition-all ${
+                  className={`px-3 lg:px-4 py-2 rounded-xl text-sm lg:text-[16px] tracking-wide whitespace-nowrap transition-all ${
                     active
                       ? "bg-orange text-white shadow-xs font-bold"
                       : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
@@ -200,7 +203,7 @@ const VendorHeader = () => {
           </nav>
 
           {/* Right section: Notifications and Profile dropdown */}
-          <div className="flex items-center justify-end gap-3 sm:gap-4 flex-1">
+          <div className="flex items-center justify-end gap-3 sm:gap-4 shrink-0">
             {/* Update the message icon section */}
             <Link
               href="/vendor-dashboard/chats"

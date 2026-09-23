@@ -3,17 +3,15 @@
 import React, { useEffect, useState, Suspense } from "react";
 import VendorHeader from "@/components/shared/Headers/VendorHeader";
 import VendorBanner from "@/components/vendor-dashboard/VendorBanner";
-import OfferingCard from "@/components/vendor-search/OfferingCard";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { GET_VENDOR_BY_ID, FIND_SERVICES_BY_VENDOR } from "@/graphql/queries";
+import { GET_VENDOR_BY_ID } from "@/graphql/queries";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { useQuery } from "@apollo/client";
 import { MdAdd } from "react-icons/md";
 import Footer from "@/components/shared/Footer";
 import { VendorDashboardSkeleton } from "@/components/ui/shimmer";
-import { Service } from "@/types/serviceTypes";
-import { FiEdit, FiCalendar, FiShield } from "react-icons/fi";
+import { FiCalendar, FiShield } from "react-icons/fi";
 import BookingCalendar from "@/components/vendor-dashboard/BookingCalendar";
 import VendorApprovalRequests from "@/components/vendor-dashboard/VendorApprovalRequests";
 
@@ -22,7 +20,6 @@ const VendorDashBoardContent: React.FC = () => {
   const { vendor, isInitialized } = useVendorAuth();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const [services, setServices] = useState<Service[]>([]);
   const [dashboardTab, setDashboardTab] = useState<"calendar" | "approvals">(
     tabParam === "approvals" ? "approvals" : "calendar",
   );
@@ -55,32 +52,12 @@ const VendorDashBoardContent: React.FC = () => {
     }
   }, [vendorData, router]);
 
-  const {
-    data: servicesData,
-    loading: servicesLoading,
-    error: servicesError,
-  } = useQuery(FIND_SERVICES_BY_VENDOR, {
-    variables: { id: vendor?.id },
-    skip: !vendor?.id,
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
-  });
-
-  // Update services state when servicesData changes
-  useEffect(() => {
-    const list =
-      servicesData?.findServicesByVendor || servicesData?.findOfferingsByVendor;
-    if (list) {
-      setServices(list);
-    }
-  }, [servicesData]);
-
-  if (!isInitialized || !vendor?.id || vendorLoading || servicesLoading)
+  if (!isInitialized || !vendor?.id || vendorLoading)
     return <VendorDashboardSkeleton />;
 
-  if (vendorError || servicesError)
+  if (vendorError)
     return (
-      <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col">
+      <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col font-body">
         <VendorHeader />
         <div className="flex-grow flex items-center justify-center p-8">
           <div className="bg-white dark:bg-darkSurface rounded-2xl p-8 border border-red-100 dark:border-red-900/40 text-center max-w-md shadow-sm">
@@ -88,7 +65,7 @@ const VendorDashBoardContent: React.FC = () => {
               Error loading vendor dashboard
             </p>
             <p className="text-gray-500 dark:text-zinc-400 text-xs">
-              {vendorError?.message || servicesError?.message}
+              {vendorError?.message}
             </p>
           </div>
         </div>
@@ -99,7 +76,7 @@ const VendorDashBoardContent: React.FC = () => {
   const vendorInfo = vendorData?.findVendorById;
 
   return (
-    <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col">
+    <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col font-body">
       <VendorHeader />
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
@@ -110,8 +87,7 @@ const VendorDashBoardContent: React.FC = () => {
               Vendor Dashboard
             </h1>
             <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
-              Monitor customer bookings, manage your storefront profile, and
-              track your active services.
+              Monitor customer bookings, manage your storefront profile, and track schedule availability.
             </p>
           </div>
           <Link
@@ -124,7 +100,7 @@ const VendorDashBoardContent: React.FC = () => {
         </div>
 
         {/* Asymmetric Profile + Booking Calendar Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           <div className="lg:col-span-4">
             <VendorBanner vendor={vendorInfo} />
           </div>
@@ -175,78 +151,6 @@ const VendorDashBoardContent: React.FC = () => {
             )}
           </div>
         </div>
-
-        {/* About Section Card */}
-        <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-7 mb-8">
-          <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100 dark:border-zinc-800">
-            <h2 className="font-title text-xl sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
-              About {vendorInfo?.busname || "Your Business"}
-            </h2>
-            <Link
-              href="/vendor-dashboard/settings"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:text-orange/80 bg-orange/10 hover:bg-orange/20 px-3 py-1.5 rounded-xl transition-colors"
-            >
-              <FiEdit size={14} />
-              <span>Edit Bio</span>
-            </Link>
-          </div>
-          <p className="font-body text-gray-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed whitespace-pre-line">
-            {vendorInfo?.about ||
-              "No business description provided yet. Update your storefront settings to let couples know more about your story, expertise, and service options."}
-          </p>
-        </div>
-
-        {/* Services Section */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <h2 className="font-title text-xl sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
-                Services by {vendorInfo?.busname || "You"}
-              </h2>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange/10 text-orange">
-                {services.length}{" "}
-                {services.length === 1 ? "Service" : "Services"}
-              </span>
-            </div>
-          </div>
-
-          {services.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.filter(Boolean).map((service: Service) => (
-                <OfferingCard
-                  key={service?.id}
-                  vendor={service.vendor?.busname || "Unknown"}
-                  name={service?.name}
-                  city={service.vendor?.city || "Unknown"}
-                  rating={Number(service?.reviews?.[0]?.rating) || 0}
-                  banner={service.banner || "/images/offeringPlaceholder.webp"}
-                  buttonText="View Details"
-                  link={`/services/${service.id}`}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-8 sm:p-12 text-center flex flex-col items-center justify-center">
-              <div className="w-16 h-16 rounded-2xl bg-orange/10 text-orange flex items-center justify-center mb-4">
-                <MdAdd size={32} />
-              </div>
-              <h3 className="font-title text-xl font-bold text-gray-900 dark:text-zinc-100 mb-1">
-                No Services Listed Yet
-              </h3>
-              <p className="text-gray-500 dark:text-zinc-400 text-sm max-w-md mb-6">
-                Create your first service listing to showcase your wedding
-                packages and start receiving bookings from couples.
-              </p>
-              <Link
-                href="/vendor-dashboard/new-service"
-                className="inline-flex items-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-5 py-2.5 rounded-xl transition-all shadow-sm text-sm"
-              >
-                <MdAdd size={20} />
-                <span>Create First Service</span>
-              </Link>
-            </div>
-          )}
-        </div>
       </main>
 
       <Footer />
@@ -254,7 +158,7 @@ const VendorDashBoardContent: React.FC = () => {
   );
 };
 
-const VendorDashboardPage: React.FC = () => {
+const VendorDashboard: React.FC = () => {
   return (
     <Suspense fallback={<VendorDashboardSkeleton />}>
       <VendorDashBoardContent />
@@ -262,4 +166,4 @@ const VendorDashboardPage: React.FC = () => {
   );
 };
 
-export default VendorDashboardPage;
+export default VendorDashboard;
