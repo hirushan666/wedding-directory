@@ -108,7 +108,7 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
   const advanceAmount = pkg.pricing * 0.2;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
       <div className="bg-white dark:bg-darkSurface rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative border border-transparent dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 my-8">
         {/* Redirecting Overlay */}
         {isSubmitting && (

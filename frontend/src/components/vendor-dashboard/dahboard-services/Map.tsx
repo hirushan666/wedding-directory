@@ -49,7 +49,8 @@ const LeafletMap = dynamic(
             center={[lat, lng]}
             zoom={15}
             scrollWheelZoom={false}
-            style={{ width: "100%", height: "400px", borderRadius: "1rem" }}
+            style={{ width: "100%", height: "400px", borderRadius: "1rem", zIndex: 0 }}
+            className="z-0"
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -190,7 +191,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
   return (
     <div className="flex flex-col gap-3">
       {/* Map display */}
-      <div className="w-full h-[400px] rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-sm relative">
+      <div className="w-full h-[400px] rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-sm relative z-0 isolate">
         <LeafletMap
           lat={coordinates.lat}
           lng={coordinates.lng}

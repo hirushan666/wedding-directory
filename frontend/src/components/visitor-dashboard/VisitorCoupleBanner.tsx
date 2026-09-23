@@ -12,6 +12,7 @@ import {
   FiClock,
   FiChevronRight,
   FiCalendar,
+  FiBookmark,
 } from "react-icons/fi";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { HiOutlineBriefcase } from "react-icons/hi2";
@@ -119,9 +120,9 @@ const VisitorCoupleBanner: React.FC<VisitorCoupleBannerProps> = ({
     },
     {
       href: `/visitor-dashboard/my-vendors/${visitorId || ""}`,
-      icon: HiOutlineBriefcase,
-      title: "My Vendors",
-      subtitle: "Saved & hired vendors",
+      icon: FiBookmark,
+      title: "Saved Services",
+      subtitle: "Shortlisted services",
       badge: myVendorsCount > 0 ? `${myVendorsCount}` : null,
       isActive: pathname.startsWith("/visitor-dashboard/my-vendors"),
     },

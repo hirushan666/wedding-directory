@@ -2,8 +2,7 @@
 
 import React from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { FiHome, FiDollarSign, FiUsers, FiChevronLeft, FiChevronRight, FiClock } from "react-icons/fi";
-import { HiOutlineBriefcase } from "react-icons/hi2";
+import { FiHome, FiDollarSign, FiUsers, FiChevronLeft, FiChevronRight, FiClock, FiBookmark } from "react-icons/fi";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BsChatDots } from "react-icons/bs";
@@ -41,8 +40,8 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
     },
     {
       href: `/visitor-dashboard/my-vendors/${visitorId}`,
-      icon: <HiOutlineBriefcase className="w-5 h-5" />,
-      label: "My Vendors"
+      icon: <FiBookmark className="w-5 h-5" />,
+      label: "Saved Services"
     },
     {
       href: `/visitor-dashboard/chats/${visitorId}`,

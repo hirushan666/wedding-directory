@@ -142,16 +142,16 @@ const VISITOR_FAQS: FAQItem[] = [
     category: "vendors",
     question: "How do I search, filter, and compare wedding vendors?",
     answer:
-      "Use our Vendor Search page to browse vendors by category (Venues, Photographers, Planners, Bridal Salons, Caterers, Musicians, and more), location/city, and pricing. You can click on any vendor to explore their photo galleries, package inclusions, and verified couple reviews.",
+      "Use our Services page to browse services by category (Venues, Photographers, Planners, Bridal Salons, Caterers, Musicians, and more), location/city, and pricing. You can click on any service to explore their photo galleries, package inclusions, and verified couple reviews.",
     tags: ["search", "filter", "vendors", "venues", "photographers"],
   },
   {
     id: "c-2",
     category: "vendors",
-    question: "Can I save vendors to compare them later?",
+    question: "Can I save services to compare them later?",
     answer:
-      "Yes! When browsing vendors, click 'Save' or add them to your 'My Vendors' list on your Visitor Dashboard. This allows you to track preferred vendors side-by-side and keep your wedding dream team organized in one place.",
-    tags: ["save", "favorite", "my vendors", "compare"],
+      "Yes! When browsing services or offerings, click the bookmark or heart icon to add them to your 'Saved Services' list on your Visitor Dashboard. This allows you to track preferred services side-by-side and keep your wedding dream team organized in one place.",
+    tags: ["save", "favorite", "saved services", "shortlist", "compare"],
   },
   {
     id: "c-3",

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, Suspense } from "react";
+import React, { useState, useCallback, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Footer from "@/components/shared/Footer";
 import Header from "@/components/shared/Headers/Header";
 import OfferingCard from "@/components/vendor-search/OfferingCard";
-import { FIND_SERVICES } from "@/graphql/queries";
-import { useLazyQuery } from "@apollo/client";
+import { FIND_SERVICES, FIND_ALL_MY_VENDORS } from "@/graphql/queries";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import { useAuth } from "@/contexts/VisitorAuthContext";
 import FilterSearchBar from "@/components/vendor-search/FilterSearchBar";
 import { Offering } from "@/types/offeringTypes";
 import { OfferingGridSkeleton } from "@/components/ui/shimmer";
@@ -15,6 +16,7 @@ import { IoClose } from "react-icons/io5";
 const ServicesSearchContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { visitor } = useAuth();
 
   const urlCategory = searchParams.get("category") || "";
   const urlCity = searchParams.get("city") || "";
@@ -23,6 +25,22 @@ const ServicesSearchContent: React.FC = () => {
   const [city, setCity] = useState<string>(urlCity);
   const [category, setCategory] = useState<string>(urlCategory);
   const [keyword, setKeyword] = useState<string>(urlQuery);
+
+  const { data: myVendorsData } = useQuery(FIND_ALL_MY_VENDORS, {
+    variables: { visitorId: visitor?.id },
+    skip: !visitor?.id,
+    fetchPolicy: "cache-and-network",
+  });
+
+  const savedServiceIds = useMemo(() => {
+    const ids = new Set<string>();
+    const list = myVendorsData?.findAllMyVendors || [];
+    list.forEach((item: any) => {
+      const sId = item.service?.id || item.offering?.id;
+      if (sId) ids.add(sId);
+    });
+    return ids;
+  }, [myVendorsData]);
 
   // useLazyQuery hook to fetch services on demand with network-only fetch policy
   const [getServices, { loading, data, error }] = useLazyQuery(FIND_SERVICES, {
@@ -309,6 +327,7 @@ const ServicesSearchContent: React.FC = () => {
                   {visibleOfferings.map((offering: Offering) => (
                     <OfferingCard
                       key={offering.id}
+                      id={offering.id}
                       name={offering.name}
                       vendor={offering.vendor?.busname || "N/A"}
                       city={offering.vendor?.city || "N/A"}
@@ -325,6 +344,7 @@ const ServicesSearchContent: React.FC = () => {
                       }
                       buttonText="View Details"
                       link={`/services/${offering.id}`}
+                      isSaved={savedServiceIds.has(offering.id)}
                     />
                   ))}
                 </div>

@@ -312,9 +312,9 @@ const Service: React.FC = () => {
 
         if (data?.removeFromMyVendors) {
           setIsInMyVendors(false);
-          toast.success("Removed from your vendors");
+          toast.success("Removed from saved services");
         } else {
-          throw new Error("Failed to remove from vendors");
+          throw new Error("Failed to remove from saved services");
         }
       } else {
         const { data } = await addToMyVendors({
@@ -328,24 +328,24 @@ const Service: React.FC = () => {
           setIsInMyVendors(true);
           toast.success(
             <div>
-              Saved to your vendors! <br />
+              Saved to your shortlisted services! <br />
               <Link
-                href={`/visitor-dashboard/my-vendors/${id}`}
-                className="underline"
+                href={`/visitor-dashboard/my-vendors/${visitor.id}`}
+                className="underline font-semibold hover:text-orange"
               >
-                View your vendors
+                View saved services
               </Link>
             </div>,
             {
-              duration: 8000,
+              duration: 6000,
             },
           );
         } else {
-          throw new Error("Failed to add to vendors");
+          throw new Error("Failed to add to saved services");
         }
       }
     } catch {
-      toast.error("Couldn't save to your favorites");
+      toast.error("Couldn't update saved services");
     }
   };
 
@@ -425,7 +425,7 @@ const Service: React.FC = () => {
             className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-orange dark:hover:text-orange transition-colors group"
           >
             <FiArrowLeft className="text-base group-hover:-translate-x-0.5 transition-transform" />
-            <span>Back to Vendor Search</span>
+            <span>Back to Services</span>
           </Link>
         </div>
 
@@ -497,8 +497,8 @@ const Service: React.FC = () => {
                         className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-darkElevated text-gray-400 hover:text-red-500 transition-colors"
                         title={
                           isInMyVendors
-                            ? "Remove from saved"
-                            : "Save to favorites"
+                            ? "Remove from saved services"
+                            : "Save to shortlisted services"
                         }
                       >
                         {isInMyVendors ? (
@@ -935,12 +935,10 @@ const Service: React.FC = () => {
               </div>
 
               {!isVendorsOffering && visitor ? (
-                <div className="mt-4">
-                  <WriteReview
-                    serviceId={offering?.id}
-                    vendorName={offering?.vendor?.busname}
-                  />
-                </div>
+                <WriteReview
+                  serviceId={offering?.id}
+                  vendorName={offering?.vendor?.busname}
+                />
               ) : null}
 
               <div className="mt-4">
@@ -951,7 +949,7 @@ const Service: React.FC = () => {
               <h2 className="mb-3 text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
                 Location
               </h2>
-              <div>
+              <div className="relative z-0 isolate">
                 <GoogleMapComponent serviceId={offering?.id} />
               </div>
             </div>
