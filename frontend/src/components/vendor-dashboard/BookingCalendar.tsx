@@ -61,7 +61,7 @@ interface ApprovalRequestItem {
 
 const BookingCalendar: React.FC = () => {
   const { vendor } = useVendorAuth();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const { data, loading, error } = useQuery(GET_VENDOR_PAYMENTS, {
@@ -387,13 +387,18 @@ const BookingCalendar: React.FC = () => {
               <div className="w-7 h-7 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
                 <FiCalendar size={15} />
               </div>
-              <h4 className="font-title font-bold text-sm sm:text-base text-gray-900 dark:text-zinc-100">
+              <h4 className="font-title font-bold text-sm sm:text-base text-gray-900 dark:text-zinc-100 flex items-center gap-2">
                 {selectedDate.toLocaleDateString(undefined, {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
                   year: "numeric",
                 })}
+                {selectedDate.toDateString() === new Date().toDateString() && (
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-orange/10 text-orange border border-orange/20">
+                    Today
+                  </span>
+                )}
               </h4>
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
