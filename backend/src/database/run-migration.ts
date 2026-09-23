@@ -3,6 +3,7 @@ import { join } from 'path';
 import { DataSource } from 'typeorm';
 import { CreatePackageViewTable1707489026321 } from './migrations/1707489026321-CreatePackageViewTable';
 import { AddReviewImagesAndMentions1762000000000 } from './migrations/1762000000000-AddReviewImagesAndMentions';
+import { CreateServiceReviewSummaryTable1762000000004 } from './migrations/1762000000004-CreateServiceReviewSummaryTable';
 
 dotenv.config({ path: join(__dirname, '..', '..', '.env') });
 
@@ -64,6 +65,15 @@ async function runMigration() {
       await migration.up(queryRunner);
     } else {
       console.log('Skipping AddReviewImagesAndMentions1762000000000 (already applied).');
+    }
+
+    const hasServiceReviewSummaryTable = await queryRunner.hasTable('service_review_summary');
+    if (!hasServiceReviewSummaryTable) {
+      const migration = new CreateServiceReviewSummaryTable1762000000004();
+      console.log(`Running migration: ${migration.name}`);
+      await migration.up(queryRunner);
+    } else {
+      console.log('Skipping CreateServiceReviewSummaryTable1762000000004 (already applied).');
     }
 
     console.log('Migration completed successfully!');

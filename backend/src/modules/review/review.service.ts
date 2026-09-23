@@ -8,6 +8,9 @@ import { CreateReviewInput } from '../../graphql/inputs/createReview.input';
 import { ServiceEntity } from '../../database/entities/service.entity';
 import { VisitorEntity } from '../../database/entities/visitor.entity';
 import { PaymentEntity } from '../../database/entities/payment.entity';
+import { OpenAI } from 'openai';
+import { ServiceReviewSummaryEntity } from '../../database/entities/service-review-summary.entity';
+import { ServiceReviewSummaryModel } from '../../graphql/models/service-review-summary.model';
 
 interface PaginatedReviewResult {
   reviews: ReviewEntity[];
@@ -28,6 +31,8 @@ export interface ReviewEligibilityResult {
 @Injectable()
 export class ReviewService {
   private reviewRepository: ReviewRepositoryType;
+  private summaryRepository: Repository<ServiceReviewSummaryEntity>;
+  private openai: OpenAI | null;
   constructor(
     private readonly dataSource: DataSource,
 
@@ -39,6 +44,15 @@ export class ReviewService {
     private readonly paymentRepository: Repository<PaymentEntity>,
   ) {
     this.reviewRepository = ReviewRepository(this.dataSource);
+    this.summaryRepository = this.dataSource.getRepository(ServiceReviewSummaryEntity);
+
+    const apiKey = process.env.GROQ_API_KEY?.trim();
+    this.openai = apiKey
+      ? new OpenAI({
+          apiKey,
+          baseURL: process.env.GROQ_REVIEW_SUMMARY_ENDPOINT?.trim() || 'https://api.groq.com/openai/v1',
+        })
+      : null;
   }
 
   async checkReviewEligibility(
@@ -141,7 +155,7 @@ export class ReviewService {
     });
 
     if (!service) {
-      throw new NotFoundException('Service not found');
+      throw new NotFoundException('Offering not found');
     }
     if (!visitor) {
       throw new NotFoundException('Visitor not found');
@@ -191,24 +205,27 @@ export class ReviewService {
       throw new BadRequestException('You can only leave a review after your booked event date has passed');
     }
 
-    let mentionedService: ServiceEntity | undefined;
-    if (createReviewInput.mentioned_service_id) {
-      mentionedService = await this.serviceRepository.findOne({
-        where: { id: createReviewInput.mentioned_service_id },
-        relations: ['vendor'],
-      });
-    }
+    const mentionedService = createReviewInput.mentioned_service_id
+      ? await this.serviceRepository.findOne({
+          where: { id: createReviewInput.mentioned_service_id },
+          relations: ['vendor'],
+        })
+      : undefined;
 
-    const { mentioned_service_id, ...reviewPayload } = createReviewInput;
-
-    return this.reviewRepository.createReview(
+    const review = await this.reviewRepository.createReview(
       {
-        ...reviewPayload,
+        ...createReviewInput,
         mentionedService,
       },
       service,
       visitor,
     );
+
+    await this.refreshServiceReviewSummary(service.id).catch((error) => {
+      console.error('Failed to refresh service review summary after create:', error);
+    });
+
+    return review;
   }
 
   async deleteReview(id: string): Promise<boolean> {
@@ -251,5 +268,114 @@ export class ReviewService {
 
   async findAllReviews(): Promise<ReviewEntity[]> {
     return this.reviewRepository.findAllReviews();
+  }
+
+  async findServiceReviewSummary(
+    serviceId: string,
+  ): Promise<ServiceReviewSummaryModel | null> {
+    const summary = await this.summaryRepository.findOne({
+      where: { service: { id: serviceId } },
+      relations: ['service'],
+    });
+
+    if (summary) {
+      return {
+        id: summary.id,
+        serviceId: summary.service?.id ?? serviceId,
+        summaryText: summary.summaryText,
+        reviewCount: summary.reviewCount,
+        lastReviewAt: summary.lastReviewAt,
+        createdAt: summary.createdAt,
+        updatedAt: summary.updatedAt,
+      };
+    }
+
+    return null;
+  }
+
+  private async generateSummary(
+    service: ServiceEntity,
+    reviews: ReviewEntity[],
+  ): Promise<string> {
+    if (!this.openai) {
+      return 'AI summary is unavailable right now.';
+    }
+
+    const model =
+      process.env.GROQ_REVIEW_SUMMARY_MODEL?.trim() ||
+      process.env.GROQ_RECOMMENDER_MODEL?.trim() ||
+      'openai/gpt-oss-20b';
+    const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+
+    const reviewLines = reviews
+      .slice(0, 30)
+      .map((review) => {
+        const author = review.visitor?.visitor_fname || 'Anonymous couple';
+        const comment = review.comment?.trim() || 'No written comment provided.';
+        return `- ${review.rating}/5 by ${author}: ${comment}`;
+      })
+      .join('\n');
+
+    const response = await this.openai.chat.completions.create({
+      model,
+      temperature: 0.3,
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You summarize wedding vendor reviews for couples. Write 2 to 4 concise sentences. Keep the tone neutral, factual, and helpful. Mention recurring strengths, recurring concerns if any, and the overall sentiment. Do not use bullets, headings, or emojis.',
+        },
+        {
+          role: 'user',
+          content: [
+            `Service: ${service.name}`,
+            `Vendor: ${service.vendor?.busname || 'Unknown vendor'}`,
+            `Average rating: ${averageRating.toFixed(1)}/5 across ${reviews.length} reviews`,
+            'Recent reviews:',
+            reviewLines,
+            'Return only the summary text.',
+          ].join('\n'),
+        },
+      ],
+    });
+
+    return response.choices[0]?.message?.content?.trim() || 'AI summary is unavailable right now.';
+  }
+
+  private async refreshServiceReviewSummary(serviceId: string): Promise<void> {
+    if (!this.openai) {
+      return;
+    }
+
+    const service = await this.serviceRepository.findOne({
+      where: { id: serviceId },
+      relations: ['vendor'],
+    });
+
+    if (!service) {
+      return;
+    }
+
+    const currentReviews = await this.reviewRepository.findReviewsByService(serviceId);
+
+    if (currentReviews.length === 0) {
+      return;
+    }
+
+    const summaryText = await this.generateSummary(service, currentReviews);
+    const latestReview = currentReviews[0];
+    const existing = await this.summaryRepository.findOne({
+      where: { service: { id: serviceId } },
+    });
+
+    const summaryEntity = this.summaryRepository.create({
+      id: existing?.id,
+      service,
+      summaryText,
+      reviewCount: currentReviews.length,
+      lastReviewAt: latestReview?.createdAt ?? new Date(),
+    });
+
+    await this.summaryRepository.save(summaryEntity);
   }
 }

@@ -6,10 +6,17 @@ import { ReviewEntity } from '../../database/entities/review.entity';
 import { VisitorEntity } from '../../database/entities/visitor.entity';
 import { ServiceEntity } from '../../database/entities/service.entity';
 import { PaymentEntity } from '../../database/entities/payment.entity';
+import { ServiceReviewSummaryEntity } from '../../database/entities/service-review-summary.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ReviewEntity, VisitorEntity, ServiceEntity, PaymentEntity])
+    TypeOrmModule.forFeature([
+      ReviewEntity,
+      VisitorEntity,
+      ServiceEntity,
+      PaymentEntity,
+      ServiceReviewSummaryEntity,
+    ])
   ],
   providers: [ReviewResolver, ReviewService],
   exports: [ReviewService]

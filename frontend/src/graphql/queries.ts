@@ -361,6 +361,20 @@ export const FIND_REVIEW_PAGE_BY_SERVICE = gql`
   }
 `;
 
+export const FIND_SERVICE_REVIEW_SUMMARY = gql`
+  query FindServiceReviewSummary($service_id: String!) {
+    findServiceReviewSummary(service_id: $service_id) {
+      id
+      serviceId
+      summaryText
+      reviewCount
+      lastReviewAt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const FIND_ALL_REVIEWS = gql`
   query FindAllReviews {
     findAllReviews {

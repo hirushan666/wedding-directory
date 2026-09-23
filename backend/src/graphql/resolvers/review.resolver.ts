@@ -5,6 +5,7 @@ import { ReviewEntity } from "../../database/entities/review.entity";
 import { CreateReviewInput } from "../inputs/createReview.input";
 import { ReviewPageModel } from "../models/review-page.model";
 import { ReviewEligibilityModel } from "../models/review-eligibility.model";
+import { ServiceReviewSummaryModel } from "../models/service-review-summary.model";
 
 @Resolver()
 export class ReviewResolver {
@@ -48,6 +49,13 @@ export class ReviewResolver {
       ...result,
       reviews: result.reviews as unknown as ReviewModel[],
     };
+  }
+
+  @Query(() => ServiceReviewSummaryModel, { nullable: true })
+  async findServiceReviewSummary(
+    @Args('service_id') serviceId: string,
+  ): Promise<ServiceReviewSummaryModel | null> {
+    return this.reviewService.findServiceReviewSummary(serviceId);
   }
 
   @Query(() => [ReviewModel])
