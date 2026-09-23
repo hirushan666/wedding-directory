@@ -42,9 +42,9 @@ const VendorHeader = () => {
       isActive: (path: string) => path.startsWith("/vendor-dashboard/payments"),
     },
     {
-      name: "Vendors",
-      href: "/vendor-search",
-      isActive: (path: string) => path.startsWith("/vendor-search") || path.startsWith("/services"),
+      name: "Services",
+      href: "/services",
+      isActive: (path: string) => path.startsWith("/services") || path.startsWith("/vendor-search"),
     },
     {
       name: "Settings",

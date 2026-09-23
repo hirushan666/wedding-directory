@@ -27,7 +27,7 @@ export const vendorCallout = defineType({
       name: "linkUrl",
       title: "Directory Link URL",
       type: "string",
-      placeholder: "e.g., /services/65a123bc... or /vendor-search",
+      placeholder: "e.g., /services/65a123bc... or /services",
     }),
     defineField({
       name: "rating",

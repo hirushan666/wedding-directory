@@ -70,7 +70,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setIsOpen(false);
 
     if (!q) {
-      router.push("/vendor-search");
+      router.push("/services");
       return;
     }
 
@@ -79,7 +79,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       (cat) => cat.toLowerCase() === q.toLowerCase()
     );
     if (exactCat) {
-      router.push(`/vendor-search?category=${encodeURIComponent(exactCat)}`);
+      router.push(`/services?category=${encodeURIComponent(exactCat)}`);
       return;
     }
 
@@ -88,38 +88,38 @@ const SearchBar: React.FC<SearchBarProps> = ({
       (city) => city.toLowerCase() === q.toLowerCase()
     );
     if (exactCity) {
-      router.push(`/vendor-search?city=${encodeURIComponent(exactCity)}`);
+      router.push(`/services?city=${encodeURIComponent(exactCity)}`);
       return;
     }
 
     // First filtered category if available
     if (filteredCategories.length > 0) {
       router.push(
-        `/vendor-search?category=${encodeURIComponent(filteredCategories[0])}`
+        `/services?category=${encodeURIComponent(filteredCategories[0])}`
       );
       return;
     }
 
     // First filtered city if available
     if (filteredCities.length > 0) {
-      router.push(`/vendor-search?city=${encodeURIComponent(filteredCities[0])}`);
+      router.push(`/services?city=${encodeURIComponent(filteredCities[0])}`);
       return;
     }
 
     // Generic search query for vendor names, service titles, or descriptions
-    router.push(`/vendor-search?q=${encodeURIComponent(q)}`);
+    router.push(`/services?q=${encodeURIComponent(q)}`);
   };
 
   const handleSelectCategory = (cat: string) => {
     setSearchTerm(cat);
     setIsOpen(false);
-    router.push(`/vendor-search?category=${encodeURIComponent(cat)}`);
+    router.push(`/services?category=${encodeURIComponent(cat)}`);
   };
 
   const handleSelectCity = (city: string) => {
     setSearchTerm(city);
     setIsOpen(false);
-    router.push(`/vendor-search?city=${encodeURIComponent(city)}`);
+    router.push(`/services?city=${encodeURIComponent(city)}`);
   };
 
   const handleClear = () => {

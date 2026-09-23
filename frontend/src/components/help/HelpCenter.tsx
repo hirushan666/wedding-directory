@@ -652,11 +652,11 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({ initialRole }) => {
                       <FiExternalLink size={12} className="text-gray-400 dark:text-zinc-500" />
                     </Link>
                     <Link
-                      href="/vendor-search"
+                      href="/services"
                       className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-darkElevated hover:bg-orange/10 dark:hover:bg-orange/20 hover:text-orange text-gray-700 dark:text-zinc-300 transition-colors"
                     >
                       <span className="flex items-center gap-2">
-                        <FiShoppingBag size={14} /> Find & Filter Vendors
+                        <FiShoppingBag size={14} /> Find & Filter Services
                       </span>
                       <FiExternalLink size={12} className="text-gray-400 dark:text-zinc-500" />
                     </Link>

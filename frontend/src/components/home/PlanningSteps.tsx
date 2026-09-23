@@ -8,8 +8,8 @@ const cards = [
     title: "Your Vendors",
     description:
       "Find verified wedding vendors tailored to your style, date, and budget across Sri Lanka.",
-    buttonText: "Explore Vendors",
-    href: "/vendor-search",
+    buttonText: "Explore Services",
+    href: "/services",
     image: "/images/venue.webp",
   },
   {
@@ -105,7 +105,7 @@ const PlanningSteps = () => {
               Sign up as a couple
             </Link>
             <Link
-              href="/vendor-search"
+              href="/services"
               className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl font-title text-base font-semibold text-gray-800 dark:text-zinc-200 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated hover:border-orange dark:hover:border-orange hover:text-orange dark:hover:text-orange transition-all shadow-2xs"
             >
               Browse Directory

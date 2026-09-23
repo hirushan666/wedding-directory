@@ -73,7 +73,7 @@ const MasonaryGrid = () => {
               key={photo.id}
               className="relative overflow-hidden rounded-2xl break-inside-avoid group border border-orange/15 dark:border-zinc-800 shadow-2xs hover:shadow-md transition-all"
             >
-              <Link href="/vendor-search" className="block relative">
+              <Link href="/services" className="block relative">
                 <Image
                   src={photo.src}
                   alt={photo.alt}

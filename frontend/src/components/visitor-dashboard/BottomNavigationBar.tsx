@@ -30,9 +30,9 @@ const BottomNavigationBar = () => {
           </a>
         </li>
         <li>
-          <a href="/vendor-search" className="flex flex-col items-center text-sm font-semibold text-gray-700 dark:text-zinc-300 hover:text-orange dark:hover:text-orange transition-colors">
+          <a href="/services" className="flex flex-col items-center text-sm font-semibold text-gray-700 dark:text-zinc-300 hover:text-orange dark:hover:text-orange transition-colors">
             <StoreIcon className="h-5 w-5 mb-0.5" />
-            <span>Vendors</span>
+            <span>Services</span>
           </a>
         </li>
       </ul>
