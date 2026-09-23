@@ -41,10 +41,10 @@ const VisitorHeader = () => {
         !path.startsWith("/visitor-dashboard/chats"),
     },
     {
-      name: "Vendors",
-      href: "/vendor-search",
+      name: "Services",
+      href: "/services",
       isActive: (path: string) =>
-        path.startsWith("/vendor-search") || path.startsWith("/services"),
+        path.startsWith("/services") || path.startsWith("/vendor-search"),
     },
     {
       name: "Blog",

@@ -310,11 +310,11 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
                 You haven&apos;t shortlisted any {category.toLowerCase()} vendors yet. Browse our directory to find the perfect vendor!
               </p>
               <Link
-                href={`/vendor-search?category=${encodeURIComponent(category)}`}
+                href={`/services?category=${encodeURIComponent(category)}`}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-orange hover:bg-orange/90 transition-all shadow-xs"
                 onClick={onClose}
               >
-                <span>Browse {category} Vendors</span>
+                <span>Browse {category} Services</span>
                 <FiSearch size={14} />
               </Link>
             </div>
@@ -324,7 +324,7 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
         {/* Modal Footer */}
         <div className="p-4 sm:p-5 border-t border-orange/10 dark:border-zinc-800 bg-white dark:bg-darkSurface flex flex-col sm:flex-row items-center justify-between gap-3">
           <Link
-            href={`/vendor-search?category=${encodeURIComponent(category)}`}
+            href={`/services?category=${encodeURIComponent(category)}`}
             onClick={onClose}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:underline"
           >

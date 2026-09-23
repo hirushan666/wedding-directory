@@ -212,10 +212,10 @@ const PortfolioPage: React.FC = () => {
             Still looking for the perfect match?
           </p>
           <Link
-            href="/vendor-search"
+            href="/services"
             className="border-2 border-orange hover:border-orange hover:bg-orange hover:text-white  text-black py-3 px-6 rounded-[22px] transition-colors font-medium text-lg inline-flex items-center"
           >
-            Continue browsing vendors
+            Continue browsing services
           </Link>
         </div>
       </div>

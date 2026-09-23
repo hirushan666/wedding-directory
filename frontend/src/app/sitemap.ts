@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: "https://sayido.lk/vendor-search",
+      url: "https://sayido.lk/services",
       lastModified: new Date(),
       changeFrequency: 'always',
       priority: 0.9,

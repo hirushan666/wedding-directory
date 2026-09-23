@@ -180,11 +180,11 @@ const VisitorDashboardContent: React.FC = () => {
 
           <div className="flex items-center gap-2.5 self-start sm:self-auto">
             <Link
-              href="/vendor-search"
+              href="/services"
               className="inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange/90 text-white font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm text-xs"
             >
               <FiSearch size={15} />
-              <span>Explore Vendors</span>
+              <span>Explore Services</span>
             </Link>
           </div>
         </div>

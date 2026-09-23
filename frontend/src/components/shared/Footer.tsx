@@ -67,10 +67,10 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="/vendor-search"
+                  href="/services"
                   className="hover:text-orange dark:hover:text-orange transition-colors"
                 >
-                  Find Vendors
+                  Find Services
                 </Link>
               </li>
               <li>

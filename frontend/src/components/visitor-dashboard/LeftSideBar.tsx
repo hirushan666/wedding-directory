@@ -30,7 +30,7 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
       label: "Checklist"
     },
     {
-      href: `visitor-dashboard/budgeter/${visitorId}`,
+      href: `/visitor-dashboard/budgeter/${visitorId}`,
       icon: <FiDollarSign className="w-5 h-5" />,
       label: "Budgeter"
     },
@@ -40,7 +40,7 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
       label: "Guest List"
     },
     {
-      href: `visitor-dashboard/my-vendors/${visitorId}`,
+      href: `/visitor-dashboard/my-vendors/${visitorId}`,
       icon: <HiOutlineBriefcase className="w-5 h-5" />,
       label: "My Vendors"
     },
@@ -66,20 +66,19 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
       {/* Collapse toggle button */}
       <button
         onClick={onToggleCollapse}
-        className="absolute -right-3 top-6 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-50
-          transition-all duration-200 ease-in-out z-10"
+        className="absolute -right-3 top-6 bg-white dark:bg-darkElevated border border-orange/20 dark:border-zinc-700 text-gray-600 dark:text-zinc-300 rounded-full p-1.5 shadow-md hover:bg-orange/10 hover:text-orange transition-all duration-200 ease-in-out z-10"
       >
         {isCollapsed ? (
-          <FiChevronRight className="w-4 h-4 text-gray-600" />
+          <FiChevronRight className="w-4 h-4" />
         ) : (
-          <FiChevronLeft className="w-4 h-4 text-gray-600" />
+          <FiChevronLeft className="w-4 h-4" />
         )}
       </button>
 
       {/* Sidebar container */}
       <div
         className={`
-          bg-white font-title rounded-lg shadow-md transition-all duration-300 ease-in-out
+          bg-white dark:bg-darkSurface font-title rounded-2xl border border-orange/20 dark:border-zinc-800 shadow-sm transition-all duration-300 ease-in-out
           ${isCollapsed ? 'w-16' : 'w-full'}
         `}
       >
@@ -87,18 +86,19 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
           {menuItems.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.label === "Chats" && pathname.startsWith("/visitor-dashboard/chats"));
+              (item.label === "Chats" && pathname.startsWith("/visitor-dashboard/chats")) ||
+              (item.label === "Smart Picks" && pathname.startsWith("/visitor-dashboard/recommendations"));
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`
-                  flex items-center px-3 py-3 rounded-md
-                  transition-colors duration-200 ease-in-out
+                  flex items-center px-3 py-3 rounded-xl
+                  transition-colors duration-200 ease-in-out font-body text-sm
                   ${isActive
-                  ? "bg-orange-50 text-orange-600"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-orange text-white shadow-xs font-semibold"
+                  : "text-gray-700 dark:text-zinc-300 hover:bg-orange/5 dark:hover:bg-darkElevated hover:text-orange dark:hover:text-orange"
                 }
                   ${isCollapsed ? 'justify-center' : 'justify-start'}
                   group
@@ -107,7 +107,7 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
               >
                 <span className={`
                   flex-shrink-0
-                  ${isActive ? "text-orange-600" : "text-gray-500"}
+                  ${isActive ? "text-white" : "text-gray-500 dark:text-zinc-400 group-hover:text-orange"}
                   ${isCollapsed ? 'mr-0' : 'mr-3'}
                   transition-all duration-200
                 `}>
@@ -122,9 +122,7 @@ const LeftSideBar: React.FC<LeftSideBarProps> = ({ isCollapsed, onToggleCollapse
 
                 {/* Tooltip for collapsed state */}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs
-                    rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity
-                    whitespace-nowrap">
+                  <div className="absolute left-full ml-2 px-2.5 py-1 bg-gray-900 dark:bg-zinc-800 text-white text-xs rounded-lg shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-20 border border-zinc-700 font-body">
                     {item.label}
                   </div>
                 )}

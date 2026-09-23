@@ -391,10 +391,10 @@ const VisitorBookingCalendar: React.FC<VisitorBookingCalendarProps> = ({
                 No vendor appointments or bookings scheduled on this date.
               </p>
               <Link
-                href="/vendor-search"
+                href="/services"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:underline"
               >
-                <span>Browse vendors available on this date &rarr;</span>
+                <span>Browse services available on this date &rarr;</span>
               </Link>
             </div>
           )}
@@ -412,10 +412,10 @@ const VisitorBookingCalendar: React.FC<VisitorBookingCalendarProps> = ({
                 } recorded on your wedding schedule.`}
           </span>
           <Link
-            href="/vendor-search"
+            href="/services"
             className="text-orange font-semibold hover:underline inline-flex items-center gap-1"
           >
-            <span>Book more wedding vendors</span>
+            <span>Book more wedding services</span>
             <span>&rarr;</span>
           </Link>
         </div>

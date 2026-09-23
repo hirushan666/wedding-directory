@@ -133,11 +133,11 @@ const MyVendors = () => {
             {/* Quick Action Button */}
             <div className="shrink-0 flex items-center gap-3">
               <Link
-                href="/vendor-search"
+                href="/services"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-orange hover:bg-orange/90 text-white font-semibold text-sm shadow-xs transition-all w-full sm:w-auto"
               >
                 <FiSearch size={16} />
-                <span>Explore Vendors</span>
+                <span>Explore Services</span>
               </Link>
             </div>
           </div>

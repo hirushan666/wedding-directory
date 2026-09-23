@@ -100,7 +100,7 @@ const Service: React.FC = () => {
   );
 
   const currentVendorId = data?.findServiceById?.vendor?.id;
-  const dashboardHref = "/vendor-search";
+  const dashboardHref = "/services";
 
   // Get vendor's booked dates for the calendar - MUST be at top level with all hooks
   const { data: bookedDatesData, refetch: refetchBookedDates } = useQuery(

@@ -115,7 +115,7 @@ const GeneralHeader = () => {
               {[
                 { name: "home", path: "/" },
                 { name: "blog", path: "/blog" },
-                { name: "vendors", path: "/vendor-search" },
+                { name: "services", path: "/services" },
                 { name: "about", path: "/about" },
                 { name: "contact", path: "/contact" },
                 { name: "help", path: "/help" },
