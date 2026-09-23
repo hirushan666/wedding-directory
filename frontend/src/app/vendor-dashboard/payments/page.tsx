@@ -421,12 +421,6 @@ const PaymentsPage = () => {
               <FiRefreshCw size={15} />
               <span>Refresh</span>
             </button>
-            <Link
-              href="/vendor-dashboard"
-              className="inline-flex items-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-4 py-2.5 rounded-xl transition-all text-sm shadow-sm"
-            >
-              <span>Back to Dashboard</span>
-            </Link>
           </div>
         </div>
 

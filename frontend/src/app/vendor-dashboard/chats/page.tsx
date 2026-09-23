@@ -4,7 +4,6 @@ import { useQuery } from "@apollo/client";
 import { GET_VENDOR_MESSAGES } from "@/graphql/queries";
 import ChatList from "../../../components/chat/VendorChatList";
 import { useVendorAuth } from "../../../contexts/VendorAuthContext";
-import Link from "next/link";
 import { ChatListSkeleton } from "@/components/ui/shimmer";
 
 export default function ChatsPage() {
@@ -19,12 +18,9 @@ export default function ChatsPage() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-4xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-2">
-            <div className="h-8 w-56 bg-gray-200/80 dark:bg-darkElevated/90 rounded-xl animate-pulse" />
-            <div className="h-4 w-80 bg-gray-200/80 dark:bg-darkElevated/90 rounded-xl animate-pulse" />
-          </div>
-          <div className="h-10 w-36 bg-gray-200/80 dark:bg-darkElevated/90 rounded-xl animate-pulse" />
+        <div className="space-y-2">
+          <div className="h-8 w-56 bg-gray-200/80 dark:bg-darkElevated/90 rounded-xl animate-pulse" />
+          <div className="h-4 w-80 bg-gray-200/80 dark:bg-darkElevated/90 rounded-xl animate-pulse" />
         </div>
         <ChatListSkeleton count={5} />
       </div>
@@ -44,22 +40,13 @@ export default function ChatsPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-4xl">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 font-title">
-            My Conversations
-          </h1>
-          <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
-            Reply to couples inquiring about your wedding services and discuss booking packages.
-          </p>
-        </div>
-
-        <Link
-          href="/vendor-dashboard"
-          className="inline-flex items-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-4 py-2.5 rounded-xl transition-all text-sm shadow-sm self-start sm:self-auto"
-        >
-          <span>Back to Dashboard</span>
-        </Link>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 font-title">
+          My Conversations
+        </h1>
+        <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+          Reply to couples inquiring about your wedding services and discuss booking packages.
+        </p>
       </div>
 
       <ChatList chats={data?.getVendorChats || []} />
