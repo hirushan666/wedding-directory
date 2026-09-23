@@ -260,8 +260,8 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
               </div>
               <p className="text-xs text-gray-500 dark:text-zinc-400 font-body mt-0.5">
                 {hasOfferings
-                  ? `Your shortlisted vendors for ${category.toLowerCase()}`
-                  : `No shortlisted vendors saved yet`}
+                  ? `Your shortlisted services for ${category.toLowerCase()}`
+                  : `No shortlisted services saved yet`}
               </p>
             </div>
           </div>
@@ -304,10 +304,10 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
                 <FiBookmark size={24} />
               </div>
               <h3 className="font-title text-lg font-bold text-gray-900 dark:text-zinc-100">
-                No saved vendors in {category}
+                No saved services in {category}
               </h3>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-1 mb-5 max-w-sm mx-auto">
-                You haven&apos;t shortlisted any {category.toLowerCase()} vendors yet. Browse our directory to find the perfect vendor!
+                You haven&apos;t shortlisted any {category.toLowerCase()} services yet. Browse our directory to find the perfect service!
               </p>
               <Link
                 href={`/services?category=${encodeURIComponent(category)}`}

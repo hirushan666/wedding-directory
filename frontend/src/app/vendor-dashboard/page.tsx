@@ -124,11 +124,11 @@ const VendorDashBoardContent: React.FC = () => {
         </div>
 
         {/* Asymmetric Profile + Booking Calendar Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-8 items-start">
           <div className="lg:col-span-4">
             <VendorBanner vendor={vendorInfo} />
           </div>
-          <div className="lg:col-span-8 flex flex-col gap-4 lg:h-full">
+          <div className="lg:col-span-8 flex flex-col gap-4">
             <div className="flex items-center gap-2 bg-white dark:bg-darkSurface p-1.5 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 w-fit self-start">
               <button
                 onClick={() => {

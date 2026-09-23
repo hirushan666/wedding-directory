@@ -1,117 +1,241 @@
-import Footer from '@/components/shared/Footer'
-import Header from '@/components/shared/Headers/Header'
-import React from 'react'
+import React from "react";
+import Header from "@/components/shared/Headers/Header";
+import Footer from "@/components/shared/Footer";
 import { Metadata } from "next";
+import { FiFileText, FiCalendar, FiMail, FiPhone, FiAlertCircle, FiCheck } from "react-icons/fi";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Use",
-}
+  title: "Terms of Use - Say I Do",
+  description: "Terms and conditions governing the use of the Say I Do multivendor wedding directory and planning platform.",
+};
 
-const TermsofUse = () => {
+const TermsOfUse = () => {
+  const sections = [
+    {
+      id: "1",
+      title: "Acceptance of Terms",
+      content: (
+        <p className="text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          Welcome to <strong className="text-gray-900 dark:text-zinc-100 font-semibold">Say I Do</strong>, Sri Lanka&apos;s premier multivendor wedding planning directory. By accessing or using our website, services, mobile interfaces, or planning tools (collectively, the &ldquo;Services&rdquo;), you acknowledge that you have read, understood, and agree to be bound by these Terms of Use (&ldquo;Terms&rdquo;). If you do not agree to these Terms, you may not access or use the platform.
+        </p>
+      ),
+    },
+    {
+      id: "2",
+      title: "Eligibility & Account Registration",
+      content: (
+        <div className="space-y-3 text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          <p>
+            To unlock planning tools (such as wedding checklists, budgeters, chats, and vendor bookings), you must register for an account:
+          </p>
+          <ul className="space-y-2.5 pl-1">
+            <li className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-md bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                <FiCheck size={12} />
+              </span>
+              <span>You must provide accurate, current, and complete registration information.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-md bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                <FiCheck size={12} />
+              </span>
+              <span>You are solely responsible for maintaining the confidentiality of your credentials and all activities occurring under your account.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-md bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                <FiCheck size={12} />
+              </span>
+              <span>You must immediately notify Say I Do of any unauthorized security breach or compromise.</span>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: "3",
+      title: "Use of Platform & Planning Tools",
+      content: (
+        <p className="text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          Say I Do provides an interactive marketplace and suite of planning features intended for engaged couples and authorized wedding vendors. You agree to use the Services solely for legitimate wedding planning and vendor discovery purposes. Misuse, automated scraping, or unauthorized reverse-engineering of our matching engines or proprietary directories is strictly prohibited.
+        </p>
+      ),
+    },
+    {
+      id: "4",
+      title: "Vendor Services & Marketplace Relationship",
+      content: (
+        <div className="space-y-3 text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          <p>
+            Say I Do connects couples with independent third-party wedding vendors (venues, photographers, caterers, florists, videographers, decorators, and more):
+          </p>
+          <ul className="space-y-2 pl-1">
+            <li className="flex items-start gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange mt-2 shrink-0" />
+              <span>Vendors operate as independent business entities and are exclusively responsible for the quality, delivery, and performance of their booked services.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange mt-2 shrink-0" />
+              <span>While Say I Do verifies profiles and provides transparent client reviews, we do not directly employ vendors or guarantee their individual service execution.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange mt-2 shrink-0" />
+              <span>Specific contractual deliverables, timelines, and package terms are established directly between the couple and the respective vendor.</span>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: "5",
+      title: "Payments, Bookings & Invoicing",
+      content: (
+        <div className="space-y-3 text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          <p>
+            Payments made through Say I Do are facilitated through regulated, secure payment gateways:
+          </p>
+          <ul className="space-y-2 pl-1">
+            <li className="flex items-start gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange mt-2 shrink-0" />
+              <span>All prices, quotes, and packages listed in Sri Lankan Rupees (LKR) are set by the respective vendors.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange mt-2 shrink-0" />
+              <span>Official digital invoices and payment confirmation receipts are generated within your Payments History tab upon transaction completion.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange mt-2 shrink-0" />
+              <span>Refund policies, milestone advance deposits, and cancellation terms are subject to each vendor&apos;s published service agreement.</span>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: "6",
+      title: "User Reviews & Content Guidelines",
+      content: (
+        <p className="text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          Users may post honest reviews, vendor ratings, planning notes, and ceremony imagery. By submitting reviews or media, you grant Say I Do a non-exclusive, royalty-free license to display this content across our directory. Content that is fraudulent, defamatory, discriminatory, infringing on copyrights, or promotional spam is subject to immediate moderation and removal.
+        </p>
+      ),
+    },
+    {
+      id: "7",
+      title: "Intellectual Property",
+      content: (
+        <p className="text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          The Say I Do trademark, logo, design system, algorithms, text, and visual assets are the exclusive intellectual property of Say I Do and its creators. Unauthorized reproduction, redistribution, or modification of any platform assets without explicit written authorization is prohibited under applicable IP laws.
+        </p>
+      ),
+    },
+    {
+      id: "8",
+      title: "Limitation of Liability",
+      content: (
+        <p className="text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          To the maximum extent permitted by applicable law in Sri Lanka, Say I Do and its directors, employees, and affiliates shall not be liable for any indirect, incidental, punitive, or consequential damages resulting from vendor performance disputes, service delays, event cancellations, or technical disruptions.
+        </p>
+      ),
+    },
+    {
+      id: "9",
+      title: "Governing Law & Dispute Resolution",
+      content: (
+        <p className="text-sm sm:text-[15px] leading-relaxed text-gray-700 dark:text-zinc-300">
+          These Terms and any non-contractual obligations arising out of or in connection with them shall be governed by and construed in accordance with the substantive laws of the Democratic Socialist Republic of Sri Lanka. Any disputes shall be subject to the exclusive jurisdiction of the courts of Sri Lanka.
+        </p>
+      ),
+    },
+  ];
+
   return (
-    <div>
-      <Header/>
-      <div className='bg-white mx-auto px-80'>
-      <div className='font-bold font-title text-3xl pt-6'> Terms of Use for Say I Do</div>
-      <div className='font-body mt-8'>
-      <h1 className='mt-8 font-bold font-title'>Effective Date: October 12, 2024</h1>
+    <div className="min-h-screen flex flex-col bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 font-body transition-colors duration-200">
+      <Header />
 
-<p className='mt-6'>Welcome to Say I Do, a multivendor wedding planning platform. By using or accessing our website, or services (collectively, the “Services”), you agree to comply with and be bound by the following terms and conditions (the “Terms”). Please read these Terms carefully before using the Services.
-</p>
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full space-y-6 sm:space-y-8">
+        {/* Hero Card */}
+        <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 shadow-sm p-6 sm:p-10 text-center relative overflow-hidden">
+          <div className="w-14 h-14 rounded-2xl bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center mx-auto mb-4 border border-orange/20 shadow-xs">
+            <FiFileText size={28} />
+          </div>
 
-<h1 className='mt-6 font-bold font-title text-lg'>1. Acceptance of Terms</h1>
-<p className='mt-6'>By accessing or using the Services, you accept and agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Services.
-</p>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange/10 dark:bg-orange/20 text-orange border border-orange/20 mb-3">
+            <FiCalendar size={13} />
+            <span>Effective Date: October 12, 2024</span>
+          </span>
 
-<h1 className='mt-6 font-bold font-title text-lg'>2. Changes to the Terms</h1>
-<p className='mt-6'>We may revise the Terms at any time without prior notice. Any changes will be effective upon posting. Your continued use of the Services after any changes are posted constitutes your acceptance of the revised Terms.
-</p>
+          <h1 className="font-title text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-zinc-100 mb-3">
+            Terms of Use
+          </h1>
+          <p className="text-gray-500 dark:text-zinc-400 font-body text-xs sm:text-sm max-w-lg mx-auto">
+            Please read these terms and conditions carefully before utilizing Say I Do and its wedding directory services.
+          </p>
+        </div>
 
-<h1 className='mt-6 font-bold font-title text-lg'>3. Use of the Services</h1>
-<p className='mt-6'>The Services are intended for individuals planning weddings and for vendors offering wedding-related products and services. You agree to use the Services only for their intended purpose. You are responsible for all activity on your account.
-</p>
+        {/* Terms Content Card */}
+        <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 shadow-sm p-6 sm:p-10 space-y-8">
+          {sections.map((section) => (
+            <section key={section.id} className="space-y-3 pb-6 border-b border-orange/10 dark:border-zinc-800 last:border-b-0 last:pb-0">
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 rounded-lg bg-orange/10 dark:bg-orange/20 text-orange font-bold font-title text-xs flex items-center justify-center shrink-0 border border-orange/20">
+                  {section.id}
+                </span>
+                <h2 className="font-title text-lg sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
+                  {section.title}
+                </h2>
+              </div>
+              <div className="pl-10">
+                {section.content}
+              </div>
+            </section>
+          ))}
 
-<h1 className='mt-6 font-bold font-title text-lg'>4. Account Registration</h1>
-<p className='mt-6'>To access certain features of the Services, you may be required to create an account. You agree to provide accurate and complete information when registering. You are solely responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
-</p>
+          {/* Contact Box */}
+          <div className="mt-8 pt-6 border-t border-orange/15 dark:border-zinc-800 bg-orange/[0.03] dark:bg-orange/[0.06] border border-orange/20 dark:border-orange/30 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-orange font-bold text-sm font-title">
+                <FiAlertCircle size={16} />
+                <span>Need Clarification on Our Terms?</span>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-400">
+                Reach out to our legal and customer support team with any questions.
+              </p>
+            </div>
 
-<h1 className='mt-6 font-bold font-title text-lg'>5. User Content</h1>
-<p className='mt-6'>You may post, upload, or submit content (e.g., reviews, photos, vendor listings) through the Services (“User Content”). You retain ownership of your User Content, but by submitting it, you grant Say I Do a non-exclusive, worldwide, royalty-free, transferable, and sublicensable license to use, modify, and display your User Content in connection with the Services.
-</p>
+            <div className="flex flex-wrap gap-4 text-xs sm:text-sm">
+              <a
+                href="mailto:sayidolk@gmail.com"
+                className="inline-flex items-center gap-2 text-orange hover:underline font-semibold"
+              >
+                <FiMail size={14} />
+                <span>sayidolk@gmail.com</span>
+              </a>
+              <a
+                href="tel:+94477864913"
+                className="inline-flex items-center gap-2 text-orange hover:underline font-semibold"
+              >
+                <FiPhone size={14} />
+                <span>+94 47 786 4913</span>
+              </a>
+            </div>
+          </div>
+        </div>
 
-<h1 className='mt-6 font-bold font-title text-lg'>6. Vendor Obligations</h1>
-<p className='mt-6'>If you are a vendor using the Services to list products or services, you must provide accurate and complete information regarding your offerings. You agree to comply with all applicable laws and regulations and ensure that any materials you post do not infringe on the rights of others.
-</p>
+        {/* Bottom Navigation Link */}
+        <div className="flex items-center justify-between px-2 text-xs sm:text-sm text-gray-500 dark:text-zinc-400">
+          <Link href="/privacy-policy" className="hover:text-orange transition-colors underline">
+            &larr; Read our Privacy Policy
+          </Link>
+          <Link href="/contact" className="hover:text-orange transition-colors underline">
+            Contact Support &rarr;
+          </Link>
+        </div>
+      </main>
 
-<h1 className='mt-6 font-bold font-title text-lg'>7. Payment and Fees</h1>
-<p className='mt-6'>For any transactions made through the Services, Say I Do may charge fees as specified in our pricing and payment terms. Vendors are responsible for all applicable taxes and must handle refunds or disputes directly with customers unless otherwise specified in these Terms.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>8. Prohibited Activities</h1>
-<p className='mt-6'>You agree not to engage in any of the following activities:
-
-Circumventing the Services to book or conduct business outside of Say I Do.
-Posting false, misleading, or defamatory information.
-Harassing or threatening other users or vendors.
-Attempting to disrupt or compromise the security of the Services.</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>9. Intellectual Property</h1>
-<p className='mt-6'>All content and materials available on the Services, including but not limited to text, graphics, logos, and software, are the property of Say I Do or its licensors and are protected by copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, or create derivative works from any content on the Services without our prior written permission.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>10. DMCA Notice</h1>
-<p className='mt-6'>If you believe that any content on the Services infringes your copyright, please provide a written DMCA notice to our Copyright Agent at, 
-</p>
-<p className='font-bold mt-3'>Email Us</p>
-<p>sayidolk@gmail.com</p>
-<div className='mt-4'>
-    <p>Your notice must include:</p>
-
-Your physical or electronic signature.
-Identification of the copyrighted work you believe to have been infringed.
-Identification of the infringing material and information sufficient to locate it.
-A statement that you have a good faith belief that the use of the material is unauthorized.
-A statement that the information in the notice is accurate and that you are authorized to act on behalf of the copyright owner.
-</div>
-
-<h1 className='mt-6 font-bold font-title text-lg'>11. Linked Websites</h1>
-<p className='mt-6'>The Services may contain links to third-party websites. Say I Do is not responsible for the content, availability, or accuracy of these external sites, and accessing them is at your own risk.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>12. Limitation of Liability</h1>
-<p className='mt-6'>To the fullest extent permitted by law, Say I Do and its affiliates will not be liable for any indirect, incidental, consequential, or punitive damages arising out of your use of the Services, even if we have been advised of the possibility of such damages.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>13. Indemnification</h1>
-<p className='mt-6'>You agree to indemnify and hold harmless Say I Do, its affiliates, and their respective officers, directors, employees, and agents from any claims, damages, liabilities, and expenses arising out of your use of the Services or any violation of these Terms.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>14. Termination</h1>
-<p className='mt-6'>We may suspend or terminate your access to the Services at any time, for any reason, including but not limited to violation of these Terms or failure to pay applicable fees.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>15. Governing Law</h1>
-<p className='mt-6'>These Terms and your use of the Services are governed by and construed in accordance with the laws of 
-    Sri Lanka,
-     without regard to its conflict of law principles.
-</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>16. Contact Us</h1>
-<p className='mt-6'>If you have any questions or concerns about these Terms, please contact us at </p>
-<p className='font-bold mt-3'>Email Us</p>
-<p>sayidolk@gmail.com</p>
-
-<h1 className='mt-6 font-bold font-title text-lg'>17. Additional Terms for Vendors</h1>
-<p className='mt-6 pb-8'>If you are a vendor, additional terms and conditions may apply to your use of the Services, including payment terms, refund policies, and any vendor-specific rules of conduct.
-</p>
-
-
-      </div>
-      </div>
-      <Footer/>
-
+      <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default TermsofUse
+export default TermsOfUse;

@@ -90,7 +90,7 @@ const MyVendors = () => {
             <Breadcrumbs
               items={[
                 { label: "Dashboard", href: "/visitor-dashboard" },
-                { label: "My Vendors" },
+                { label: "Saved Services" },
               ]}
             />
           </div>
@@ -100,17 +100,17 @@ const MyVendors = () => {
               <div className="flex items-center gap-2.5 mb-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange/10 text-orange">
                   <FiBookmark size={13} />
-                  Shortlisted & Booked
+                  Shortlisted Services
                 </span>
                 <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">
                   {categories.length} Categories Total
                 </span>
               </div>
               <h1 className="font-title text-3xl sm:text-4xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
-                My Vendors
+                Saved Services
               </h1>
               <p className="font-body text-sm sm:text-base text-gray-600 dark:text-zinc-400 mt-1.5 max-w-2xl">
-                Easily organize, track, and manage all your shortlisted and booked wedding vendors in one place.
+                Easily organize, track, and compare all your shortlisted wedding services in one place.
               </p>
 
               {/* Metric badges */}
@@ -118,13 +118,13 @@ const MyVendors = () => {
                 <div className="flex items-center gap-2 bg-orange/[0.06] dark:bg-darkElevated border border-orange/15 dark:border-zinc-800 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200">
                   <span className="w-2 h-2 rounded-full bg-orange" />
                   <span>
-                    <strong className="text-orange font-bold">{allVendors.length}</strong> Saved Vendors
+                    <strong className="text-orange font-bold">{allVendors.length}</strong> Saved Services
                   </span>
                 </div>
                 <div className="flex items-center gap-2 bg-orange/[0.06] dark:bg-darkElevated border border-orange/15 dark:border-zinc-800 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200">
                   <FiLayers className="text-orange" size={14} />
                   <span>
-                    <strong className="text-orange font-bold">{categoriesWithVendorsCount}</strong> Categories with Vendors
+                    <strong className="text-orange font-bold">{categoriesWithVendorsCount}</strong> Categories with Services
                   </span>
                 </div>
               </div>
@@ -150,10 +150,10 @@ const MyVendors = () => {
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pb-6 border-b border-orange/10 dark:border-zinc-800">
           <div>
             <h2 className="font-title text-xl sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
-              Vendors by Category
+              Saved Services by Category
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 font-body">
-              Click any category box below to open your shortlisted vendors or explore options.
+              Click any category box below to view your shortlisted services or explore directory options.
             </p>
           </div>
 

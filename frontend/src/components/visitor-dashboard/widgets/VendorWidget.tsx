@@ -1,10 +1,12 @@
 import React from "react";
-import { HiOutlineBriefcase } from "react-icons/hi2";
+import { FiBookmark } from "react-icons/fi";
 import Image from "next/image";
+import Link from "next/link";
 import ActionButton from "../common/ActionButton";
 import EmptyStateDisplay from "../common/EmptyStateDisplay";
 
 interface ServiceOrOffering {
+  id?: string;
   name?: string;
   banner?: string;
   vendor?: {
@@ -14,6 +16,7 @@ interface ServiceOrOffering {
 
 interface Vendor {
   id: string;
+  serviceId?: string;
   service?: ServiceOrOffering;
   offering?: ServiceOrOffering;
 }
@@ -30,10 +33,10 @@ const VendorWidget: React.FC<VendorWidgetProps> = ({ vendors, visitorId }) => {
       <div className="px-5 sm:px-6 py-4 border-b border-orange/15 dark:border-orange/20 bg-orange/[0.02] dark:bg-orange/[0.04] flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center shrink-0 border border-orange/15 dark:border-orange/30 shadow-xs">
-            <HiOutlineBriefcase className="h-5 w-5" />
+            <FiBookmark className="h-5 w-5" />
           </div>
           <h3 className="font-title text-base sm:text-lg font-bold text-gray-900 dark:text-zinc-100">
-            My Vendors
+            Saved Services
           </h3>
         </div>
       </div>
@@ -42,22 +45,28 @@ const VendorWidget: React.FC<VendorWidgetProps> = ({ vendors, visitorId }) => {
       <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between gap-4">
         <div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mb-3.5 font-body">
-            Track and manage your selected wedding vendors.
+            Track and compare your shortlisted wedding services.
           </p>
           {vendors && vendors.length > 0 ? (
             <div className="space-y-2.5">
             {vendors.slice(0, 2).map((vendor) => {
               const svc = vendor.service || vendor.offering;
+              const serviceId = svc?.id || vendor.serviceId;
+              const href = serviceId
+                ? `/services/${serviceId}`
+                : `/visitor-dashboard/my-vendors/${visitorId}`;
+
               return (
-                <div
+                <Link
                   key={vendor.id}
-                  className="flex items-center gap-3 pb-2.5 border-b border-orange/10 dark:border-zinc-800 last:border-b-0 last:pb-0 group"
+                  href={href}
+                  className="flex items-center gap-3 p-1.5 -mx-1.5 rounded-xl transition-all duration-200 hover:bg-orange/[0.04] dark:hover:bg-zinc-800/50 pb-2.5 border-b border-orange/10 dark:border-zinc-800 last:border-b-0 last:pb-1.5 group cursor-pointer"
                 >
                   <div className="w-11 h-11 rounded-xl overflow-hidden bg-orange/10 dark:bg-orange/20 shrink-0 border border-orange/20 shadow-xs flex items-center justify-center">
                     {svc?.banner ? (
                       <Image
                         src={svc.banner}
-                        alt={svc?.name || "Vendor"}
+                        alt={svc?.name || "Service"}
                         width={50}
                         height={50}
                         className="h-full w-full object-cover transition-transform group-hover:scale-105"
@@ -72,20 +81,20 @@ const VendorWidget: React.FC<VendorWidgetProps> = ({ vendors, visitorId }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-title font-bold truncate text-gray-900 dark:text-zinc-200 text-sm group-hover:text-orange transition-colors">
-                      {svc?.name || "Unnamed Vendor"}
+                      {svc?.name || "Unnamed Service"}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-zinc-400 font-body truncate mt-0.5">
                       {svc?.vendor?.busname || "No business name"}
                     </p>
                   </div>
-                </div>
+                </Link>
               );
             })}
             </div>
           ) : (
             <EmptyStateDisplay
-              Icon={HiOutlineBriefcase}
-              message="No vendors added yet"
+              Icon={FiBookmark}
+              message="No services shortlisted yet"
             />
           )}
         </div>
@@ -95,8 +104,8 @@ const VendorWidget: React.FC<VendorWidgetProps> = ({ vendors, visitorId }) => {
             href={`/visitor-dashboard/my-vendors/${visitorId}`}
             label={
               vendors.length > 0
-                ? `View all vendors (${vendors.length})`
-                : "Find vendors"
+                ? `View all saved (${vendors.length})`
+                : "Explore services"
             }
           />
         </div>

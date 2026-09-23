@@ -149,7 +149,8 @@ const WriteReview: React.FC<WriteReviewProps> = ({ serviceId, vendorName }) => {
           })
         : null;
 
-    if (!visitor) {
+    // Only render for visitors who are eligible to submit a review per site requirements
+    if (!visitor || eligibilityLoading || !eligibility?.canReview) {
         return null;
     }
 
