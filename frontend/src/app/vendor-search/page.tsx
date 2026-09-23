@@ -10,7 +10,6 @@ import { useLazyQuery } from "@apollo/client";
 import FilterSearchBar from "@/components/vendor-search/FilterSearchBar";
 import { Offering } from "@/types/offeringTypes";
 import { OfferingGridSkeleton } from "@/components/ui/shimmer";
-import Chatbot from "@/components/ai/chatbot";
 import { IoClose } from "react-icons/io5";
 
 const VendorSearchContent: React.FC = () => {
@@ -42,7 +41,7 @@ const VendorSearchContent: React.FC = () => {
         },
       });
     },
-    [getServices]
+    [getServices],
   );
 
   // Sync state and run search when URL query parameters change
@@ -66,7 +65,7 @@ const VendorSearchContent: React.FC = () => {
       const qs = params.toString();
       router.push(qs ? `/vendor-search?${qs}` : "/vendor-search");
     },
-    [searchParams, router]
+    [searchParams, router],
   );
 
   const handleCategoryChange = useCallback(
@@ -81,7 +80,7 @@ const VendorSearchContent: React.FC = () => {
       const qs = params.toString();
       router.push(qs ? `/vendor-search?${qs}` : "/vendor-search");
     },
-    [searchParams, router]
+    [searchParams, router],
   );
 
   // Search button click handler
@@ -106,7 +105,7 @@ const VendorSearchContent: React.FC = () => {
       router.push(qs ? `/vendor-search?${qs}` : "/vendor-search");
       executeQuery(activeCity, activeCategory);
     },
-    [city, category, searchParams, router, executeQuery]
+    [city, category, searchParams, router, executeQuery],
   );
 
   // Filter removal helpers
@@ -142,43 +141,45 @@ const VendorSearchContent: React.FC = () => {
   };
 
   // Filter offerings by visibility, category/city in-memory fallback, and keyword query
-  const visibleOfferings = (data?.findServices || data?.findOfferings || []).filter(
-    (offering: Offering) => {
-      if (!offering.visible) return false;
+  const visibleOfferings = (
+    data?.findServices ||
+    data?.findOfferings ||
+    []
+  ).filter((offering: Offering) => {
+    if (!offering.visible) return false;
 
-      // In-memory verification for active category filter
-      if (category && category.trim()) {
-        const catTarget = category.toLowerCase().trim();
-        const offCat = (offering.category || "").toLowerCase().trim();
-        if (!offCat.includes(catTarget) && !catTarget.includes(offCat)) {
-          return false;
-        }
+    // In-memory verification for active category filter
+    if (category && category.trim()) {
+      const catTarget = category.toLowerCase().trim();
+      const offCat = (offering.category || "").toLowerCase().trim();
+      if (!offCat.includes(catTarget) && !catTarget.includes(offCat)) {
+        return false;
       }
-
-      // In-memory verification for active city filter
-      if (city && city.trim()) {
-        const cityTarget = city.toLowerCase().trim();
-        const offCity = (offering.vendor?.city || "").toLowerCase().trim();
-        if (!offCity.includes(cityTarget) && !cityTarget.includes(offCity)) {
-          return false;
-        }
-      }
-
-      if (keyword.trim()) {
-        const q = keyword.toLowerCase().trim();
-        const matchName = offering.name?.toLowerCase().includes(q);
-        const matchBus = offering.vendor?.busname?.toLowerCase().includes(q);
-        const matchCat = offering.category?.toLowerCase().includes(q);
-        const matchCity = offering.vendor?.city?.toLowerCase().includes(q);
-        const matchDesc = offering.description?.toLowerCase().includes(q);
-        if (!matchName && !matchBus && !matchCat && !matchCity && !matchDesc) {
-          return false;
-        }
-      }
-
-      return true;
     }
-  );
+
+    // In-memory verification for active city filter
+    if (city && city.trim()) {
+      const cityTarget = city.toLowerCase().trim();
+      const offCity = (offering.vendor?.city || "").toLowerCase().trim();
+      if (!offCity.includes(cityTarget) && !cityTarget.includes(offCity)) {
+        return false;
+      }
+    }
+
+    if (keyword.trim()) {
+      const q = keyword.toLowerCase().trim();
+      const matchName = offering.name?.toLowerCase().includes(q);
+      const matchBus = offering.vendor?.busname?.toLowerCase().includes(q);
+      const matchCat = offering.category?.toLowerCase().includes(q);
+      const matchCity = offering.vendor?.city?.toLowerCase().includes(q);
+      const matchDesc = offering.description?.toLowerCase().includes(q);
+      if (!matchName && !matchBus && !matchCat && !matchCity && !matchDesc) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 
   const hasActiveFilters = Boolean(category || city || keyword);
 
@@ -280,7 +281,8 @@ const VendorSearchContent: React.FC = () => {
             ) : error ? (
               <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-rose-200 dark:border-rose-900/50 p-8 text-center my-6 max-w-md mx-auto">
                 <p className="text-rose-600 dark:text-rose-400 font-medium text-sm font-body">
-                  Oops! We encountered an issue loading vendors. Please try again in a moment.
+                  Oops! We encountered an issue loading vendors. Please try
+                  again in a moment.
                 </p>
               </div>
             ) : visibleOfferings.length > 0 ? (
@@ -303,12 +305,14 @@ const VendorSearchContent: React.FC = () => {
                       name={offering.name}
                       vendor={offering.vendor?.busname || "N/A"}
                       city={offering.vendor?.city || "N/A"}
-                      banner={offering.banner || "/images/offeringPlaceholder.webp"}
+                      banner={
+                        offering.banner || "/images/offeringPlaceholder.webp"
+                      }
                       rating={
                         offering.reviews.length > 0
                           ? offering.reviews.reduce(
                               (acc, review) => acc + Number(review.rating),
-                              0
+                              0,
                             ) / offering.reviews.length
                           : 0
                       }
@@ -324,7 +328,8 @@ const VendorSearchContent: React.FC = () => {
                   No vendors found
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 font-body">
-                  Try adjusting your city, category, or keyword search to discover more wedding services.
+                  Try adjusting your city, category, or keyword search to
+                  discover more wedding services.
                 </p>
                 {hasActiveFilters && (
                   <button
@@ -341,7 +346,6 @@ const VendorSearchContent: React.FC = () => {
         </div>
       </main>
 
-      <Chatbot />
       <Footer />
     </div>
   );
