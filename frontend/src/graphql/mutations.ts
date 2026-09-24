@@ -35,6 +35,8 @@ export const UPDATE_VISITOR = gql`
       engaged_date
       wed_date
       wed_venue
+      phone
+      city
     }
   }
 `;

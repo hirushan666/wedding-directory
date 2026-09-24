@@ -76,6 +76,20 @@ const VisitorDashboardContent: React.FC = () => {
     },
   });
 
+  // If visitor profile is incomplete (missing visitor_fname), redirect to onboarding
+  useEffect(() => {
+    if (data?.findVisitorById) {
+      const v = data.findVisitorById;
+      const isMissingName =
+        !v.visitor_fname ||
+        !v.visitor_fname.trim() ||
+        v.visitor_fname === 'Visitor';
+      if (isMissingName) {
+        router.push('/visitor-onboarding');
+      }
+    }
+  }, [data, router]);
+
   // Get my vendors data
   const { data: vendorsData } = useQuery(FIND_ALL_MY_VENDORS, {
     variables: { visitorId: visitor?.id },
@@ -159,8 +173,12 @@ const VisitorDashboardContent: React.FC = () => {
   }
 
   const visitorData = data?.findVisitorById;
-  const brideName = visitorData?.partner_fname || "Bride";
-  const groomName = visitorData?.visitor_fname || "Groom";
+  const userFname = visitorData?.visitor_fname?.trim() || "";
+  const partnerFname = visitorData?.partner_fname?.trim() || "";
+  const welcomeNames =
+    userFname && partnerFname
+      ? `${userFname} & ${partnerFname}`
+      : userFname || "Couple";
 
   return (
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col font-body transition-colors duration-200">
@@ -174,7 +192,7 @@ const VisitorDashboardContent: React.FC = () => {
               Wedding Dashboard
             </h1>
             <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
-              Welcome back, {brideName} & {groomName}!
+              Welcome back, {welcomeNames}!
             </p>
           </div>
 

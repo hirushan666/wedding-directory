@@ -134,12 +134,12 @@ const SignupPage: React.FC = () => {
       );
 
       if (signupRes && signupRes.access_token) {
-        toast.success('Successfully Registered & Verified!', {
+        toast.success('Account created! Now set up your wedding profile.', {
           style: { background: '#333', color: '#fff' },
         });
 
         login(signupRes.access_token);
-        router.push('/pageone');
+        router.push('/visitor-onboarding');
       } else {
         setError('Registration succeeded, but login failed. Please sign in.');
       }
