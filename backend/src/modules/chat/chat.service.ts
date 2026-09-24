@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { v4 as uuid } from "uuid";
@@ -8,6 +8,7 @@ import { VisitorEntity } from "../../database/entities/visitor.entity";
 import { VendorEntity } from "../../database/entities/vendor.entity";
 import { ServiceEntity } from "../../database/entities/service.entity";
 import { IChat } from "../../database/schemas/chat.schema";
+import { formatCoupleName } from "../../utils/format-couple-name.util";
 
 @Injectable()
 export class ChatService {
@@ -39,17 +40,14 @@ export class ChatService {
       const visitor = visitorId
         ? await this.visitorRepository.findOne({ where: { id: visitorId } })
         : null;
-      const visitorName = [visitor?.visitor_fname, visitor?.partner_fname]
-        .filter(Boolean)
-        .join(' & ')
-        .trim();
+      const visitorName = formatCoupleName(visitor, '');
 
       const response = await fetch('https://exp.host/--/api/v2/push/send', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Accept-encoding': 'gzip, deflate',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: JSON.stringify({
           to: pushToken,

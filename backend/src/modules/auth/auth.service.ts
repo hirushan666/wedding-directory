@@ -17,6 +17,7 @@ import {
   CompleteVisitorSignupDto,
   CompleteVendorSignupDto,
 } from './dto/signup-otp.dto';
+import { formatCoupleName } from '../../utils/format-couple-name.util';
 
 @Injectable()
 export class AuthService {
@@ -660,19 +661,8 @@ export class AuthService {
       return { success: false, message: 'Visitor not found' };
     }
 
-    let coupleName = formattedName?.trim();
-    if (!coupleName) {
-      const p1 = visitor.visitor_fname?.trim();
-      const p2 = visitor.partner_fname?.trim();
-      if (p1 && p2) {
-        coupleName = `${p1} & ${p2}`;
-      } else if (p1) {
-        const l1 = visitor.visitor_lname?.trim();
-        coupleName = l1 ? `${p1} ${l1}` : p1;
-      } else {
-        coupleName = 'Happy Couple';
-      }
-    }
+    const coupleName =
+      formattedName?.trim() || formatCoupleName(visitor, 'Happy Couple');
 
     void this.mailService.sendVisitorSignupWelcomeEmail({
       to: visitor.email,

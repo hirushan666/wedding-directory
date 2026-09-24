@@ -20,6 +20,7 @@ import {
   RespondApprovalRequestInput,
 } from '../../graphql/inputs/respond-approval-request.input';
 import { MailService } from '../mail/mail.service';
+import { formatCoupleName } from '../../utils/format-couple-name.util';
 
 @Injectable()
 export class PackageApprovalService {
@@ -86,7 +87,7 @@ export class PackageApprovalService {
         headers: {
           Accept: 'application/json',
           'Accept-encoding': 'gzip, deflate',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: JSON.stringify({
           to: pushToken.trim(),
@@ -183,9 +184,7 @@ export class PackageApprovalService {
     const saved = await this.approvalRequestRepo.save(request);
 
     // Send push notification to vendor mobile app
-    const visitorName = [visitor.visitor_fname, visitor.partner_fname]
-      .filter(Boolean)
-      .join(' & ') || 'Couple';
+    const visitorName = formatCoupleName(visitor, 'Couple');
 
     if (vendor.expoPushToken) {
       void this.sendPushToVendor(
@@ -262,9 +261,7 @@ export class PackageApprovalService {
 
     // Send email notification to the couple
     if (request.visitor?.email) {
-      const visitorName = [request.visitor.visitor_fname, request.visitor.partner_fname]
-        .filter(Boolean)
-        .join(' & ') || 'Couple';
+      const visitorName = formatCoupleName(request.visitor, 'Couple');
       const vendorName = request.vendor.busname || 'Your Vendor';
 
       void this.mailService.sendApprovalDecisionEmail({
