@@ -134,6 +134,8 @@ export const GET_VISITOR_BY_ID = gql`
       engaged_date
       wed_date
       wed_venue
+      phone
+      city
       profile_pic_url
     }
   }

@@ -26,3 +26,13 @@ export class CompleteVendorSignupDto {
   location?: string;
   signupVerificationToken: string;
 }
+
+export class VisitorOnboardingWelcomeDto {
+  visitorId: string;
+  formattedName?: string;
+}
+
+export class VendorOnboardingWelcomeDto {
+  vendorId: string;
+}
+

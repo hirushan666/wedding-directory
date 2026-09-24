@@ -1,4 +1,4 @@
-﻿import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
@@ -67,7 +67,7 @@ export class MailService {
         </p>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -130,7 +130,7 @@ export class MailService {
         </p>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -173,7 +173,7 @@ export class MailService {
     const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
     const isApproved = options.action === 'approved';
     const subject = isApproved
-      ? `≡ƒÄë Booking Request Approved: ${options.packageName} - Say I Do`
+      ? `🎉 Booking Request Approved: ${options.packageName} - Say I Do`
       : `Booking Request Update: ${options.packageName} - Say I Do`;
 
     const formattedDate = new Date(options.bookingDate).toLocaleDateString('en-US', {
@@ -199,7 +199,7 @@ export class MailService {
         </div>
         
         <h3 style="color: #222222; font-size: 20px; margin-bottom: 12px;">
-          ${isApproved ? '≡ƒÄë Great news! Your request was approved.' : 'Booking Request Update'}
+          ${isApproved ? '🎉 Great news! Your request was approved.' : 'Booking Request Update'}
         </h3>
         
         <p style="color: #444444; font-size: 15px; line-height: 1.5;">
@@ -236,7 +236,7 @@ export class MailService {
         }
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -279,7 +279,7 @@ export class MailService {
     paymentReference: string;
   }): Promise<boolean> {
     const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `≡ƒÄë Booking Confirmed: ${options.packageName} - Say I Do`;
+    const subject = `🎉 Booking Confirmed: ${options.packageName} - Say I Do`;
     const formattedAmount = Number(options.amount || 0).toLocaleString();
     const formattedDate = options.bookingDate
       ? new Date(options.bookingDate).toLocaleDateString('en-US', {
@@ -349,8 +349,8 @@ export class MailService {
           options.vendorEmail || options.vendorPhone
             ? `<div style="background-color: #f8f9fa; border-radius: 6px; padding: 14px 18px; margin: 20px 0;">
                 <span style="font-size: 13px; font-weight: bold; color: #444444; display: block; margin-bottom: 6px;">Vendor Contact Details</span>
-                ${options.vendorPhone ? `<p style="margin: 3px 0; font-size: 13px; color: #555555;">≡ƒô₧ Phone: <strong>${options.vendorPhone}</strong></p>` : ''}
-                ${options.vendorEmail ? `<p style="margin: 3px 0; font-size: 13px; color: #555555;">Γ£ë∩╕Å Email: <strong>${options.vendorEmail}</strong></p>` : ''}
+                ${options.vendorPhone ? `<p style="margin: 3px 0; font-size: 13px; color: #555555;">📞 Phone: <strong>${options.vendorPhone}</strong></p>` : ''}
+                ${options.vendorEmail ? `<p style="margin: 3px 0; font-size: 13px; color: #555555;">✉️ Email: <strong>${options.vendorEmail}</strong></p>` : ''}
               </div>`
             : ''
         }
@@ -360,7 +360,7 @@ export class MailService {
         </p>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px; border-top: 1px solid #eeeeee; padding-top: 16px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -401,7 +401,7 @@ export class MailService {
     paymentReference: string;
   }): Promise<boolean> {
     const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `≡ƒÄë New Package Purchase: ${options.packageName} - Say I Do`;
+    const subject = `🎉 New Package Purchase: ${options.packageName} - Say I Do`;
     const formattedAmount = Number(options.amount || 0).toLocaleString();
     const formattedDate = options.bookingDate
       ? new Date(options.bookingDate).toLocaleDateString('en-US', {
@@ -421,7 +421,7 @@ export class MailService {
 
         <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 18px; text-align: center; margin-bottom: 24px;">
           <span style="font-size: 20px; font-weight: bold; color: #16a34a; display: block; margin-bottom: 4px;">
-            ≡ƒÄë Congratulations! You have a new booking.
+            🎉 Congratulations! You have a new booking.
           </span>
           <span style="font-size: 14px; color: #4b5563;">
             A couple has successfully purchased and reserved your wedding package.
@@ -487,7 +487,7 @@ export class MailService {
         </div>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px; border-top: 1px solid #eeeeee; padding-top: 16px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -528,7 +528,7 @@ export class MailService {
     requestId: string;
   }): Promise<boolean> {
     const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `≡ƒÆì New Package Approval Request: ${options.packageName} - Say I Do`;
+    const subject = `💍 New Package Approval Request: ${options.packageName} - Say I Do`;
     const formattedDate = new Date(options.bookingDate).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -599,7 +599,7 @@ export class MailService {
         </div>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px; border-top: 1px solid #eeeeee; padding-top: 16px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -632,7 +632,7 @@ export class MailService {
     visitorName: string;
   }): Promise<boolean> {
     const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `Welcome to Say I Do! ≡ƒÆì Your Wedding Planning Journey Begins`;
+    const subject = `Welcome to Say I Do! 💍 Your Wedding Planning Journey Begins`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -642,7 +642,7 @@ export class MailService {
         </div>
 
         <h3 style="color: #222222; font-size: 20px; margin-bottom: 12px; text-align: center;">
-          Welcome, ${options.visitorName || 'Happy Couple'}! ≡ƒÄë
+          Welcome, ${options.visitorName || 'Happy Couple'}! 🎉
         </h3>
 
         <p style="color: #444444; font-size: 15px; line-height: 1.6;">
@@ -664,7 +664,7 @@ export class MailService {
         </p>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px; border-top: 1px solid #eeeeee; padding-top: 16px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -698,7 +698,7 @@ export class MailService {
     businessName: string;
   }): Promise<boolean> {
     const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `Welcome to Say I Do! Vendor Registration Received ≡ƒîƒ`;
+    const subject = `Welcome to Say I Do! Vendor Registration Received 🌟`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -738,7 +738,7 @@ export class MailService {
         </p>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px; border-top: 1px solid #eeeeee; padding-top: 16px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do. All rights reserved.
+          &copy; ${new Date().getFullYear()} Say I Do. All rights reserved.
         </div>
       </div>
     `;
@@ -777,7 +777,7 @@ export class MailService {
   }): Promise<boolean> {
     const to = options.adminEmail || process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'sayidolk@gmail.com';
     const from = process.env.SMTP_FROM || 'Say I Do System <no-reply@sayido.lk>';
-    const subject = `≡ƒôï New Vendor Signup: ${options.businessName || options.vendorName} - Review Request`;
+    const subject = `📋 New Vendor Signup: ${options.businessName || options.vendorName} - Review Request`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -824,7 +824,7 @@ export class MailService {
         </p>
 
         <div style="text-align: center; margin-top: 24px; color: #aaaaaa; font-size: 12px; border-top: 1px solid #eeeeee; padding-top: 16px;">
-          ┬⌐ ${new Date().getFullYear()} Say I Do Admin System
+          &copy; ${new Date().getFullYear()} Say I Do Admin System
         </div>
       </div>
     `;

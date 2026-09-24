@@ -14,6 +14,7 @@ import CityInput from '@/components/vendor-signup/CityInput';
 import LocationInput from '@/components/vendor-signup/LocationInput';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'react-hot-toast';
+import { sendVendorOnboardingWelcome } from '@/api/auth/signup-otp.api';
 import { Building2, User, Phone, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function VendorOnboardingPage() {
@@ -154,6 +155,11 @@ export default function VendorOnboardingPage() {
             location: location.trim(),
           },
         },
+      });
+
+      // Send vendor welcome email and notify admin
+      sendVendorOnboardingWelcome(vendor.id).catch((emailErr) => {
+        console.warn('Vendor welcome email notice:', emailErr);
       });
 
       toast.success('Business profile setup complete! Welcome to your dashboard.', {

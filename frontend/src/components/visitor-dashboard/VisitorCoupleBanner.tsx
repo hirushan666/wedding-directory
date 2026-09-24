@@ -74,8 +74,8 @@ const VisitorCoupleBanner: React.FC<VisitorCoupleBannerProps> = ({
       })
     : null;
 
-  const brideName = visitorData?.partner_fname || "Bride";
-  const groomName = visitorData?.visitor_fname || "Groom";
+  const userFname = visitorData?.visitor_fname?.trim() || "";
+  const partnerFname = visitorData?.partner_fname?.trim() || "";
 
   const navigationItems = [
     {
@@ -161,32 +161,69 @@ const VisitorCoupleBanner: React.FC<VisitorCoupleBannerProps> = ({
 
       {/* Couple Header / Marriage Names */}
       <div className="mb-4">
-        <span className="text-[11px] font-semibold text-orange uppercase tracking-wider block mb-1">
-          The Marriage Of
-        </span>
-        <h2 className="font-marck text-3xl sm:text-4xl text-gray-900 dark:text-zinc-100 leading-tight">
-          {brideName}
-          <span className="text-orange font-title text-2xl mx-2 font-normal">&</span>
-          {groomName}
-        </h2>
+        {userFname && partnerFname ? (
+          <>
+            <span className="text-[11px] font-semibold text-orange uppercase tracking-wider block mb-1">
+              The Marriage Of
+            </span>
+            <h2 className="font-marck text-3xl sm:text-4xl text-gray-900 dark:text-zinc-100 leading-tight">
+              {userFname}
+              <span className="text-orange font-title text-2xl mx-2 font-normal">&</span>
+              {partnerFname}
+            </h2>
+          </>
+        ) : (
+          <>
+            <span className="text-[11px] font-semibold text-orange uppercase tracking-wider block mb-1">
+              Wedding Planning
+            </span>
+            <h2 className="font-marck text-3xl sm:text-4xl text-gray-900 dark:text-zinc-100 leading-tight">
+              {userFname ? `${userFname}'s Wedding` : "Our Wedding"}
+            </h2>
+            <Link
+              href="/visitor-profile"
+              className="inline-block text-xs font-medium text-orange hover:underline mt-1 transition-colors"
+            >
+              + Add partner&apos;s name
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Countdown Card matching vendor profile detail cards */}
       <div className="w-full bg-orange/[0.04] dark:bg-orange/[0.08] border border-orange/20 rounded-2xl p-4 mb-6 text-center">
-        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-zinc-400 font-medium mb-1">
-          <FiCalendar size={13} className="text-orange" />
-          <span>Days Until The Wedding</span>
-        </div>
-        <div className="font-title text-3xl sm:text-4xl font-bold text-orange">
-          {daysLeft}{" "}
-          <span className="text-sm font-normal text-gray-600 dark:text-zinc-400">
-            {daysLeft === 1 ? "Day" : "Days"}
-          </span>
-        </div>
-        {formattedWeddingDate && (
-          <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1 font-body">
-            Date: {formattedWeddingDate}
-          </p>
+        {weddingDate ? (
+          <>
+            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-zinc-400 font-medium mb-1">
+              <FiCalendar size={13} className="text-orange" />
+              <span>Days Until The Wedding</span>
+            </div>
+            <div className="font-title text-3xl sm:text-4xl font-bold text-orange">
+              {daysLeft}{" "}
+              <span className="text-sm font-normal text-gray-600 dark:text-zinc-400">
+                {daysLeft === 1 ? "Day" : "Days"}
+              </span>
+            </div>
+            {formattedWeddingDate && (
+              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1 font-body">
+                Date: {formattedWeddingDate}
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-1">
+            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-700 dark:text-zinc-300 font-semibold mb-2.5">
+              <FiCalendar size={14} className="text-orange" />
+              <span>Wedding date is not set</span>
+            </div>
+            <Link
+              href="/visitor-profile"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-orange hover:bg-orange/90 text-white shadow-sm shadow-orange/20 transition-all active:scale-[0.98]"
+            >
+              <FiCalendar size={13} />
+              <span>Set Wedding Date</span>
+            </Link>
+          </div>
         )}
       </div>
 

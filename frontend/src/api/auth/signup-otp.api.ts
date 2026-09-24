@@ -79,3 +79,25 @@ export const completeVendorSignup = async (
   );
   return response.data;
 };
+
+export const sendVisitorOnboardingWelcome = async (
+  visitorId: string,
+  formattedName?: string,
+): Promise<{ success: boolean }> => {
+  const response = await request.post<{ success: boolean }>(
+    '/auth/onboarding/welcome-visitor',
+    { visitorId, formattedName },
+  );
+  return response.data;
+};
+
+export const sendVendorOnboardingWelcome = async (
+  vendorId: string,
+): Promise<{ success: boolean }> => {
+  const response = await request.post<{ success: boolean }>(
+    '/auth/onboarding/welcome-vendor',
+    { vendorId },
+  );
+  return response.data;
+};
+
