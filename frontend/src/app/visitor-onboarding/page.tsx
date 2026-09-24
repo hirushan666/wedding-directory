@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import CityInput from '@/components/vendor-signup/CityInput';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'react-hot-toast';
+import { formatCoupleName } from '@/utils/formatCoupleName';
+import { sendVisitorOnboardingWelcome } from '@/api/auth/signup-otp.api';
 import {
   Heart,
   User,
@@ -128,6 +130,18 @@ export default function VisitorOnboardingPage() {
           console.warn('Checklist date init notice:', dateErr);
         }
       }
+
+      // Send welcome email with personalized names formatted via the helper function
+      const formattedName = formatCoupleName({
+        visitor_fname: trimmedFname,
+        visitor_lname: visitorLname,
+        partner_fname: partnerFname,
+        partner_lname: partnerLname,
+      });
+
+      sendVisitorOnboardingWelcome(visitor.id, formattedName).catch((emailErr) => {
+        console.warn('Visitor welcome email notice:', emailErr);
+      });
 
       toast.success('Wedding profile setup complete! Welcome to Say I Do.', {
         style: { background: '#333', color: '#fff' },
