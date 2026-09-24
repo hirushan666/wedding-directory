@@ -35,7 +35,7 @@ const OfferingCard: React.FC<OfferingProps> = ({
   isSaved = false,
   onToggleSave,
 }) => {
-  const { visitor } = useAuth();
+  const { visitor, isAuthenticated } = useAuth();
   const [isSavedState, setIsSavedState] = useState(isSaved);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -99,7 +99,7 @@ const OfferingCard: React.FC<OfferingProps> = ({
     const emptyStars = 5 - Math.ceil(safeRating);
     for (let i = 0; i < emptyStars; i++) {
       stars.push(
-        <FaRegStar key={`empty-star-${i}`} className="text-yellow-400" />
+        <FaRegStar key={`empty-star-${i}`} className="text-yellow-400" />,
       );
     }
 
@@ -107,7 +107,9 @@ const OfferingCard: React.FC<OfferingProps> = ({
   };
 
   const numericRating = Number(rating) || 0;
-  const [imgSrc, setImgSrc] = useState(banner || "/images/offeringPlaceholder.webp");
+  const [imgSrc, setImgSrc] = useState(
+    banner || "/images/offeringPlaceholder.webp",
+  );
 
   return (
     <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm hover:shadow-md border border-gray-100 dark:border-zinc-800 hover:border-orange/30 dark:hover:border-orange/30 transition-all duration-200 overflow-hidden flex flex-col h-full group">
@@ -123,13 +125,19 @@ const OfferingCard: React.FC<OfferingProps> = ({
           />
 
           {/* Quick Save / Bookmark Heart Button */}
-          {id && (
+          {id && isAuthenticated && (
             <button
               type="button"
               onClick={handleSaveToggle}
               disabled={isSaving}
-              aria-label={isSavedState ? "Remove from saved services" : "Save service"}
-              title={isSavedState ? "Remove from saved services" : "Save to shortlisted services"}
+              aria-label={
+                isSavedState ? "Remove from saved services" : "Save service"
+              }
+              title={
+                isSavedState
+                  ? "Remove from saved services"
+                  : "Save to shortlisted services"
+              }
               className={`absolute top-2.5 right-2.5 z-10 p-2 rounded-full backdrop-blur-md transition-all cursor-pointer shadow-sm ${
                 isSavedState
                   ? "bg-white/95 dark:bg-darkSurface/95 text-red-500 scale-105"
@@ -150,7 +158,9 @@ const OfferingCard: React.FC<OfferingProps> = ({
             {name}
           </h3>
           <div className="flex items-center gap-1 mb-1.5">
-            <div className="flex items-center text-sm">{renderStars(numericRating)}</div>
+            <div className="flex items-center text-sm">
+              {renderStars(numericRating)}
+            </div>
             <span className="text-xs text-gray-500 dark:text-zinc-400 ml-1 font-body">
               ({numericRating.toFixed(1)})
             </span>
