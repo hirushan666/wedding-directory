@@ -8,6 +8,7 @@ import { VisitorEntity } from "../../database/entities/visitor.entity";
 import { VendorEntity } from "../../database/entities/vendor.entity";
 import { ServiceEntity } from "../../database/entities/service.entity";
 import { IChat } from "../../database/schemas/chat.schema";
+import { formatCoupleName } from "../../utils/format-couple-name.util";
 
 @Injectable()
 export class ChatService {
@@ -39,10 +40,7 @@ export class ChatService {
       const visitor = visitorId
         ? await this.visitorRepository.findOne({ where: { id: visitorId } })
         : null;
-      const visitorName = [visitor?.visitor_fname, visitor?.partner_fname]
-        .filter(Boolean)
-        .join(' & ')
-        .trim();
+      const visitorName = formatCoupleName(visitor, '');
 
       const response = await fetch('https://exp.host/--/api/v2/push/send', {
         method: 'POST',

@@ -12,6 +12,7 @@ import {
   PackageApprovalRequestEntity,
 } from '../../database/entities/package-approval-request.entity';
 import { MailService } from '../mail/mail.service';
+import { formatCoupleName } from '../../utils/format-couple-name.util';
 
 @Injectable()
 export class PaymentService {
@@ -562,11 +563,7 @@ export class PaymentService {
 
       if (!payment) return;
 
-      const visitorName =
-        [payment.visitor?.visitor_fname, payment.visitor?.partner_fname]
-          .filter(Boolean)
-          .join(' & ')
-          .trim() || 'A couple';
+      const visitorName = formatCoupleName(payment.visitor, 'A couple');
 
       const vendorName =
         payment.vendor?.busname ||
