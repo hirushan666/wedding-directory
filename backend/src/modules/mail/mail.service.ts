@@ -35,10 +35,38 @@ export class MailService {
     }
   }
 
+  private getSender(): string {
+    const raw = process.env.SMTP_FROM || process.env.SMTP_USER || 'Say I Do <sayidolk@gmail.com>';
+    const cleaned = raw.replace(/^["']|["']$/g, '').trim();
+    if (cleaned.includes('<')) return cleaned;
+    return `Say I Do <${cleaned}>`;
+  }
+
+  private getReplyTo(): string {
+    const raw = process.env.SMTP_REPLY_TO || process.env.SMTP_USER || 'sayidolk@gmail.com';
+    return raw.replace(/^["']|["']$/g, '').trim();
+  }
+
+  private generateMessageId(): string {
+    const timestamp = Date.now();
+    const randomPart = Math.random().toString(36).substring(2, 10);
+    const host = process.env.SMTP_HOST || 'gmail.com';
+    const domain = host.includes('gmail') ? 'gmail.com' : 'sayido.lk';
+    return `<${timestamp}.${randomPart}@${domain}>`;
+  }
+
+  private getTransactionalHeaders() {
+    return {
+      'X-Entity-Ref-ID': `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      'X-Auto-Response-Suppress': 'OOF, AutoReply',
+      'Auto-Submitted': 'auto-generated',
+      'X-Mailer': 'SayIDo-Notification-Service',
+    };
+  }
+
   async sendOtpEmail(to: string, otp: string, role: 'visitor' | 'vendor'): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
     const roleLabel = role === 'vendor' ? 'Wedding Vendor' : 'Couple / Visitor';
-    const subject = `Your Password Reset OTP - Say I Do`;
+    const subject = `Your Password Reset Code - Say I Do`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -76,11 +104,14 @@ export class MailService {
       try {
         this.logger.log(`[OTP DISPATCH] Generated code for ${to} (${role}): [ ${otp} ]`);
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to,
           subject,
           html,
-          text: `Your Say I Do password reset OTP is ${otp}. It expires in 10 minutes.`,
+          text: `Your Say I Do password reset code is ${otp}. It expires in 10 minutes.`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Password reset OTP email sent successfully to ${to}`);
         return true;
@@ -99,7 +130,6 @@ export class MailService {
   }
 
   async sendSignupOtpEmail(to: string, otp: string, role: 'visitor' | 'vendor'): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <sayidolk@gmail.com>';
     const roleLabel = role === 'vendor' ? 'Wedding Vendor' : 'Couple / Visitor';
     const subject = `Verify Your Email - Say I Do`;
 
@@ -139,11 +169,14 @@ export class MailService {
       try {
         this.logger.log(`[SIGNUP OTP] Generated code for ${to} (${role}): [ ${otp} ]`);
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to,
           subject,
           html,
           text: `Your Say I Do email verification code is ${otp}. It expires in 10 minutes.`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Signup verification email sent successfully to ${to}`);
         return true;
@@ -170,10 +203,9 @@ export class MailService {
     vendorMessage?: string;
     expiresAt?: Date;
   }): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
     const isApproved = options.action === 'approved';
     const subject = isApproved
-      ? `🎉 Booking Request Approved: ${options.packageName} - Say I Do`
+      ? `Booking Request Approved: ${options.packageName} - Say I Do`
       : `Booking Request Update: ${options.packageName} - Say I Do`;
 
     const formattedDate = new Date(options.bookingDate).toLocaleDateString('en-US', {
@@ -199,7 +231,7 @@ export class MailService {
         </div>
         
         <h3 style="color: #222222; font-size: 20px; margin-bottom: 12px;">
-          ${isApproved ? '🎉 Great news! Your request was approved.' : 'Booking Request Update'}
+          ${isApproved ? 'Great news! Your request was approved.' : 'Booking Request Update'}
         </h3>
         
         <p style="color: #444444; font-size: 15px; line-height: 1.5;">
@@ -217,7 +249,7 @@ export class MailService {
                 <p style="margin: 0; font-size: 14px; color: #555555; font-style: italic;">
                   "${options.vendorMessage}"
                 </p>
-                <span style="font-size: 12px; color: #888888; display: block; margin-top: 6px;">ΓÇö Message from vendor</span>
+                <span style="font-size: 12px; color: #888888; display: block; margin-top: 6px;">&mdash; Message from vendor</span>
               </div>`
             : ''
         }
@@ -244,13 +276,16 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to: options.to,
           subject,
           html,
           text: `${subject}\n\nVendor: ${options.vendorName}\nPackage: ${options.packageName}\nDate: ${formattedDate}\n${
             options.vendorMessage ? `Note: ${options.vendorMessage}` : ''
           }`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Approval decision email sent successfully to ${options.to}`);
         return true;
@@ -278,8 +313,7 @@ export class MailService {
     bookingDate?: Date;
     paymentReference: string;
   }): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `🎉 Booking Confirmed: ${options.packageName} - Say I Do`;
+    const subject = `Booking Confirmation: ${options.packageName} - Say I Do`;
     const formattedAmount = Number(options.amount || 0).toLocaleString();
     const formattedDate = options.bookingDate
       ? new Date(options.bookingDate).toLocaleDateString('en-US', {
@@ -368,11 +402,14 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to: options.to,
           subject,
           html,
           text: `Booking Confirmed!\nPackage: ${options.packageName}\nVendor: ${options.vendorName}\nDate: ${formattedDate}\nAmount: LKR ${formattedAmount}\nReference: ${options.paymentReference}`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Package purchase confirmation email sent to user ${options.to}`);
         return true;
@@ -400,8 +437,7 @@ export class MailService {
     bookingDate?: Date;
     paymentReference: string;
   }): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `🎉 New Package Purchase: ${options.packageName} - Say I Do`;
+    const subject = `New Booking Received: ${options.packageName} - Say I Do`;
     const formattedAmount = Number(options.amount || 0).toLocaleString();
     const formattedDate = options.bookingDate
       ? new Date(options.bookingDate).toLocaleDateString('en-US', {
@@ -421,7 +457,7 @@ export class MailService {
 
         <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 18px; text-align: center; margin-bottom: 24px;">
           <span style="font-size: 20px; font-weight: bold; color: #16a34a; display: block; margin-bottom: 4px;">
-            🎉 Congratulations! You have a new booking.
+            Congratulations! You have a new booking.
           </span>
           <span style="font-size: 14px; color: #4b5563;">
             A couple has successfully purchased and reserved your wedding package.
@@ -495,11 +531,14 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to: options.to,
           subject,
           html,
           text: `New Package Purchase!\nClient: ${options.visitorName} (${options.visitorEmail})\nPackage: ${options.packageName}\nDate: ${formattedDate}\nAmount: LKR ${formattedAmount}\nReference: ${options.paymentReference}`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Package purchase alert email sent to vendor ${options.to}`);
         return true;
@@ -527,8 +566,7 @@ export class MailService {
     userNote?: string;
     requestId: string;
   }): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `💍 New Package Approval Request: ${options.packageName} - Say I Do`;
+    const subject = `New Package Approval Request: ${options.packageName} - Say I Do`;
     const formattedDate = new Date(options.bookingDate).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -607,11 +645,14 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to: options.to,
           subject,
           html,
           text: `New Booking Approval Request!\nCouple: ${options.visitorName}\nPackage: ${options.packageName}\nDate: ${formattedDate}\nNote: ${options.userNote || 'None'}`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Package approval request email sent to vendor ${options.to}`);
         return true;
@@ -631,8 +672,7 @@ export class MailService {
     to: string;
     visitorName: string;
   }): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `Welcome to Say I Do! 💍 Your Wedding Planning Journey Begins`;
+    const subject = `Welcome to Say I Do - Your Wedding Planning Journey Begins`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -642,7 +682,7 @@ export class MailService {
         </div>
 
         <h3 style="color: #222222; font-size: 20px; margin-bottom: 12px; text-align: center;">
-          Welcome, ${options.visitorName || 'Happy Couple'}! 🎉
+          Welcome, ${options.visitorName || 'Happy Couple'}!
         </h3>
 
         <p style="color: #444444; font-size: 15px; line-height: 1.6;">
@@ -672,11 +712,14 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to: options.to,
           subject,
           html,
           text: `Welcome to Say I Do!\nCongratulations on your wedding planning journey, ${options.visitorName || 'Happy Couple'}! Discover Sri Lanka's top wedding vendors and packages at Say I Do.`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Visitor welcome email sent to ${options.to}`);
         return true;
@@ -697,8 +740,7 @@ export class MailService {
     vendorName: string;
     businessName: string;
   }): Promise<boolean> {
-    const from = process.env.SMTP_FROM || 'Say I Do <no-reply@sayido.lk>';
-    const subject = `Welcome to Say I Do! Vendor Registration Received 🌟`;
+    const subject = `Welcome to Say I Do - Vendor Registration Received`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -746,11 +788,14 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to: options.to,
           subject,
           html,
           text: `Welcome to Say I Do, ${options.businessName}!\nYour vendor account has been created. Start setting up your profile and packages to reach couples planning their wedding.`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Vendor welcome email sent to ${options.to}`);
         return true;
@@ -776,8 +821,7 @@ export class MailService {
     location?: string;
   }): Promise<boolean> {
     const to = options.adminEmail || process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'sayidolk@gmail.com';
-    const from = process.env.SMTP_FROM || 'Say I Do System <no-reply@sayido.lk>';
-    const subject = `📋 New Vendor Signup: ${options.businessName || options.vendorName} - Review Request`;
+    const subject = `New Vendor Signup: ${options.businessName || options.vendorName} - Review Request`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff;">
@@ -832,11 +876,14 @@ export class MailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from,
+          from: this.getSender(),
+          replyTo: this.getReplyTo(),
           to,
           subject,
           html,
           text: `New Vendor Signup:\nBusiness: ${options.businessName}\nName: ${options.vendorName}\nEmail: ${options.vendorEmail}\nPhone: ${options.phone || 'N/A'}`,
+          messageId: this.generateMessageId(),
+          headers: this.getTransactionalHeaders(),
         });
         this.logger.log(`Admin new vendor alert email sent to ${to}`);
         return true;
@@ -852,4 +899,5 @@ export class MailService {
     }
   }
 }
+
 
