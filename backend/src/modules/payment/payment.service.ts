@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaymentEntity } from '../../database/entities/payment.entity';
@@ -592,7 +592,7 @@ export class PaymentService {
             })
           : null;
 
-        const title = `≡ƒÄë New Booking: ${packageName}!`;
+        const title = `🎉 New Booking: ${packageName}!`;
         const body = bookingDateStr
           ? `${visitorName} booked "${packageName}" (LKR ${formattedAmount}) for ${bookingDateStr}.`
           : `${visitorName} booked "${packageName}" (LKR ${formattedAmount}).`;

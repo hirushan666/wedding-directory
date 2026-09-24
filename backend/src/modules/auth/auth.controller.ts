@@ -24,6 +24,8 @@ import {
   VerifySignupOtpDto,
   CompleteVisitorSignupDto,
   CompleteVendorSignupDto,
+  VisitorOnboardingWelcomeDto,
+  VendorOnboardingWelcomeDto,
 } from './dto/signup-otp.dto';
 
 const buildCookieOptions = (): CookieOptions => {
@@ -176,6 +178,19 @@ export class AuthController {
     res.cookie('access_tokenVendor', result.access_token, buildCookieOptions());
     res.clearCookie('access_token', clearCookieOptions());
     return result;
+  }
+
+  @Post('onboarding/welcome-visitor')
+  async sendVisitorWelcome(@Body() body: VisitorOnboardingWelcomeDto) {
+    return await this.authService.sendVisitorOnboardingWelcome(
+      body.visitorId,
+      body.formattedName,
+    );
+  }
+
+  @Post('onboarding/welcome-vendor')
+  async sendVendorWelcome(@Body() body: VendorOnboardingWelcomeDto) {
+    return await this.authService.sendVendorOnboardingWelcome(body.vendorId);
   }
 
   @Post('logout')

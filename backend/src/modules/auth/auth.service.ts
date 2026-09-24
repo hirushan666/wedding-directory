@@ -365,13 +365,6 @@ export class AuthService {
           profile_pic_url: payload.picture,
         });
         isNewUser = true;
-
-        void this.mailService.sendVisitorSignupWelcomeEmail({
-          to: visitor.email,
-          visitorName:
-            `${visitor.visitor_fname || ''} ${visitor.visitor_lname || ''}`.trim() ||
-            'Valued Couple',
-        });
       }
       const { access_token } = this.loginVisitor(visitor);
       return {
@@ -398,20 +391,6 @@ export class AuthService {
           profile_pic_url: payload.picture,
         });
         isNewUser = true;
-
-        void this.mailService.sendVendorSignupWelcomeEmail({
-          to: vendor.email,
-          vendorName:
-            `${vendor.fname || ''} ${vendor.lname || ''}`.trim() || 'Wedding Vendor',
-          businessName: vendor.busname || 'My Business',
-        });
-
-        void this.mailService.sendAdminNewVendorAlertEmail({
-          vendorName:
-            `${vendor.fname || ''} ${vendor.lname || ''}`.trim() || 'Wedding Vendor',
-          businessName: vendor.busname || 'My Business',
-          vendorEmail: vendor.email,
-        });
       }
       const { access_token } = this.loginVendor(vendor);
       return {
@@ -608,11 +587,6 @@ export class AuthService {
       password: dto.password,
     });
 
-    void this.mailService.sendVisitorSignupWelcomeEmail({
-      to: visitor.email,
-      visitorName: 'Valued Couple',
-    });
-
     const { access_token } = this.loginVisitor(visitor);
 
     return {
@@ -667,23 +641,6 @@ export class AuthService {
       location: dto.location || '',
     });
 
-    void this.mailService.sendVendorSignupWelcomeEmail({
-      to: vendor.email,
-      vendorName:
-        `${vendor.fname || ''} ${vendor.lname || ''}`.trim() || 'Wedding Vendor',
-      businessName: vendor.busname || 'My Business',
-    });
-
-    void this.mailService.sendAdminNewVendorAlertEmail({
-      vendorName:
-        `${vendor.fname || ''} ${vendor.lname || ''}`.trim() || 'Wedding Vendor',
-      businessName: vendor.busname || 'My Business',
-      vendorEmail: vendor.email,
-      phone: vendor.phone,
-      city: vendor.city,
-      location: vendor.location,
-    });
-
     const { access_token } = this.loginVendor(vendor);
 
     return {
@@ -692,5 +649,67 @@ export class AuthService {
       vendorId: vendor.id,
       vendorEmail: vendor.email,
     };
+  }
+
+  /**
+   * Sends personalized welcome email to visitor after completing onboarding form.
+   */
+  async sendVisitorOnboardingWelcome(visitorId: string, formattedName?: string) {
+    const visitor = await this.visitorService.findVisitorById(visitorId);
+    if (!visitor) {
+      return { success: false, message: 'Visitor not found' };
+    }
+
+    let coupleName = formattedName?.trim();
+    if (!coupleName) {
+      const p1 = visitor.visitor_fname?.trim();
+      const p2 = visitor.partner_fname?.trim();
+      if (p1 && p2) {
+        coupleName = `${p1} & ${p2}`;
+      } else if (p1) {
+        const l1 = visitor.visitor_lname?.trim();
+        coupleName = l1 ? `${p1} ${l1}` : p1;
+      } else {
+        coupleName = 'Happy Couple';
+      }
+    }
+
+    void this.mailService.sendVisitorSignupWelcomeEmail({
+      to: visitor.email,
+      visitorName: coupleName,
+    });
+
+    return { success: true };
+  }
+
+  /**
+   * Sends personalized welcome email to vendor and alerts admin after completing onboarding form.
+   */
+  async sendVendorOnboardingWelcome(vendorId: string) {
+    const vendor = await this.vendorService.findVendorById(vendorId);
+    if (!vendor) {
+      return { success: false, message: 'Vendor not found' };
+    }
+
+    const vendorName =
+      `${vendor.fname || ''} ${vendor.lname || ''}`.trim() || 'Wedding Vendor';
+    const businessName = vendor.busname || 'My Business';
+
+    void this.mailService.sendVendorSignupWelcomeEmail({
+      to: vendor.email,
+      vendorName,
+      businessName,
+    });
+
+    void this.mailService.sendAdminNewVendorAlertEmail({
+      vendorName,
+      businessName,
+      vendorEmail: vendor.email,
+      phone: vendor.phone,
+      city: vendor.city,
+      location: vendor.location,
+    });
+
+    return { success: true };
   }
 }
