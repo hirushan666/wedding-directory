@@ -603,7 +603,7 @@ export class PaymentService {
             headers: {
               Accept: 'application/json',
               'Accept-encoding': 'gzip, deflate',
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({
               to: pushToken,

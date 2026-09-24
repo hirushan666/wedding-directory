@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { v4 as uuid } from "uuid";
@@ -49,7 +49,7 @@ export class ChatService {
         headers: {
           Accept: 'application/json',
           'Accept-encoding': 'gzip, deflate',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: JSON.stringify({
           to: pushToken,
