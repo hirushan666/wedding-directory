@@ -73,6 +73,7 @@ export class VisitorService {
       visitor_lname: data.visitor_lname,
       profile_pic_url: data.profile_pic_url,
       password: hashedPassword,
+      isOnboarded: false,
     });
     return this.visitorRepository.save(visitor);
   }

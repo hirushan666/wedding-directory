@@ -37,6 +37,7 @@ export const UPDATE_VISITOR = gql`
       wed_venue
       phone
       city
+      isOnboarded
     }
   }
 `;

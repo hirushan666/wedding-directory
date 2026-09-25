@@ -81,7 +81,7 @@ export default function GoogleAuthButton({
             ? (shouldOnboard ? '/vendor-onboarding' : '/vendor-dashboard')
             : (shouldOnboard ? '/visitor-onboarding' : '/visitor-dashboard');
 
-        const target = redirectTo || defaultTarget;
+        const target = shouldOnboard ? defaultTarget : (redirectTo || defaultTarget);
         window.location.replace(target);
       } else {
         toast.error('Failed to retrieve authentication token.', { id: toastId });

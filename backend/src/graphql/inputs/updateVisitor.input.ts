@@ -34,4 +34,7 @@ export class UpdateVisitorInput {
 
   @Field({ nullable: true })
   city?: string;
+
+  @Field({ nullable: true })
+  isOnboarded?: boolean;
 }

@@ -137,6 +137,7 @@ export const GET_VISITOR_BY_ID = gql`
       phone
       city
       profile_pic_url
+      isOnboarded
     }
   }
 `;

@@ -71,11 +71,26 @@ export class AuthController {
     res.cookie('access_token', access_token, buildCookieOptions());
     res.clearCookie('access_tokenVendor', clearCookieOptions());
 
+    const isMissingName =
+      !visitor.visitor_fname ||
+      !visitor.visitor_fname.trim() ||
+      visitor.visitor_fname === 'Visitor';
+    const isOnboarded =
+      visitor.isOnboarded === true ||
+      (!isMissingName &&
+        !!(
+          visitor.city ||
+          visitor.phone ||
+          visitor.weddingDate ||
+          visitor.partner_fname
+        ));
+
     res.status(HttpStatus.OK).json({
       message: 'Login successful',
       access_token,
       visitorId: visitor.id,
       visitorEmail: visitor.email,
+      isOnboarded,
     });
   }
 

@@ -371,7 +371,16 @@ export class AuthService {
         !visitor.visitor_fname ||
         !visitor.visitor_fname.trim() ||
         visitor.visitor_fname === 'Visitor';
-      const isOnboarded = !isNewUser && !isMissingName;
+      const isVisitorOnboarded =
+        !isNewUser &&
+        (visitor.isOnboarded === true ||
+          (!isMissingName &&
+            !!(
+              visitor.city ||
+              visitor.phone ||
+              visitor.weddingDate ||
+              visitor.partner_fname
+            )));
 
       const { access_token } = this.loginVisitor(visitor);
       return {
@@ -380,7 +389,7 @@ export class AuthService {
         visitorEmail: visitor.email,
         role: 'visitor' as const,
         isNewUser,
-        isOnboarded,
+        isOnboarded: isVisitorOnboarded,
       };
     } else {
       let vendor = await this.vendorService.getVendorByEmail(email);
