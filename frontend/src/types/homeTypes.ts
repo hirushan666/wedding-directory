@@ -3,4 +3,5 @@ export interface SearchBarProps {
   placehHolderText?: string;
   className?: string;
   size?: "default" | "large";
+  disabled?: boolean;
 }

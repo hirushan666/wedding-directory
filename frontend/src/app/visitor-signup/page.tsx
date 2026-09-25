@@ -158,7 +158,9 @@ const SignupPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 flex flex-col justify-between transition-colors duration-200">
       {/* Header */}
-      <Header />
+      <div className="sticky top-0 z-30 w-full">
+        <Header />
+      </div>
 
       {/* Main Content with theme orange background styling */}
       <main className="flex-1 flex justify-center items-center px-4 py-12 relative overflow-hidden bg-gradient-to-b from-orange/10 via-lightYellow to-orange/5 dark:from-[#1F1715] dark:via-darkBg dark:to-[#161211]">
