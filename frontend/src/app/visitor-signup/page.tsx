@@ -139,7 +139,8 @@ const SignupPage: React.FC = () => {
         });
 
         login(signupRes.access_token);
-        router.push('/visitor-onboarding');
+        router.replace('/visitor-onboarding');
+        return; // Retain isLoading true to prevent button flicker while route transitions
       } else {
         setError('Registration succeeded, but login failed. Please sign in.');
       }
