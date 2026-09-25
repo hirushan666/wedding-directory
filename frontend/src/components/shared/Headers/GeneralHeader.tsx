@@ -54,7 +54,7 @@ const GeneralHeader = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
+              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >
@@ -128,7 +128,7 @@ const GeneralHeader = () => {
                     className={`text-base font-title capitalize transition-all cursor-pointer py-1.5 px-2 rounded-lg ${
                       isActive
                         ? "font-bold text-orange bg-orange/10 dark:bg-orange/15"
-                        : "text-gray-800 dark:text-zinc-200 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                        : "text-gray-800 dark:text-zinc-200 hover:text-orange dark:hover:text-orange hover:bg-orange/5"
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

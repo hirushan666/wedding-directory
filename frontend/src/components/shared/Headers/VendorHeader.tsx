@@ -19,6 +19,11 @@ const VendorHeader = () => {
   const pathname = usePathname();
   const { logout, vendor } = useVendorAuth(); // Added logout function from vendor auth context
   const { theme, toggleTheme } = useTheme();
+  const isSignupForm =
+    pathname === "/vendor-onboarding" ||
+    pathname.startsWith("/vendor-onboarding") ||
+    pathname === "/sign-up" ||
+    pathname === "/vendor-signup";
   const [showProfileMenu, setShowProfileMenu] = useState(false); // State for the profile dropdown
   const [showNotificationMenu, setShowNotificationMenu] = useState(false); // State for notifications dropdown
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -186,6 +191,17 @@ const VendorHeader = () => {
           <nav className="hidden md:flex justify-center items-center gap-1 lg:gap-2 font-title">
             {navLinks.map((link) => {
               const active = link.isActive(pathname);
+              if (isSignupForm) {
+                return (
+                  <span
+                    key={link.name}
+                    className="px-3 lg:px-4 py-2 rounded-xl text-sm lg:text-[16px] tracking-wide whitespace-nowrap transition-all text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
+                    title="Complete sign up to access"
+                  >
+                    {link.name}
+                  </span>
+                );
+              }
               return (
                 <Link
                   key={link.name}
@@ -193,7 +209,7 @@ const VendorHeader = () => {
                   className={`px-3 lg:px-4 py-2 rounded-xl text-sm lg:text-[16px] tracking-wide whitespace-nowrap transition-all ${
                     active
                       ? "bg-orange text-white shadow-xs font-bold"
-                      : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
+                      : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
                   }`}
                 >
                   {link.name}
@@ -205,35 +221,44 @@ const VendorHeader = () => {
           {/* Right section: Notifications and Profile dropdown */}
           <div className="flex items-center justify-end gap-3 sm:gap-4 shrink-0">
             {/* Update the message icon section */}
-            <Link
-              href="/vendor-dashboard/chats"
-              className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
-                pathname.startsWith("/vendor-dashboard/chats")
-                  ? "bg-orange text-white shadow-xs font-bold"
-                  : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
-              }`}
-              title="Messages"
-            >
-              <BiMessageRounded className="w-[26px] h-[26px]" />
-              {unreadCount > 0 && (
-                <span
-                  className={`absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-xs ${
-                    pathname.startsWith("/vendor-dashboard/chats")
-                      ? "bg-white text-orange"
-                      : "bg-red-500 text-white"
-                  }`}
-                >
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </Link>
+            {isSignupForm ? (
+              <span
+                className="relative p-2 rounded-xl transition-all flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
+                title="Complete sign up to access"
+              >
+                <BiMessageRounded className="w-[26px] h-[26px]" />
+              </span>
+            ) : (
+              <Link
+                href="/vendor-dashboard/chats"
+                className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
+                  pathname.startsWith("/vendor-dashboard/chats")
+                    ? "bg-orange text-white shadow-xs font-bold"
+                    : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                }`}
+                title="Messages"
+              >
+                <BiMessageRounded className="w-[26px] h-[26px]" />
+                {unreadCount > 0 && (
+                  <span
+                    className={`absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-xs ${
+                      pathname.startsWith("/vendor-dashboard/chats")
+                        ? "bg-white text-orange"
+                        : "bg-red-500 text-white"
+                    }`}
+                  >
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* Notification bell dropdown */}
             <div className="relative" ref={notificationMenuRef}>
               <button
                 type="button"
                 onClick={() => setShowNotificationMenu((prev) => !prev)}
-                className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100"
+                className="relative p-2 rounded-xl hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-orange"
                 title={pendingCount > 0 ? `${pendingCount} new notification${pendingCount === 1 ? "" : "s"}` : "Notifications"}
                 aria-label="Notifications"
               >
@@ -301,7 +326,7 @@ const VendorHeader = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
+              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >

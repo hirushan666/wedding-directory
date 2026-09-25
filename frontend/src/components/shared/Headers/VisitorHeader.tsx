@@ -22,6 +22,10 @@ const VisitorHeader = () => {
   const pathname = usePathname();
   const { visitor, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const isSignupForm =
+    pathname === "/visitor-onboarding" ||
+    pathname.startsWith("/visitor-onboarding") ||
+    pathname === "/visitor-signup";
   const [profilePic, setProfilePic] = useState<string>(
     "/images/visitorPlaceholder.png",
   ); // Default placeholder
@@ -223,6 +227,17 @@ const VisitorHeader = () => {
             <nav className="flex items-center gap-1.5 sm:gap-2.5">
               {navLinks.map((link) => {
                 const active = link.isActive(pathname);
+                if (isSignupForm) {
+                  return (
+                    <span
+                      key={link.name}
+                      className="px-4 py-2 rounded-xl text-base sm:text-[17px] tracking-wide transition-all text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
+                      title="Complete sign up to access"
+                    >
+                      {link.name}
+                    </span>
+                  );
+                }
                 return (
                   <Link
                     key={link.name}
@@ -230,7 +245,7 @@ const VisitorHeader = () => {
                     className={`px-4 py-2 rounded-xl text-base sm:text-[17px] tracking-wide transition-all ${
                       active
                         ? "bg-orange text-white shadow-xs font-bold"
-                        : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
+                        : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
                     }`}
                   >
                     {link.name}
@@ -240,35 +255,44 @@ const VisitorHeader = () => {
             </nav>
 
             {/* Chat icon with unread badge */}
-            <Link
-              href={`/visitor-dashboard/chats/${visitor?.id}`}
-              className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
-                pathname.startsWith("/visitor-dashboard/chats")
-                  ? "bg-orange text-white shadow-xs font-bold"
-                  : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
-              }`}
-              title="Messages"
-            >
-              <BiMessageRounded className="w-[26px] h-[26px]" />
-              {unreadCount > 0 && (
-                <span
-                  className={`absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-xs ${
-                    pathname.startsWith("/visitor-dashboard/chats")
-                      ? "bg-white text-orange"
-                      : "bg-red-500 text-white"
-                  }`}
-                >
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </Link>
+            {isSignupForm ? (
+              <span
+                className="relative p-2 rounded-xl transition-all flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
+                title="Complete sign up to access"
+              >
+                <BiMessageRounded className="w-[26px] h-[26px]" />
+              </span>
+            ) : (
+              <Link
+                href={`/visitor-dashboard/chats/${visitor?.id}`}
+                className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
+                  pathname.startsWith("/visitor-dashboard/chats")
+                    ? "bg-orange text-white shadow-xs font-bold"
+                    : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                }`}
+                title="Messages"
+              >
+                <BiMessageRounded className="w-[26px] h-[26px]" />
+                {unreadCount > 0 && (
+                  <span
+                    className={`absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-xs ${
+                      pathname.startsWith("/visitor-dashboard/chats")
+                        ? "bg-white text-orange"
+                        : "bg-red-500 text-white"
+                    }`}
+                  >
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* Notification bell dropdown */}
             <div className="relative" ref={notificationMenuRef}>
               <button
                 type="button"
                 onClick={() => setShowNotificationMenu((prev) => !prev)}
-                className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100"
+                className="relative p-2 rounded-xl hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-orange"
                 title={
                   notificationCount > 0
                     ? `${notificationCount} notification${notificationCount === 1 ? "" : "s"}`
@@ -417,7 +441,7 @@ const VisitorHeader = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
+              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >
