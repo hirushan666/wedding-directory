@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/shared/Headers/Header';
 import Footer from '@/components/shared/Footer';
 import Link from "next/link";
@@ -19,12 +19,13 @@ const LoginPage = () => {
   const router = useRouter();
   const { login, visitor } = useAuth();
 
-  // If already authenticated as visitor, redirect directly to visitor dashboard
+  // If already authenticated as visitor upon landing on this page, redirect to dashboard
+  const wasAlreadyLoggedIn = useRef(!!visitor);
   useEffect(() => {
-    if (visitor) {
-      window.location.replace('/visitor-dashboard');
+    if (wasAlreadyLoggedIn.current) {
+      router.replace('/visitor-dashboard');
     }
-  }, [visitor]);
+  }, [router]);
 
   // Handle form submission logic
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,12 +59,6 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (visitor && !isLoading) {
-      router.replace('/visitor-dashboard');
-    }
-  }, [visitor, isLoading, router]);
 
   return (
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 flex flex-col justify-between transition-colors duration-200">

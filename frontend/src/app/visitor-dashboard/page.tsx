@@ -76,19 +76,19 @@ const VisitorDashboardContent: React.FC = () => {
     },
   });
 
+  const visitorData = data?.findVisitorById;
+  const isMissingName =
+    visitorData &&
+    (!visitorData.visitor_fname ||
+      !visitorData.visitor_fname.trim() ||
+      visitorData.visitor_fname === 'Visitor');
+
   // If visitor profile is incomplete (missing visitor_fname), redirect to onboarding
   useEffect(() => {
-    if (data?.findVisitorById) {
-      const v = data.findVisitorById;
-      const isMissingName =
-        !v.visitor_fname ||
-        !v.visitor_fname.trim() ||
-        v.visitor_fname === 'Visitor';
-      if (isMissingName) {
-        router.push('/visitor-onboarding');
-      }
+    if (isMissingName) {
+      router.replace('/visitor-onboarding');
     }
-  }, [data, router]);
+  }, [isMissingName, router]);
 
   // Get my vendors data
   const { data: vendorsData } = useQuery(FIND_ALL_MY_VENDORS, {
@@ -153,7 +153,7 @@ const VisitorDashboardContent: React.FC = () => {
   const checklistProgress =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  if (!isInitialized || !visitor?.id || loading) {
+  if (!isInitialized || !visitor?.id || loading || isMissingName) {
     return <VisitorDashboardSkeleton />;
   }
 
@@ -172,7 +172,6 @@ const VisitorDashboardContent: React.FC = () => {
     );
   }
 
-  const visitorData = data?.findVisitorById;
   const userFname = visitorData?.visitor_fname?.trim() || "";
   const partnerFname = visitorData?.partner_fname?.trim() || "";
   const welcomeNames =

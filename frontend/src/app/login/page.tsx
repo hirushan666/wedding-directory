@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
 import Link from "next/link";
@@ -18,12 +18,13 @@ const VendorLoginPage = () => {
   const { login, vendor } = useVendorAuth();
   const router = useRouter();
 
-  // If already authenticated as vendor, redirect directly to vendor dashboard
+  // If already authenticated as vendor upon landing on this page, redirect to dashboard
+  const wasAlreadyLoggedIn = useRef(!!vendor);
   useEffect(() => {
-    if (vendor) {
-      window.location.replace('/vendor-dashboard');
+    if (wasAlreadyLoggedIn.current) {
+      router.replace('/vendor-dashboard');
     }
-  }, [vendor]);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,12 +70,6 @@ const VendorLoginPage = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (vendor && !isLoading) {
-      router.replace('/vendor-dashboard');
-    }
-  }, [vendor, isLoading, router]);
 
   return (
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 flex flex-col justify-between transition-colors duration-200">

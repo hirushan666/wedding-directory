@@ -41,18 +41,17 @@ const VendorDashBoardContent: React.FC = () => {
     skip: !vendor?.id,
   });
 
+  const v = vendorData?.findVendorById;
+  const isIncomplete = v && (!v.city || !v.phone || !v.location);
+
   // If vendor profile is incomplete (missing city, phone, or location), redirect to onboarding
   useEffect(() => {
-    if (vendorData?.findVendorById) {
-      const v = vendorData.findVendorById;
-      const isIncomplete = !v.city || !v.phone || !v.location;
-      if (isIncomplete) {
-        router.push("/vendor-onboarding");
-      }
+    if (isIncomplete) {
+      router.replace("/vendor-onboarding");
     }
-  }, [vendorData, router]);
+  }, [isIncomplete, router]);
 
-  if (!isInitialized || !vendor?.id || vendorLoading)
+  if (!isInitialized || !vendor?.id || vendorLoading || isIncomplete)
     return <VendorDashboardSkeleton />;
 
   if (vendorError)

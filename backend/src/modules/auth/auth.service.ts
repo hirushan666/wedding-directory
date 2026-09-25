@@ -367,6 +367,12 @@ export class AuthService {
         });
         isNewUser = true;
       }
+      const isMissingName =
+        !visitor.visitor_fname ||
+        !visitor.visitor_fname.trim() ||
+        visitor.visitor_fname === 'Visitor';
+      const isOnboarded = !isNewUser && !isMissingName;
+
       const { access_token } = this.loginVisitor(visitor);
       return {
         access_token,
@@ -374,6 +380,7 @@ export class AuthService {
         visitorEmail: visitor.email,
         role: 'visitor' as const,
         isNewUser,
+        isOnboarded,
       };
     } else {
       let vendor = await this.vendorService.getVendorByEmail(email);
@@ -393,6 +400,9 @@ export class AuthService {
         });
         isNewUser = true;
       }
+      const isVendorOnboarded =
+        !isNewUser && !!(vendor.city && vendor.phone && vendor.location);
+
       const { access_token } = this.loginVendor(vendor);
       return {
         access_token,
@@ -400,6 +410,7 @@ export class AuthService {
         vendorEmail: vendor.email,
         role: 'vendor' as const,
         isNewUser,
+        isOnboarded: isVendorOnboarded,
       };
     }
   }
