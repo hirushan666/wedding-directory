@@ -230,7 +230,7 @@ const VisitorHeader = () => {
                     className={`px-4 py-2 rounded-xl text-base sm:text-[17px] tracking-wide transition-all ${
                       active
                         ? "bg-orange text-white shadow-xs font-bold"
-                        : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                        : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
                     }`}
                   >
                     {link.name}
@@ -245,7 +245,7 @@ const VisitorHeader = () => {
               className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
                 pathname.startsWith("/visitor-dashboard/chats")
                   ? "bg-orange text-white shadow-xs font-bold"
-                  : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                  : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
               }`}
               title="Messages"
             >
@@ -268,7 +268,7 @@ const VisitorHeader = () => {
               <button
                 type="button"
                 onClick={() => setShowNotificationMenu((prev) => !prev)}
-                className="relative p-2 rounded-xl hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-orange"
+                className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100"
                 title={
                   notificationCount > 0
                     ? `${notificationCount} notification${notificationCount === 1 ? "" : "s"}`
@@ -333,7 +333,7 @@ const VisitorHeader = () => {
                             key={req.id}
                             href={targetUrl}
                             onClick={() => setShowNotificationMenu(false)}
-                            className="block p-3.5 hover:bg-orange/5 transition-colors cursor-pointer text-left"
+                            className="block p-3.5 hover:bg-gray-50 dark:hover:bg-zinc-800/60 transition-colors cursor-pointer text-left"
                           >
                             <div className="flex items-start gap-3">
                               <div
@@ -351,7 +351,7 @@ const VisitorHeader = () => {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-1">
-                                  <p className="text-xs font-bold text-gray-900 truncate">
+                                  <p className="text-xs font-bold text-gray-900 dark:text-zinc-100 truncate">
                                     {vendorName}
                                   </p>
                                   {isApproved && (
@@ -375,7 +375,7 @@ const VisitorHeader = () => {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-xs text-gray-600 mt-0.5">
+                                <p className="text-xs text-gray-600 dark:text-zinc-400 mt-0.5">
                                   {isApproved
                                     ? `Approved your request for ${pkgName}!`
                                     : isRejected
@@ -417,7 +417,7 @@ const VisitorHeader = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
+              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >

@@ -193,7 +193,7 @@ const VendorHeader = () => {
                   className={`px-3 lg:px-4 py-2 rounded-xl text-sm lg:text-[16px] tracking-wide whitespace-nowrap transition-all ${
                     active
                       ? "bg-orange text-white shadow-xs font-bold"
-                      : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                      : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
                   }`}
                 >
                   {link.name}
@@ -210,7 +210,7 @@ const VendorHeader = () => {
               className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
                 pathname.startsWith("/vendor-dashboard/chats")
                   ? "bg-orange text-white shadow-xs font-bold"
-                  : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                  : "text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold"
               }`}
               title="Messages"
             >
@@ -233,7 +233,7 @@ const VendorHeader = () => {
               <button
                 type="button"
                 onClick={() => setShowNotificationMenu((prev) => !prev)}
-                className="relative p-2 rounded-xl hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-orange"
+                className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100"
                 title={pendingCount > 0 ? `${pendingCount} new notification${pendingCount === 1 ? "" : "s"}` : "Notifications"}
                 aria-label="Notifications"
               >
@@ -301,7 +301,7 @@ const VendorHeader = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
+              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >
