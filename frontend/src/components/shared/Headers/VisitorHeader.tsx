@@ -218,7 +218,12 @@ const VisitorHeader = () => {
           <div className="hidden lg:flex flex-1 justify-center px-6">
             <SearchBar
               showIcon={false}
-              placehHolderText="search venues, caterers, etc."
+              placehHolderText={
+                isSignupForm
+                  ? "Search disabled during sign up"
+                  : "search venues, caterers, etc."
+              }
+              disabled={isSignupForm}
             />
           </div>
 

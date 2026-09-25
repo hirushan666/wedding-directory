@@ -13,6 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   placehHolderText = "Search venues, photographers, Colombo...",
   className = "",
   size = "default",
+  disabled = false,
 }) => {
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -41,6 +42,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   // Handle input change and search filtering
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     const value = e.target.value;
     setSearchTerm(value);
 
@@ -66,6 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   // Submit search query
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (disabled) return;
     const q = searchTerm.trim();
     setIsOpen(false);
 
@@ -130,7 +133,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const hasSuggestions =
-    isOpen && (filteredCategories.length > 0 || filteredCities.length > 0);
+    !disabled && isOpen && (filteredCategories.length > 0 || filteredCities.length > 0);
 
   return (
     <div
@@ -142,8 +145,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
           type="text"
           placeholder={placehHolderText}
           value={searchTerm}
+          disabled={disabled}
           onChange={handleInputChange}
           onFocus={() => {
+            if (disabled) return;
             if (
               searchTerm.trim() &&
               (filteredCategories.length > 0 || filteredCities.length > 0)
@@ -152,6 +157,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
             }
           }}
           className={`w-full rounded-full border border-orange/30 dark:border-zinc-700 bg-white dark:bg-darkElevated focus:bg-white dark:focus:bg-darkElevated text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-orange/25 focus:border-orange transition-all font-body ${
+            disabled
+              ? "opacity-60 cursor-not-allowed bg-gray-100/80 dark:bg-zinc-800/40 border-gray-300 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 placeholder:text-gray-400/80 dark:placeholder:text-zinc-600 select-none shadow-none"
+              : ""
+          } ${
             isLarge
               ? "h-14 sm:h-16 text-sm sm:text-base shadow-lg pl-12 sm:pl-14 pr-20 sm:pr-24"
               : `py-2 text-xs sm:text-sm shadow-xs ${showIcon ? "pl-9" : "pl-4"} ${searchTerm ? "pr-16" : "pr-9"}`
@@ -169,7 +178,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         )}
 
         {/* Clear Button */}
-        {searchTerm && (
+        {!disabled && searchTerm && (
           <button
             type="button"
             onClick={handleClear}
@@ -185,12 +194,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
         {/* Action Button */}
         <button
           type="submit"
-          className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-orange hover:bg-orange/90 text-white flex items-center justify-center transition-all active:scale-95 shadow-sm cursor-pointer ${
+          disabled={disabled}
+          className={`absolute top-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all shadow-sm ${
+            disabled
+              ? "bg-gray-300 dark:bg-zinc-700 text-gray-400 dark:text-zinc-500 cursor-not-allowed opacity-60"
+              : "bg-orange hover:bg-orange/90 text-white active:scale-95 cursor-pointer"
+          } ${
             isLarge
               ? "right-2 w-10 h-10 sm:w-12 sm:h-12"
               : "right-1.5 w-7 h-7"
           }`}
-          title="Search"
+          title={disabled ? "Search disabled" : "Search"}
         >
           <MdSearch className={isLarge ? "w-5 h-5 sm:w-6 sm:h-6" : "w-4 h-4"} />
         </button>

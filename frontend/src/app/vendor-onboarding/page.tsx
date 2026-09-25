@@ -175,8 +175,8 @@ export default function VendorOnboardingPage() {
 
   if (fetchingVendor) {
     return (
-      <div className="relative w-full min-h-screen bg-lightYellow dark:bg-darkBg font-body overflow-x-hidden animate-fade-in">
-        <div className="relative z-20">
+      <div className="relative w-full min-h-screen bg-lightYellow dark:bg-darkBg font-body overflow-x-clip animate-fade-in flex flex-col">
+        <div className="sticky top-0 z-30 w-full">
           <Header />
         </div>
         <div className="container mx-auto px-4 py-8 max-w-3xl space-y-6">
@@ -225,8 +225,8 @@ export default function VendorOnboardingPage() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-lightYellow font-body overflow-x-hidden">
-      <div className="relative z-20">
+    <div className="relative w-full min-h-screen bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 font-body overflow-x-clip transition-colors duration-200 flex flex-col">
+      <div className="sticky top-0 z-30 w-full">
         <Header />
       </div>
 
