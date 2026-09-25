@@ -12,14 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CityInput from '@/components/vendor-signup/CityInput';
 import LocationInput from '@/components/vendor-signup/LocationInput';
-import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'react-hot-toast';
 import { sendVendorOnboardingWelcome } from '@/api/auth/signup-otp.api';
 import { Building2, User, Phone, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function VendorOnboardingPage() {
   const router = useRouter();
-  const { vendor, isAuthenticated, logout } = useVendorAuth();
+  const { vendor, isAuthenticated, isInitialized, logout } = useVendorAuth();
 
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
@@ -30,10 +29,10 @@ export default function VendorOnboardingPage() {
   const [initialized, setInitialized] = useState(false);
 
   // Fetch current vendor info (especially if signed up via Google)
-  const { data, loading: fetchingVendor } = useQuery(GET_VENDOR_BY_ID, {
+  const { data } = useQuery(GET_VENDOR_BY_ID, {
     variables: { id: vendor?.id },
     skip: !vendor?.id,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-first',
   });
 
   const [updateVendor, { loading: isSubmitting }] = useMutation(UPDATE_VENDOR);
@@ -41,14 +40,14 @@ export default function VendorOnboardingPage() {
   const [isSavingDraft, setIsSavingDraft] = useState(false);
 
   useEffect(() => {
-    // If not authenticated, redirect to login
-    if (!isAuthenticated && !vendor) {
+    // If not authenticated after auth initialization, redirect to login
+    if (isInitialized && !isAuthenticated && !vendor) {
       const timer = setTimeout(() => {
         if (!isAuthenticated) router.push('/vendor-login');
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, vendor, router]);
+  }, [isInitialized, isAuthenticated, vendor, router]);
 
   useEffect(() => {
     if (data?.findVendorById && !initialized) {
@@ -172,57 +171,6 @@ export default function VendorOnboardingPage() {
       toast.error(err?.message || 'Failed to save business details. Please try again.');
     }
   };
-
-  if (fetchingVendor) {
-    return (
-      <div className="relative w-full min-h-screen bg-lightYellow dark:bg-darkBg font-body overflow-x-clip animate-fade-in flex flex-col">
-        <div className="sticky top-0 z-30 w-full">
-          <Header />
-        </div>
-        <div className="container mx-auto px-4 py-8 max-w-3xl space-y-6">
-          <div className="bg-white dark:bg-darkSurface rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-zinc-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div className="space-y-1.5">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-4 w-40" />
-              </div>
-            </div>
-            <Skeleton className="h-4 w-32" />
-          </div>
-
-          <div className="bg-white dark:bg-darkSurface rounded-2xl p-6 sm:p-10 shadow-sm border border-gray-100 dark:border-zinc-800 space-y-6">
-            <div className="flex flex-col items-center space-y-2 mb-8">
-              <Skeleton className="h-8 w-64" />
-              <Skeleton className="h-4 w-96 max-w-full" />
-            </div>
-
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <Skeleton className="h-3.5 w-32" />
-                <Skeleton className="h-12 w-full rounded-xl" />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-3.5 w-24" />
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-3.5 w-24" />
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-3.5 w-28" />
-                <Skeleton className="h-12 w-full rounded-xl" />
-              </div>
-              <Skeleton className="h-12 w-full rounded-xl mt-6" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full min-h-screen bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 font-body overflow-x-clip transition-colors duration-200 flex flex-col">

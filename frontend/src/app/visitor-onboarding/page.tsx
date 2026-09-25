@@ -10,7 +10,6 @@ import { UPDATE_VISITOR, SET_WEDDING_DATE } from '@/graphql/mutations';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CityInput from '@/components/vendor-signup/CityInput';
-import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'react-hot-toast';
 import { formatCoupleName } from '@/utils/formatCoupleName';
 import { sendVisitorOnboardingWelcome } from '@/api/auth/signup-otp.api';
@@ -27,7 +26,7 @@ import {
 
 export default function VisitorOnboardingPage() {
   const router = useRouter();
-  const { visitor, isAuthenticated } = useAuth();
+  const { visitor, isAuthenticated, isInitialized } = useAuth();
 
   const [visitorFname, setVisitorFname] = useState('');
   const [visitorLname, setVisitorLname] = useState('');
@@ -41,41 +40,47 @@ export default function VisitorOnboardingPage() {
   const [nameError, setNameError] = useState<string | null>(null);
 
   // Fetch current visitor info (pre-populates if signed up via Google or previous draft)
-  const { data, loading: fetchingVisitor } = useQuery(GET_VISITOR_BY_ID, {
+  const { data } = useQuery(GET_VISITOR_BY_ID, {
     variables: { id: visitor?.id },
     skip: !visitor?.id,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-first',
   });
 
   const [updateVisitor, { loading: isUpdating }] = useMutation(UPDATE_VISITOR);
   const [setWeddingDateChecklist, { loading: isSettingDate }] = useMutation(SET_WEDDING_DATE);
 
   useEffect(() => {
-    // If not authenticated, redirect to login
-    if (!isAuthenticated && !visitor) {
+    // If auth state has initialized and user is not authenticated, redirect to login
+    if (isInitialized && !isAuthenticated && !visitor) {
       const timer = setTimeout(() => {
         if (!isAuthenticated) router.push('/visitor-login');
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, visitor, router]);
+  }, [isInitialized, isAuthenticated, visitor, router]);
 
   useEffect(() => {
-    if (data?.findVisitorById && !initialized) {
+    if (data?.findVisitorById) {
       const v = data.findVisitorById;
-      if (v.visitor_fname && v.visitor_fname !== 'Visitor') {
-        setVisitorFname(v.visitor_fname);
+      if (v.isOnboarded === true) {
+        router.replace('/visitor-dashboard');
+        return;
       }
-      if (v.visitor_lname) setVisitorLname(v.visitor_lname);
-      if (v.partner_fname) setPartnerFname(v.partner_fname);
-      if (v.partner_lname) setPartnerLname(v.partner_lname);
-      if (v.wed_date) setWeddingDate(v.wed_date.split('T')[0]);
-      if (v.engaged_date) setEngagedDate(v.engaged_date.split('T')[0]);
-      if (v.city || v.wed_venue) setCity(v.city || v.wed_venue);
-      if (v.phone) setPhone(v.phone);
-      setInitialized(true);
+      if (!initialized) {
+        if (v.visitor_fname && v.visitor_fname !== 'Visitor') {
+          setVisitorFname(v.visitor_fname);
+        }
+        if (v.visitor_lname) setVisitorLname(v.visitor_lname);
+        if (v.partner_fname) setPartnerFname(v.partner_fname);
+        if (v.partner_lname) setPartnerLname(v.partner_lname);
+        if (v.wed_date) setWeddingDate(v.wed_date.split('T')[0]);
+        if (v.engaged_date) setEngagedDate(v.engaged_date.split('T')[0]);
+        if (v.city || v.wed_venue) setCity(v.city || v.wed_venue);
+        if (v.phone) setPhone(v.phone);
+        setInitialized(true);
+      }
     }
-  }, [data, initialized]);
+  }, [data, initialized, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,53 +153,12 @@ export default function VisitorOnboardingPage() {
         style: { background: '#333', color: '#fff' },
       });
 
-      router.push('/visitor-dashboard');
+      router.replace('/visitor-dashboard');
     } catch (err: any) {
       console.error('Failed to complete onboarding:', err);
       toast.error(err?.message || 'Failed to save profile details. Please try again.');
     }
   };
-
-  if (fetchingVisitor) {
-    return (
-      <div className="relative w-full min-h-screen bg-lightYellow dark:bg-darkBg font-body overflow-x-clip animate-fade-in flex flex-col">
-        <div className="sticky top-0 z-30 w-full">
-          <Header />
-        </div>
-        <div className="container mx-auto px-4 py-8 max-w-3xl space-y-6">
-          <div className="bg-white dark:bg-darkSurface rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-zinc-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div className="space-y-1.5">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-4 w-40" />
-              </div>
-            </div>
-            <Skeleton className="h-4 w-32" />
-          </div>
-
-          <div className="bg-white dark:bg-darkSurface rounded-2xl p-6 sm:p-10 shadow-sm border border-gray-100 dark:border-zinc-800 space-y-6">
-            <div className="flex flex-col items-center space-y-2 mb-8">
-              <Skeleton className="h-8 w-64" />
-              <Skeleton className="h-4 w-96 max-w-full" />
-            </div>
-
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Skeleton className="h-12 w-full rounded-xl" />
-                <Skeleton className="h-12 w-full rounded-xl" />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Skeleton className="h-12 w-full rounded-xl" />
-                <Skeleton className="h-12 w-full rounded-xl" />
-              </div>
-              <Skeleton className="h-12 w-full rounded-xl mt-6" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const isSubmitting = isUpdating || isSettingDate;
 
