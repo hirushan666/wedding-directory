@@ -1,4 +1,4 @@
-﻿import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
 export class UpdateServiceInput {
@@ -44,4 +44,19 @@ export class UpdateServiceInput {
 
     @Field({ nullable: true })
     tiktok?: string;
+
+    @Field({ nullable: true })
+    name?: string;
+
+    @Field({ nullable: true })
+    city?: string;
+
+    @Field({ nullable: true })
+    location?: string;
+
+    @Field({ nullable: true })
+    latitude?: number;
+
+    @Field({ nullable: true })
+    longitude?: number;
 }

@@ -1,4 +1,4 @@
-﻿import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 import { VendorModel } from './vendor.model';
 import { ReviewModel } from './review.model';  // Add this import
 import { ServiceMediaModel } from './service-media.model';
@@ -58,6 +58,18 @@ export class ServiceModel {
 
   @Field({ nullable: true })
   tiktok: string;
+
+  @Field({ nullable: true })
+  city?: string;
+
+  @Field({ nullable: true })
+  location?: string;
+
+  @Field({ nullable: true })
+  latitude?: number;
+
+  @Field({ nullable: true })
+  longitude?: number;
   
   @Field({ nullable: true })
   createdAt: Date;

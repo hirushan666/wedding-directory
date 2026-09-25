@@ -11,7 +11,6 @@ import { UPDATE_VENDOR } from '@/graphql/mutations';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CityInput from '@/components/vendor-signup/CityInput';
-import LocationInput from '@/components/vendor-signup/LocationInput';
 import { toast } from 'react-hot-toast';
 import { sendVendorOnboardingWelcome } from '@/api/auth/signup-otp.api';
 import { Building2, User, Phone, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -131,28 +130,20 @@ export default function VendorOnboardingPage() {
       return;
     }
 
-    if (!city.trim()) {
-      toast.error('Please select your primary city.');
-      return;
-    }
-
-    if (!location.trim()) {
-      toast.error('Please search and select your business location/area.');
-      return;
-    }
-
     try {
+      const updatePayload: any = {
+        fname: fname.trim(),
+        lname: lname.trim(),
+        busname: busname.trim(),
+        phone: phone.trim(),
+      };
+      if (city.trim()) updatePayload.city = city.trim();
+      if (location.trim()) updatePayload.location = location.trim();
+
       await updateVendor({
         variables: {
           id: vendor.id,
-          input: {
-            fname: fname.trim(),
-            lname: lname.trim(),
-            busname: busname.trim(),
-            phone: phone.trim(),
-            city: city.trim(),
-            location: location.trim(),
-          },
+          input: updatePayload,
         },
       });
 
@@ -279,35 +270,21 @@ export default function VendorOnboardingPage() {
               </p>
             </div>
 
-            {/* City */}
+            {/* Primary Base City (Optional) */}
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                Primary City <span className="text-orange">*</span>
+                Primary Base City <span className="text-gray-400 font-normal lowercase">(optional)</span>
               </label>
               <div className="rounded-xl overflow-hidden">
                 <CityInput
-                  placeholder={city || "Select your city"}
+                  placeholder={city || "Select your main operational city (optional)"}
+                  value={city}
                   onCityChange={(selectedCity) => setCity(selectedCity)}
                   className="border-2 border-gray-200 rounded-xl flex flex-row space-y-1.5 bg-white hover:border-orange transition-colors h-12"
                 />
               </div>
               <p className="text-[11px] text-gray-400 mt-1">
-                Helps couples filter services by their wedding destination.
-              </p>
-            </div>
-
-            {/* Location / Area Search */}
-            <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                Business Location / Address <span className="text-orange">*</span>
-              </label>
-              <LocationInput
-                placeholder={location || "Search street address or landmark for Google Maps"}
-                onLocationChange={(selectedLocation) => setLocation(selectedLocation)}
-                className="border-2 border-gray-200 rounded-xl flex flex-col relative bg-white hover:border-orange transition-colors h-12"
-              />
-              <p className="text-[11px] text-gray-400 mt-1">
-                Used to pin your exact location on Google Maps on your service profile.
+                Your main operational base. You can add specific locations and interactive map pins for each individual service later in your dashboard.
               </p>
             </div>
 

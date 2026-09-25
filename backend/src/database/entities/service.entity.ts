@@ -45,6 +45,18 @@ export class ServiceEntity {
     @Column({ type: 'varchar', length: 100, nullable: true })
     tiktok: string;
 
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    city?: string;
+
+    @Column({ type: 'varchar', length: 500, nullable: true })
+    location?: string;
+
+    @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
+    latitude?: number;
+
+    @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
+    longitude?: number;
+
     @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
     createdAt: Date;
   

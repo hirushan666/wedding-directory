@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FIND_VENDOR_BY_SERVICE } from "@/graphql/queries";
+import { FIND_VENDOR_BY_SERVICE, FIND_SERVICE_BY_ID } from "@/graphql/queries";
 import { useQuery } from "@apollo/client";
 import axios from "axios";
 import dynamic from "next/dynamic";
@@ -92,29 +92,45 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
   const [coordinates, setCoordinates] = useState<Coordinates>(defaultCenter);
   const [isFetchingCoordinates, setIsFetchingCoordinates] = useState(false);
 
+  const { data: sdata, loading: serviceLoading } = useQuery(FIND_SERVICE_BY_ID, {
+    variables: { id: serviceId },
+    skip: !serviceId,
+  });
+
   const { data: vdata, loading: vendorLoading, error: vendorError } = useQuery(FIND_VENDOR_BY_SERVICE, {
     variables: { service_id: serviceId },
     skip: !serviceId,
   });
 
+  const service = sdata?.findServiceById;
   const vendorData = vdata?.findVendorsByService || vdata?.findVendorsByOffering || [];
-  const vendor = vendorData.length > 0 ? vendorData[0] : null;
-  const vendorLocation = vendor?.location || vendor?.city || null;
-  const businessName = vendor?.busname;
+  const vendor = service?.vendor || (vendorData.length > 0 ? vendorData[0] : null);
+  const displayLocation = service?.location || service?.city || vendor?.location || vendor?.city || null;
+  const businessName = vendor?.busname || service?.name;
 
   useEffect(() => {
-    if (!vendorLocation) return;
+    // 1. If service has direct coordinates from the map picker, use them immediately
+    if (service?.latitude !== undefined && service?.latitude !== null &&
+        service?.longitude !== undefined && service?.longitude !== null) {
+      setCoordinates({
+        lat: Number(service.latitude),
+        lng: Number(service.longitude),
+      });
+      return;
+    }
+
+    if (!displayLocation) return;
 
     setIsFetchingCoordinates(true);
 
     const fetchCoordinates = async () => {
       try {
-        // 1. First try Nominatim (OpenStreetMap)
+        // 2. First try Nominatim (OpenStreetMap)
         const osmResponse = await axios.get(
           `https://nominatim.openstreetmap.org/search`,
           {
             params: {
-              q: vendorLocation.includes("Sri Lanka") ? vendorLocation : `${vendorLocation}, Sri Lanka`,
+              q: displayLocation.includes("Sri Lanka") ? displayLocation : `${displayLocation}, Sri Lanka`,
               format: "json",
               limit: 1,
             },
@@ -130,13 +146,13 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
           return;
         }
 
-        // 2. Fallback to Google Geocoding if OSM didn't find specific point and API key exists
+        // 3. Fallback to Google Geocoding if OSM didn't find specific point and API key exists
         if (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
           const gResponse = await axios.get(
             `https://maps.googleapis.com/maps/api/geocode/json`,
             {
               params: {
-                address: vendorLocation,
+                address: displayLocation,
                 key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
               },
             }
@@ -155,7 +171,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
     };
 
     fetchCoordinates();
-  }, [vendorLocation]);
+  }, [service?.latitude, service?.longitude, displayLocation]);
 
   if (vendorLoading || isFetchingCoordinates) {
     return (
@@ -185,7 +201,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
 
   // Google Maps directions navigation URL
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    vendorLocation ? `${vendorLocation}` : `${coordinates.lat},${coordinates.lng}`
+    displayLocation ? `${displayLocation}` : `${coordinates.lat},${coordinates.lng}`
   )}`;
 
   return (
@@ -195,7 +211,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
         <LeafletMap
           lat={coordinates.lat}
           lng={coordinates.lng}
-          address={vendorLocation || "Sri Lanka"}
+          address={displayLocation || "Sri Lanka"}
           businessName={businessName}
         />
       </div>
@@ -211,7 +227,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
               {businessName ? `${businessName} Location` : "Service Location"}
             </p>
             <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
-              {vendorLocation || "Location available on contact"}
+              {displayLocation || "Location available on contact"}
             </p>
           </div>
         </div>

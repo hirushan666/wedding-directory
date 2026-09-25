@@ -4,6 +4,10 @@ export interface ProfileData {
   businessEmail: string;
   description: string;
   showCategoryDropdown?: boolean;
+  city?: string;
+  location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface EditProfileProps {
@@ -30,6 +34,10 @@ export interface Service {
   name: string;
   category?: string;
   description: string;
+  city?: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
   reviews: Review[];
   vendor?: {
     busname: string;

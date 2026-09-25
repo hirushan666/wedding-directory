@@ -32,6 +32,10 @@ export const FIND_SERVICES = gql`
             bus_email
             description
             banner
+            city
+            location
+            latitude
+            longitude
             reviews {
                 rating
             }
@@ -63,6 +67,10 @@ export const FIND_SERVICE_BY_ID = gql`
       tiktok
       photo_showcase
       video_showcase
+      city
+      location
+      latitude
+      longitude
       vendor {
         id
         busname
@@ -110,6 +118,10 @@ export const FIND_SERVICES_BY_VENDOR = gql`
       category
       description
       banner
+      city
+      location
+      latitude
+      longitude
       reviews{
         rating
       }
