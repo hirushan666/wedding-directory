@@ -47,16 +47,6 @@ export class PaymentService {
     gateway = 'payhere',
     gatewayPaymentId?: string,
   ) {
-    // Check for date conflicts if bookingDate is provided
-    if (bookingDate) {
-      const hasConflict = await this.checkDateConflict(vendorId, bookingDate);
-      if (hasConflict) {
-        throw new Error(
-          'This vendor is already booked for the selected date. Please choose a different date.',
-        );
-      }
-    }
-
     const visitor = await this.visitorRepository.findOneBy({ id: visitorId });
     const vendor = await this.vendorRepository.findOneBy({ id: vendorId });
     const package_ = await this.packageRepository.findOneBy({ id: packageId });
@@ -91,6 +81,18 @@ export class PaymentService {
 
       if (!bookingDate && activeApproval.bookingDate) {
         bookingDate = activeApproval.bookingDate;
+      }
+      // Note: For requiresApproval packages, the vendor has full responsibility
+      // and can accept any amount of bookings for a day. Date blocking is intentionally bypassed.
+    } else if (package_?.requiresReservation) {
+      // Check for date conflicts only for packages requiring strict exclusive reservation
+      if (bookingDate) {
+        const hasConflict = await this.checkDateConflict(vendorId, bookingDate);
+        if (hasConflict) {
+          throw new Error(
+            'This vendor is already reserved for the selected date. Please choose a different date.',
+          );
+        }
       }
     }
 
@@ -426,7 +428,7 @@ export class PaymentService {
     await this.paymentRepository.delete({ id: paymentId });
   }
 
-  // Check if a vendor has a booking on a specific date
+  // Check if a vendor has a booking on a specific date for strict reservation packages
   async checkDateConflict(
     vendorId: string,
     bookingDate: Date,
@@ -438,13 +440,18 @@ export class PaymentService {
     const nextDay = new Date(dateOnly);
     nextDay.setDate(nextDay.getDate() + 1);
 
-    // Find completed payments for this vendor on this date
+    // Find completed payments for this vendor on this date that strictly locked the date.
+    // Packages with requiresApproval do NOT block dates, so they are excluded.
     const completedBookings = await this.paymentRepository
       .createQueryBuilder('payment')
+      .leftJoin('payment.package', 'package')
       .where('payment.vendor_id = :vendorId', { vendorId })
       .andWhere('payment.booking_date >= :startDate', { startDate: dateOnly })
       .andWhere('payment.booking_date < :endDate', { endDate: nextDay })
       .andWhere('payment.status = :status', { status: 'completed' })
+      .andWhere(
+        '(package.requiresReservation = true OR (package.id IS NULL))',
+      )
       .getCount();
 
     return completedBookings > 0;

@@ -26,9 +26,16 @@ export class PaymentResolver {
   async getVendorBookedDates(@Args('vendorId') vendorId: string) {
     const payments = await this.paymentService.findByVendorId(vendorId);
     
-    // Only completed payments lock booked dates on the calendar
+    // Only completed payments for strict reservation packages lock booked dates on the calendar.
+    // Approval-based packages do not lock dates because vendors have full discretion to accept multiple bookings.
     const bookedDates = payments
-      .filter(p => p.status === 'completed' && p.bookingDate)
+      .filter(
+        p =>
+          p.status === 'completed' &&
+          p.bookingDate &&
+          p.package?.requiresReservation &&
+          !p.package?.requiresApproval,
+      )
       .map(p => p.bookingDate.toISOString());
     
     return bookedDates;

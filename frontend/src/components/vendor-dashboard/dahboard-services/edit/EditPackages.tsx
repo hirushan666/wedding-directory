@@ -872,7 +872,7 @@ const EditPackages: React.FC = () => {
                       <div className="text-xs text-gray-500 dark:text-zinc-400">
                         {formPackage.requiresApproval
                           ? "Disabled because Vendor Approval is enabled for this package."
-                          : "Couples must select an available date on your calendar to book this package."}
+                          : "Strict 1-booking exclusive lock. Automatically blocks the date on your calendar upon booking (ideal for venues and solo professionals)."}
                       </div>
                     </div>
                   </div>
@@ -902,7 +902,7 @@ const EditPackages: React.FC = () => {
                       <div className="text-xs text-gray-500 dark:text-zinc-400">
                         {formPackage.requiresReservation
                           ? "Disabled because Date Reservation is enabled for this package."
-                          : "Couples select a date & submit a request for your approval before they can pay."}
+                          : "Couples submit a date request for your review. You have full discretion and can accept multiple bookings for the same day (no automatic date blocking)."}
                       </div>
                     </div>
                   </div>
