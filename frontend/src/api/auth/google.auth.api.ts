@@ -9,6 +9,7 @@ export interface GoogleAuthResponse {
   vendorEmail?: string;
   role: 'visitor' | 'vendor';
   isNewUser: boolean;
+  isOnboarded?: boolean;
 }
 
 export const googleAuthApi = async (

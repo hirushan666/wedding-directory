@@ -73,12 +73,16 @@ export default function GoogleAuthButton({
           { id: toastId, style: { background: '#333', color: '#fff' } },
         );
 
-        const target =
-          redirectTo ||
-          (role === 'vendor'
-            ? (response.isNewUser ? '/vendor-onboarding' : '/vendor-dashboard')
-            : (response.isNewUser ? '/visitor-onboarding' : '/visitor-dashboard'));
-        window.location.href = target;
+        const shouldOnboard =
+          response.isNewUser || response.isOnboarded === false;
+
+        const defaultTarget =
+          role === 'vendor'
+            ? (shouldOnboard ? '/vendor-onboarding' : '/vendor-dashboard')
+            : (shouldOnboard ? '/visitor-onboarding' : '/visitor-dashboard');
+
+        const target = redirectTo || defaultTarget;
+        window.location.replace(target);
       } else {
         toast.error('Failed to retrieve authentication token.', { id: toastId });
       }
