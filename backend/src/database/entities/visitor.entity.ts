@@ -71,6 +71,10 @@ export class VisitorEntity {
   @Column({ type: 'varchar', nullable: true })
   city?: string;
 
+  @Field(() => Boolean, { nullable: true })
+  @Column({ name: 'is_onboarded', type: 'boolean', default: false, nullable: true })
+  isOnboarded?: boolean;
+
   @OneToMany(() => ReviewEntity, (r) => r.visitor)
   reviews: ReviewEntity[];
 

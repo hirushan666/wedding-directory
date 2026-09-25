@@ -99,6 +99,7 @@ export default function VisitorOnboardingPage() {
     try {
       const inputToSave: any = {
         visitor_fname: trimmedFname,
+        isOnboarded: true,
       };
 
       if (visitorLname.trim()) inputToSave.visitor_lname = visitorLname.trim();

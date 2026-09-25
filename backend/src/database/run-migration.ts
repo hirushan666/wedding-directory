@@ -1,4 +1,4 @@
-﻿import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { join } from 'path';
 import { DataSource } from 'typeorm';
 import { CreatePackageViewTable1707489026321 } from './migrations/1707489026321-CreatePackageViewTable';
@@ -75,6 +75,18 @@ async function runMigration() {
     } else {
       console.log('Skipping CreateServiceReviewSummaryTable1762000000004 (already applied).');
     }
+
+    const hasIsOnboarded = await queryRunner.hasColumn('visitor', 'is_onboarded');
+    if (!hasIsOnboarded) {
+      await queryRunner.query(
+        `ALTER TABLE "visitor" ADD COLUMN IF NOT EXISTS "is_onboarded" boolean DEFAULT false`,
+      );
+      console.log('Added is_onboarded column to visitor table');
+    }
+
+    await queryRunner.query(
+      `UPDATE "visitor" SET "is_onboarded" = true WHERE "is_onboarded" IS NOT TRUE AND ("city" IS NOT NULL OR "phone" IS NOT NULL OR "wedding_date" IS NOT NULL OR "partner_first_name" IS NOT NULL)`,
+    );
 
     console.log('Migration completed successfully!');
     

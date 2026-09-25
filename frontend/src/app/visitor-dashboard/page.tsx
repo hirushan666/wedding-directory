@@ -83,12 +83,22 @@ const VisitorDashboardContent: React.FC = () => {
       !visitorData.visitor_fname.trim() ||
       visitorData.visitor_fname === 'Visitor');
 
-  // If visitor profile is incomplete (missing visitor_fname), redirect to onboarding
+  const isProfileIncomplete =
+    visitorData &&
+    (visitorData.isOnboarded === false ||
+      (visitorData.isOnboarded !== true &&
+        (isMissingName ||
+          (!visitorData.city &&
+            !visitorData.phone &&
+            !visitorData.wed_date &&
+            !visitorData.partner_fname))));
+
+  // If visitor profile is incomplete, redirect to onboarding
   useEffect(() => {
-    if (isMissingName) {
+    if (isProfileIncomplete) {
       router.replace('/visitor-onboarding');
     }
-  }, [isMissingName, router]);
+  }, [isProfileIncomplete, router]);
 
   // Get my vendors data
   const { data: vendorsData } = useQuery(FIND_ALL_MY_VENDORS, {
@@ -153,7 +163,7 @@ const VisitorDashboardContent: React.FC = () => {
   const checklistProgress =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  if (!isInitialized || !visitor?.id || loading || isMissingName) {
+  if (!isInitialized || !visitor?.id || loading || isProfileIncomplete) {
     return <VisitorDashboardSkeleton />;
   }
 
