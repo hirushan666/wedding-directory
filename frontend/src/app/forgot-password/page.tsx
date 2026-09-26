@@ -15,6 +15,7 @@ import {
   UserRole,
 } from '@/api/auth/password-reset.api';
 import { Eye, EyeOff, CheckCircle2, ArrowLeft, Mail, KeyRound } from 'lucide-react';
+import { isValidEmail, sanitizeEmail } from '@/lib/validation';
 
 const ForgotPasswordForm = () => {
   const router = useRouter();
@@ -59,15 +60,20 @@ const ForgotPasswordForm = () => {
     e.preventDefault();
     setError(null);
 
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) {
+    const sanitizedEmail = sanitizeEmail(email);
+    if (!sanitizedEmail) {
       setError('Please enter your email address.');
+      return;
+    }
+
+    if (!isValidEmail(sanitizedEmail)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await requestPasswordResetOtp(trimmedEmail, role);
+      const response = await requestPasswordResetOtp(sanitizedEmail, role);
       toast.success(response.message || 'Verification code sent to your email!', {
         style: { background: '#333', color: '#fff' },
       });
@@ -90,9 +96,16 @@ const ForgotPasswordForm = () => {
   const handleResendOtp = async () => {
     if (resendTimer > 0) return;
     setError(null);
+
+    const sanitizedEmail = sanitizeEmail(email);
+    if (!sanitizedEmail || !isValidEmail(sanitizedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const response = await requestPasswordResetOtp(email.trim(), role);
+      const response = await requestPasswordResetOtp(sanitizedEmail, role);
       toast.success(response.message || 'A new code has been sent.', {
         style: { background: '#333', color: '#fff' },
       });
@@ -232,9 +245,11 @@ const ForgotPasswordForm = () => {
                 className="w-full h-12 px-4 rounded-xl text-base bg-white dark:bg-darkElevated border-2 border-gray-200 dark:border-zinc-700/80 text-gray-900 dark:text-zinc-100 placeholder:text-gray-400 dark:placeholder:text-zinc-500 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-orange dark:focus:border-orange transition-colors"
                 type="email"
                 id="email"
+                maxLength={254}
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmail((prev) => prev.trim().toLowerCase())}
                 required
               />
             </div>

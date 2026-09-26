@@ -12,6 +12,7 @@ import { useChatSocket } from "@/hooks/useChatSocket";
 import Link from "next/link";
 import Image from "next/image";
 import { ChatWindowSkeleton } from "@/components/ui/shimmer";
+import { sanitizeInput } from "@/lib/sanitize";
 
 interface Message {
   content: string;
@@ -112,10 +113,11 @@ const VisitorChatWindow = ({ chatId }: VisitorChatWindowProps) => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !visitor?.id) return;
+    const sanitizedContent = sanitizeInput(message, { maxLength: 1500, multiline: true });
+    if (!sanitizedContent || !visitor?.id) return;
 
     const optimisticMsg: Message = {
-      content: message.trim(),
+      content: sanitizedContent,
       senderId: visitor.id,
       senderType: "visitor",
       timestamp: new Date().toISOString(),
@@ -294,6 +296,7 @@ const VisitorChatWindow = ({ chatId }: VisitorChatWindowProps) => {
             <input
               type="text"
               value={message}
+              maxLength={1500}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Type your message..."
               className="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 font-body"

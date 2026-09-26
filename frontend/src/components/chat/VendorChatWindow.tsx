@@ -17,6 +17,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChatWindowSkeleton } from "@/components/ui/shimmer";
 import { formatCoupleName } from "@/utils/formatCoupleName";
+import { sanitizeInput } from "@/lib/sanitize";
 
 interface Message {
   content: string;
@@ -124,10 +125,11 @@ const VendorChatWindow = ({ chatId }: VendorChatWindowProps) => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !vendor?.id) return;
+    const sanitizedContent = sanitizeInput(message, { maxLength: 1500, multiline: true });
+    if (!sanitizedContent || !vendor?.id) return;
 
     const optimisticMsg: Message = {
-      content: message.trim(),
+      content: sanitizedContent,
       senderId: vendor.id,
       senderType: "vendor",
       timestamp: new Date().toISOString(),
@@ -303,6 +305,7 @@ const VendorChatWindow = ({ chatId }: VendorChatWindowProps) => {
             <input
               type="text"
               value={message}
+              maxLength={1500}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Type your message..."
               className="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 font-body"

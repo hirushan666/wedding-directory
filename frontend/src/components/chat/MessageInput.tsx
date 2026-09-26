@@ -5,6 +5,9 @@ import { useMutation } from "@apollo/client";
 import { SEND_MESSAGE } from "@/graphql/mutations";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { IoSend } from "react-icons/io5";
+import { sanitizeInput } from "@/lib/sanitize";
+import { getFriendlyErrorMessage } from "@/lib/errorUtils";
+import { toast } from "react-hot-toast";
 
 interface MessageInputProps {
   chatId: string;
@@ -22,25 +25,28 @@ export default function MessageInput({ chatId, onMessageSent }: MessageInputProp
       }
     },
     onError: (error) => {
-      console.error("Error sending message:", error);
+      const friendlyMsg = getFriendlyErrorMessage(error, "Failed to send message.");
+      toast.error(friendlyMsg);
     },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    const sanitized = sanitizeInput(message, { maxLength: 1500, multiline: true });
+    if (!sanitized) return;
 
     try {
       await sendMessage({
         variables: {
           chatId,
-          content: message.trim(),
+          content: sanitized,
           vendorSenderId: vendor?.id,
         },
       });
       setMessage("");
     } catch (error) {
-      console.error("Failed to send message:", error);
+      const friendlyMsg = getFriendlyErrorMessage(error, "Failed to send message.");
+      toast.error(friendlyMsg);
     }
   };
 
@@ -51,6 +57,7 @@ export default function MessageInput({ chatId, onMessageSent }: MessageInputProp
           <input
             type="text"
             value={message}
+            maxLength={1500}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your message..."
             className="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 font-body"
@@ -58,7 +65,7 @@ export default function MessageInput({ chatId, onMessageSent }: MessageInputProp
           <button
             type="submit"
             disabled={!message.trim()}
-            className="p-2.5 rounded-xl bg-orange hover:bg-orange/90 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs flex-shrink-0"
+            className="p-2.5 rounded-xl bg-orange hover:bg-orange/90 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs flex-shrink-0 cursor-pointer"
             title="Send Message"
           >
             <IoSend className="text-sm" />

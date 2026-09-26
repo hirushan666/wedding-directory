@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { SanitizePayloadInterceptor } from './common/interceptors/sanitize-payload.interceptor';
 // main.ts — very top, before other imports
 import * as dns from 'dns';
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -63,6 +65,41 @@ async function bootstrap() {
   };
 
   app.enableCors(corsOptions);
+
+  // Global Layer 3: Payload sanitization (strips null bytes, control chars, limits payload ceiling)
+  app.useGlobalInterceptors(new SanitizePayloadInterceptor());
+
+  // Global Layer 4: Field-level validation and sanitization
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: false,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors) => {
+        const firstError = errors[0];
+        const fieldName = (firstError?.property || 'Field')
+          .replace(/_/g, ' ')
+          .replace(/([a-z])([A-Z])/g, '$1 $2');
+        const constraints = firstError?.constraints || {};
+
+        let friendlyMessage = `${fieldName} is invalid.`;
+        if (constraints.maxLength) {
+          friendlyMessage = `${fieldName} exceeds the maximum allowed length.`;
+        } else if (constraints.minLength) {
+          friendlyMessage = `${fieldName} is too short.`;
+        } else if (constraints.isEmail) {
+          friendlyMessage = `Please enter a valid email address.`;
+        } else if (constraints.isString) {
+          friendlyMessage = `${fieldName} must be valid text.`;
+        }
+
+        return new BadRequestException(friendlyMessage);
+      },
+    }),
+  );
 
   const port = Number(process.env.PORT || 4000);
   const host = process.env.HOST || '0.0.0.0';

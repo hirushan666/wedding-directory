@@ -1,28 +1,40 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { SanitizeString } from '../../common/decorators/sanitize-string.decorator';
 
 @InputType()
 export class CreatePackageInput {
-    @Field()
-    name: string;
+  @Field()
+  @SanitizeString({ minLength: 2, maxLength: 120 })
+  name: string;
 
-    @Field()
-    description: string;
+  @Field()
+  @SanitizeString({ maxLength: 3000, allowMultiline: true })
+  description: string;
 
-    @Field()
-    pricing: number;
+  @Field()
+  @IsNumber()
+  pricing: number;
 
-    @Field(() => [String])
-    features: string[];
+  @Field(() => [String])
+  @IsArray()
+  @IsString({ each: true })
+  features: string[];
 
-    @Field(() => Boolean, { defaultValue: false })
-    visible: boolean;
-    
-    @Field(() => Boolean, { defaultValue: false })
-    requiresReservation: boolean;
+  @Field(() => Boolean, { defaultValue: false })
+  @IsBoolean()
+  visible: boolean;
 
-    @Field(() => Boolean, { defaultValue: false, nullable: true })
-    requiresApproval?: boolean;
+  @Field(() => Boolean, { defaultValue: false })
+  @IsBoolean()
+  requiresReservation: boolean;
 
-    @Field({ nullable: true })
-    image?: string;
+  @Field(() => Boolean, { defaultValue: false, nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  requiresApproval?: boolean;
+
+  @Field({ nullable: true })
+  @SanitizeString({ maxLength: 2048, optional: true })
+  image?: string;
 }
