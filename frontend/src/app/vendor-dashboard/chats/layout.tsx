@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import VendorHeader from "@/components/shared/Headers/VendorHeader";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Messages & Client Inquiries",
+  description: "Manage client inquiries, chat conversations, and quotes.",
+};
 
 const VendorDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (

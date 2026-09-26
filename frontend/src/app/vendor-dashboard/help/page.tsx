@@ -6,7 +6,7 @@ import { HelpCenterSkeleton } from "@/components/ui/shimmer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Vendor Help & Support | Say I Do",
+  title: "Vendor Help & Support",
   description:
     "Vendor knowledge base, guide, and support desk for managing your wedding business on Say I Do.",
 };

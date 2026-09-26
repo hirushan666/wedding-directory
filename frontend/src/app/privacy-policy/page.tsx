@@ -6,7 +6,7 @@ import { FiShield, FiMail, FiPhone, FiMapPin, FiCalendar, FiLock, FiCheck } from
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Say I Do",
+  title: "Privacy Policy",
   description: "Learn how Say I Do collects, uses, and safeguards your personal information.",
 };
 

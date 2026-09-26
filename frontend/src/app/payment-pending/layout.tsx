@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Payment Processing",
+  description: "Your payment transaction is being verified and processed.",
+};
 
 export default function PaymentPendingLayout({
   children,

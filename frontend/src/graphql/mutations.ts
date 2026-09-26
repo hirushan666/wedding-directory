@@ -398,12 +398,14 @@ export const TRACK_PACKAGE_VIEW = gql`
     $visitorId: String
     $sessionId: String
     $ipAddress: String
+    $vendorId: String
   ) {
     trackPackageView(
       packageId: $packageId
       visitorId: $visitorId
       sessionId: $sessionId
       ipAddress: $ipAddress
+      vendorId: $vendorId
     )
   }
 `;

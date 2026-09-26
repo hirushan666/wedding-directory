@@ -7,7 +7,7 @@ import PurposeAndVision from "@/components/about-us/PurposeAndVision";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Us | Say I Do",
+  title: "About Us",
   description: "Learn more about Say I Do, our mission to simplify wedding planning, and how we connect couples with Sri Lanka's finest wedding vendors.",
 };
 

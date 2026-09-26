@@ -1,6 +1,12 @@
 import React, { Fragment } from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Payment Successful",
+  description: "Your payment was processed successfully. Thank you for booking through Say I Do.",
+};
 
 const SuccessLayout = ({ children }: { children: React.ReactNode }) => {
   return (

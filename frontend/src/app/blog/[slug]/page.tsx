@@ -55,6 +55,9 @@ export default function BlogPostPage() {
             setError("Blog post not found.");
           } else {
             setPost(data);
+            if (data.title) {
+              document.title = `${data.title} | Say I Do`;
+            }
           }
         }
       } catch (err: unknown) {

@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import VisitorHeader from "@/components/shared/Headers/VisitorHeader";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Guest List Manager",
+  description: "Organize your wedding guest list, RSVPs, meal preferences, and invitations.",
+};
 
 const GuestListLayout = ({ children }: { children: React.ReactNode }) => {
   return (

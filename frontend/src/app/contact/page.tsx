@@ -7,7 +7,7 @@ import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Us - Say I Do",
+  title: "Contact Us",
   description: "Get in touch with the Say I Do wedding support team.",
 };
 
