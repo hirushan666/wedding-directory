@@ -18,6 +18,7 @@ import {
   CompleteVendorSignupDto,
 } from './dto/signup-otp.dto';
 import { formatCoupleName } from '../../utils/format-couple-name.util';
+import { isValidEmail, normalizeEmail } from '../../utils/email-validator.util';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,12 @@ export class AuthService {
   ) {}
 
   async validateVisitor(email: string, password: string): Promise<VisitorEntity | null> {
-    const visitor = await this.visitorService.getVisitorByEmail(email);
+    const normalizedEmail = normalizeEmail(email);
+    if (!normalizedEmail || !isValidEmail(normalizedEmail)) {
+      return null;
+    }
+
+    const visitor = await this.visitorService.getVisitorByEmail(normalizedEmail);
 
     if (!visitor) {
       return null;
@@ -42,7 +48,12 @@ export class AuthService {
   }
 
   async validateVendor(email: string, password: string): Promise<VendorEntity | null> {
-    const vendor = await this.vendorService.getVendorByEmail(email);
+    const normalizedEmail = normalizeEmail(email);
+    if (!normalizedEmail || !isValidEmail(normalizedEmail)) {
+      return null;
+    }
+
+    const vendor = await this.vendorService.getVendorByEmail(normalizedEmail);
 
     if (!vendor) {
       return null;
@@ -107,9 +118,12 @@ export class AuthService {
     rawEmail: string,
     role?: ResetRole,
   ): Promise<{ message: string; role?: ResetRole }> {
-    const email = rawEmail?.trim().toLowerCase();
+    const email = normalizeEmail(rawEmail);
     if (!email) {
       throw new BadRequestException('Email address is required.');
+    }
+    if (!isValidEmail(email)) {
+      throw new BadRequestException('Please enter a valid email address.');
     }
 
     let detectedRole: ResetRole | null = role || null;
@@ -200,11 +214,15 @@ export class AuthService {
     rawOtp: string,
     role?: ResetRole,
   ): Promise<{ message: string; resetToken: string; role: ResetRole }> {
-    const email = rawEmail?.trim().toLowerCase();
+    const email = normalizeEmail(rawEmail);
     const otp = rawOtp?.trim();
 
     if (!email || !otp) {
       throw new BadRequestException('Email and verification code are required.');
+    }
+
+    if (!isValidEmail(email)) {
+      throw new BadRequestException('Please enter a valid email address.');
     }
 
     const whereCondition: any = { email, isUsed: false };
@@ -428,9 +446,12 @@ export class AuthService {
    * Generates and sends a 6-digit OTP code to verify email before registration.
    */
   async requestSignupOtp(rawEmail: string, role: 'visitor' | 'vendor') {
-    const email = rawEmail?.trim().toLowerCase();
+    const email = normalizeEmail(rawEmail);
     if (!email) {
       throw new BadRequestException('Email address is required.');
+    }
+    if (!isValidEmail(email)) {
+      throw new BadRequestException('Please enter a valid email address.');
     }
 
     // Check if account already exists across visitor and vendor
@@ -514,11 +535,15 @@ export class AuthService {
     rawOtp: string,
     role: 'visitor' | 'vendor',
   ) {
-    const email = rawEmail?.trim().toLowerCase();
+    const email = normalizeEmail(rawEmail);
     const otp = rawOtp?.trim();
 
     if (!email || !otp) {
       throw new BadRequestException('Email and verification code are required.');
+    }
+
+    if (!isValidEmail(email)) {
+      throw new BadRequestException('Please enter a valid email address.');
     }
 
     const record = await this.otpRepository.findOne({

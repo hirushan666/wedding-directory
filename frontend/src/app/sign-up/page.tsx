@@ -16,6 +16,7 @@ import {
 } from '@/api/auth/signup-otp.api';
 import { Mail, ArrowLeft } from 'lucide-react';
 import OtpInput from "@/components/auth/OtpInput";
+import { isValidEmail, sanitizeEmail } from "@/lib/validation";
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -52,9 +53,14 @@ const Signup: React.FC = () => {
     e.preventDefault();
     setError(null);
 
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail || !password || !confirmPassword) {
+    const sanitizedEmail = sanitizeEmail(email);
+    if (!sanitizedEmail || !password || !confirmPassword) {
       setError('Email, password, and confirmation are required.');
+      return;
+    }
+
+    if (!isValidEmail(sanitizedEmail)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
@@ -75,7 +81,7 @@ const Signup: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const response = await requestSignupOtp(trimmedEmail, 'vendor');
+      const response = await requestSignupOtp(sanitizedEmail, 'vendor');
       toast.success(response.message || 'Verification code sent to your email!', {
         style: { background: '#333', color: '#fff' },
       });
@@ -97,9 +103,16 @@ const Signup: React.FC = () => {
   const handleResendOtp = async () => {
     if (resendTimer > 0) return;
     setError(null);
+
+    const sanitizedEmail = sanitizeEmail(email);
+    if (!sanitizedEmail || !isValidEmail(sanitizedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const response = await requestSignupOtp(email.trim(), 'vendor');
+      const response = await requestSignupOtp(sanitizedEmail, 'vendor');
       toast.success(response.message || 'A new verification code has been sent.', {
         style: { background: '#333', color: '#fff' },
       });
@@ -203,9 +216,11 @@ const Signup: React.FC = () => {
                       className="w-full h-12 px-4 rounded-xl text-base bg-white dark:bg-darkElevated border-2 border-gray-200 dark:border-zinc-700/80 text-gray-900 dark:text-zinc-100 placeholder:text-gray-400 dark:placeholder:text-zinc-500 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-orange dark:focus:border-orange transition-colors"
                       type="email"
                       id="email"
+                      maxLength={254}
                       placeholder="vendor@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      onBlur={() => setEmail((prev) => prev.trim().toLowerCase())}
                       required
                     />
                   </div>

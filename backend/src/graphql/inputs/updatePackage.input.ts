@@ -1,32 +1,45 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { SanitizeString } from '../../common/decorators/sanitize-string.decorator';
 
 @InputType()
 export class UpdatePackageInput {
+  @Field()
+  @IsString()
+  id: string;
 
-    @Field()
-    id: string;
+  @Field()
+  @SanitizeString({ minLength: 2, maxLength: 120 })
+  name: string;
 
-    @Field()
-    name: string;
+  @Field()
+  @SanitizeString({ maxLength: 3000, allowMultiline: true })
+  description: string;
 
-    @Field()
-    description: string;
+  @Field()
+  @IsNumber()
+  pricing: number;
 
-    @Field()
-    pricing: number;
+  @Field(() => [String])
+  @IsArray()
+  @IsString({ each: true })
+  features: string[];
 
-    @Field(() => [String])
-    features: string[];
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  requiresReservation?: boolean;
 
-    @Field(() => Boolean, { nullable: true })
-    requiresReservation?: boolean;
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  requiresApproval?: boolean;
 
-    @Field(() => Boolean, { nullable: true })
-    requiresApproval?: boolean;
+  @Field(() => Boolean, { defaultValue: false })
+  @IsBoolean()
+  visible: boolean;
 
-    @Field(() => Boolean, { defaultValue: false })
-    visible: boolean;
-
-    @Field({ nullable: true })
-    image?: string;
+  @Field({ nullable: true })
+  @SanitizeString({ maxLength: 2048, optional: true })
+  image?: string;
 }

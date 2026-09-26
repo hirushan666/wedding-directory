@@ -9,6 +9,7 @@ import { loginVendor as loginVendorAPI } from "@/api/auth/vendor.auth.api";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
 import { toast } from 'react-hot-toast';
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
+import { isValidEmail, sanitizeEmail } from "@/lib/validation";
 
 const VendorLoginPage = () => {
   const [email, setEmail] = useState("");
@@ -29,10 +30,22 @@ const VendorLoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const sanitizedEmail = sanitizeEmail(email);
+    if (!sanitizedEmail) {
+      setError('Please enter your email address.');
+      return;
+    }
+
+    if (!isValidEmail(sanitizedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await loginVendorAPI(email, password);
+      const response = await loginVendorAPI(sanitizedEmail, password);
 
       if (response && (response.message === 'Login successful' || response.access_token)) {
         const storedToken = document.cookie
@@ -104,9 +117,11 @@ const VendorLoginPage = () => {
                   className="w-full h-12 px-4 rounded-xl text-base bg-white dark:bg-darkElevated border-2 border-gray-200 dark:border-zinc-700/80 text-gray-900 dark:text-zinc-100 placeholder:text-gray-400 dark:placeholder:text-zinc-500 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-orange dark:focus:border-orange transition-colors disabled:opacity-60"
                   type="email"
                   id="email"
+                  maxLength={254}
                   placeholder="vendor@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => setEmail((prev) => prev.trim().toLowerCase())}
                   disabled={isLoading}
                   required
                 />

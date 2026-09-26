@@ -9,6 +9,9 @@ import { CHECK_REVIEW_ELIGIBILITY, FIND_REVIEW_PAGE_BY_SERVICE } from '@/graphql
 import { useAuth } from '@/contexts/VisitorAuthContext';
 import toast from 'react-hot-toast';
 import { uploadReviewImages } from '@/api/upload/review/reviewImages.upload';
+import { Textarea } from '@/components/ui/textarea';
+import { sanitizeInput } from '@/lib/sanitize';
+import { getFriendlyErrorMessage } from '@/lib/errorUtils';
 
 interface WriteReviewProps {
     serviceId?: string;
@@ -109,6 +112,8 @@ const WriteReview: React.FC<WriteReviewProps> = ({ serviceId, vendorName }) => {
             return;
         }
 
+        const sanitizedComment = sanitizeInput(comment, { maxLength: 2000, multiline: true });
+
         try {
             const uploadedImageUrls = await uploadReviewImages(images);
 
@@ -116,7 +121,7 @@ const WriteReview: React.FC<WriteReviewProps> = ({ serviceId, vendorName }) => {
                 variables: {
                     input: {
                         rating,
-                        comment,
+                        comment: sanitizedComment,
                         image_urls: uploadedImageUrls,
                         mentioned_service_id: mentionVendor ? serviceId : null,
                         service_id: serviceId,
@@ -135,7 +140,7 @@ const WriteReview: React.FC<WriteReviewProps> = ({ serviceId, vendorName }) => {
                 toast.success("Review submitted successfully!");
             }
         } catch (error: any) {
-            const errorMessage = error?.graphQLErrors?.[0]?.message || error?.message || "Failed to submit review. Please try again.";
+            const errorMessage = getFriendlyErrorMessage(error, "Failed to submit review. Please try again.");
             toast.error(errorMessage);
         }
     };
@@ -250,19 +255,18 @@ const WriteReview: React.FC<WriteReviewProps> = ({ serviceId, vendorName }) => {
                             <label htmlFor="review-comment" className='block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wide'>
                                 Your Review
                             </label>
-                            <textarea
-                                className='mt-1.5 w-full rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-darkElevated p-3 text-sm text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 outline-none focus:ring-2 focus:ring-orange/20 focus:border-orange min-h-[120px] transition-all'
+                            <Textarea
+                                className='mt-1.5 min-h-[120px]'
                                 id="review-comment"
                                 name="content"
                                 placeholder="How was the communication, punctuality, and service quality on your wedding day?"
                                 rows={4}
+                                maxLength={2000}
+                                showCount={true}
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 disabled={loading}
                             />
-                            <div className='mt-1 text-right text-[11px] text-gray-400 dark:text-zinc-500 font-mono'>
-                                {comment.trim().length} characters
-                            </div>
                         </div>
 
                         <div>
