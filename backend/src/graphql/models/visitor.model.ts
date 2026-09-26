@@ -42,6 +42,9 @@ export class VisitorModel {
   @Field({ nullable: true })
   city?: string;
 
+  @Field({ nullable: true })
+  isOnboarded?: boolean;
+
   @Field()
   createdAt: Date;
 
