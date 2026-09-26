@@ -24,9 +24,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [filteredCities, setFilteredCities] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Memoize unique city list
-  const uniqueCities = useMemo(() => {
-    return Array.from(new Set(citiesData.map((c) => c.City))).sort();
+  // Memoize unique district list (Sri Lanka's 25 districts)
+  const uniqueDistricts = useMemo(() => {
+    return Array.from(new Set(citiesData.map((c) => c.District))).sort();
   }, []);
 
   // Handle outside click to close suggestions
@@ -51,13 +51,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
       const matchedCats = categories.filter((category) =>
         category.toLowerCase().includes(q)
       );
-      const matchedCities = uniqueCities
-        .filter((city) => city.toLowerCase().includes(q))
+      const matchedDistricts = uniqueDistricts
+        .filter((district) => district.toLowerCase().includes(q))
         .slice(0, 4);
 
       setFilteredCategories(matchedCats);
-      setFilteredCities(matchedCities);
-      setIsOpen(matchedCats.length > 0 || matchedCities.length > 0);
+      setFilteredCities(matchedDistricts);
+      setIsOpen(matchedCats.length > 0 || matchedDistricts.length > 0);
     } else {
       setFilteredCategories([]);
       setFilteredCities([]);
@@ -86,12 +86,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
       return;
     }
 
-    // Exact or case-insensitive city match
-    const exactCity = uniqueCities.find(
-      (city) => city.toLowerCase() === q.toLowerCase()
+    // Exact or case-insensitive district match
+    const exactDistrict = uniqueDistricts.find(
+      (district) => district.toLowerCase() === q.toLowerCase()
     );
-    if (exactCity) {
-      router.push(`/services?city=${encodeURIComponent(exactCity)}`);
+    if (exactDistrict) {
+      router.push(`/services?city=${encodeURIComponent(exactDistrict)}`);
       return;
     }
 
