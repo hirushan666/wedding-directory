@@ -270,21 +270,21 @@ export default function VendorOnboardingPage() {
               </p>
             </div>
 
-            {/* Primary Base City (Optional) */}
+            {/* Primary Base District (Optional) */}
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                Primary Base City <span className="text-gray-400 font-normal lowercase">(optional)</span>
+                Primary Base District <span className="text-gray-400 font-normal lowercase">(optional)</span>
               </label>
-              <div className="rounded-xl overflow-hidden">
+              <div>
                 <CityInput
-                  placeholder={city || "Select your main operational city (optional)"}
+                  placeholder={city || "Select your primary operational district (optional)"}
                   value={city}
                   onCityChange={(selectedCity) => setCity(selectedCity)}
-                  className="border-2 border-gray-200 rounded-xl flex flex-row space-y-1.5 bg-white hover:border-orange transition-colors h-12"
+                  className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl bg-white hover:border-orange transition-colors text-base font-normal"
                 />
               </div>
               <p className="text-[11px] text-gray-400 mt-1">
-                Your main operational base. You can add specific locations and interactive map pins for each individual service later in your dashboard.
+                Your main operational district in Sri Lanka. You can add specific locations and interactive map pins for each individual service later in your dashboard.
               </p>
             </div>
 

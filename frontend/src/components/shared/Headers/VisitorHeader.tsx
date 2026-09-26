@@ -16,6 +16,7 @@ import {
 } from "@/graphql/queries";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import toast from "react-hot-toast";
+import { matchSriLankaDistrict } from "@/utils/geolocation";
 
 const VisitorHeader = () => {
   const router = useRouter();
@@ -35,34 +36,6 @@ const VisitorHeader = () => {
   const notificationMenuRef = useRef<HTMLDivElement>(null);
   const previousApprovedCountRef = useRef<number | null>(null);
 
-  const navLinks = [
-    {
-      name: "Dashboard",
-      href: "/visitor-dashboard",
-      isActive: (path: string) =>
-        path.startsWith("/visitor-dashboard") &&
-        !path.startsWith("/visitor-dashboard/help") &&
-        !path.startsWith("/visitor-dashboard/chats"),
-    },
-    {
-      name: "Services",
-      href: "/services",
-      isActive: (path: string) =>
-        path.startsWith("/services") || path.startsWith("/vendor-search"),
-    },
-    {
-      name: "Blog",
-      href: "/blog",
-      isActive: (path: string) => path.startsWith("/blog"),
-    },
-    {
-      name: "Help",
-      href: "/visitor-dashboard/help",
-      isActive: (path: string) =>
-        path === "/visitor-dashboard/help" || path === "/help",
-    },
-  ];
-
   // WebSocket hook for unread count
   const { unreadCount } = useChatSocket(visitor?.id, "visitor");
 
@@ -81,6 +54,39 @@ const VisitorHeader = () => {
   });
 
   const visitorInfo = visitorProfileData?.findVisitorById;
+  const visitorDistrict = matchSriLankaDistrict(
+    visitorInfo?.city || visitorInfo?.wed_venue,
+  );
+
+  const navLinks = [
+    {
+      name: "Dashboard",
+      href: "/visitor-dashboard",
+      isActive: (path: string) =>
+        path.startsWith("/visitor-dashboard") &&
+        !path.startsWith("/visitor-dashboard/help") &&
+        !path.startsWith("/visitor-dashboard/chats"),
+    },
+    {
+      name: "Services",
+      href: visitorDistrict
+        ? `/services?city=${encodeURIComponent(visitorDistrict)}`
+        : "/services",
+      isActive: (path: string) =>
+        path.startsWith("/services") || path.startsWith("/vendor-search"),
+    },
+    {
+      name: "Blog",
+      href: "/blog",
+      isActive: (path: string) => path.startsWith("/blog"),
+    },
+    {
+      name: "Help",
+      href: "/visitor-dashboard/help",
+      isActive: (path: string) =>
+        path === "/visitor-dashboard/help" || path === "/help",
+    },
+  ];
 
   // Query visitor approval requests with polling for real-time notifications
   const { data: approvalData } = useQuery(GET_VISITOR_APPROVAL_REQUESTS, {
