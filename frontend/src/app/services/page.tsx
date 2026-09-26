@@ -1,22 +1,24 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Footer from "@/components/shared/Footer";
 import Header from "@/components/shared/Headers/Header";
 import OfferingCard from "@/components/vendor-search/OfferingCard";
-import { FIND_SERVICES, FIND_ALL_MY_VENDORS } from "@/graphql/queries";
+import { FIND_SERVICES, FIND_ALL_MY_VENDORS, GET_VISITOR_BY_ID } from "@/graphql/queries";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { useAuth } from "@/contexts/VisitorAuthContext";
 import FilterSearchBar from "@/components/vendor-search/FilterSearchBar";
 import { Offering } from "@/types/offeringTypes";
 import { OfferingGridSkeleton } from "@/components/ui/shimmer";
 import { IoClose } from "react-icons/io5";
+import { detectUserDistrict, matchSriLankaDistrict } from "@/utils/geolocation";
+import toast from "react-hot-toast";
 
 const ServicesSearchContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { visitor } = useAuth();
+  const { visitor, isInitialized: authInitialized } = useAuth();
 
   const urlCategory = searchParams.get("category") || "";
   const urlCity = searchParams.get("city") || "";
@@ -31,6 +33,18 @@ const ServicesSearchContent: React.FC = () => {
     skip: !visitor?.id,
     fetchPolicy: "cache-and-network",
   });
+
+  // Query visitor profile to check their district if logged in
+  const { data: visitorProfileData, loading: visitorLoading } = useQuery(
+    GET_VISITOR_BY_ID,
+    {
+      variables: { id: visitor?.id },
+      skip: !visitor?.id,
+      fetchPolicy: "cache-first",
+    },
+  );
+
+  const hasInitializedLocationRef = useRef(false);
 
   const savedServiceIds = useMemo(() => {
     const ids = new Set<string>();
@@ -69,6 +83,92 @@ const ServicesSearchContent: React.FC = () => {
     setKeyword(urlQuery);
     executeQuery(urlCity, urlCategory);
   }, [urlCategory, urlCity, urlQuery, executeQuery]);
+
+  // Auto-default district filter:
+  // 1. If visitor is logged in and has a district in profile -> default to their district
+  // 2. If visitor is logged in without a district OR user is not logged in -> detect via browser geolocation (if permitted)
+  // 3. If explicit city already in URL or user has manually cleared filters -> do not override
+  useEffect(() => {
+    if (urlCity) {
+      hasInitializedLocationRef.current = true;
+      return;
+    }
+
+    if (hasInitializedLocationRef.current) {
+      return;
+    }
+
+    if (!authInitialized) {
+      return;
+    }
+
+    if (visitor?.id && visitorLoading) {
+      return;
+    }
+
+    hasInitializedLocationRef.current = true;
+
+    // Case A: Logged-in visitor with district in profile
+    if (visitor?.id) {
+      const profile = visitorProfileData?.findVisitorById;
+      const visitorDistrict = matchSriLankaDistrict(
+        profile?.city || profile?.wed_venue,
+      );
+      if (visitorDistrict) {
+        setCity(visitorDistrict);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("city", visitorDistrict);
+        router.replace(`/services?${params.toString()}`);
+        return;
+      }
+    }
+
+    // Case B: Not logged in OR visitor with no district in profile -> Check cached session district
+    const cachedDistrict =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("user_detected_district")
+        : null;
+
+    if (cachedDistrict) {
+      setCity(cachedDistrict);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("city", cachedDistrict);
+      router.replace(`/services?${params.toString()}`);
+      return;
+    }
+
+    // Case C: Request browser location (if permitted)
+    const alreadyPrompted =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("geo_prompted")
+        : null;
+
+    if (!alreadyPrompted) {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("geo_prompted", "true");
+      }
+      detectUserDistrict().then((district) => {
+        if (district) {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("user_detected_district", district);
+          }
+          setCity(district);
+          const params = new URLSearchParams(window.location.search);
+          params.set("city", district);
+          router.replace(`/services?${params.toString()}`);
+          toast.success(`Showing services in your district: ${district}`);
+        }
+      });
+    }
+  }, [
+    urlCity,
+    authInitialized,
+    visitor?.id,
+    visitorLoading,
+    visitorProfileData,
+    searchParams,
+    router,
+  ]);
 
   // Handlers for filter changes from FilterSearchBar
   const handleCityChange = useCallback(
@@ -181,8 +281,13 @@ const ServicesSearchContent: React.FC = () => {
     // In-memory verification for active city filter
     if (city && city.trim()) {
       const cityTarget = city.toLowerCase().trim();
-      const offCity = (offering.vendor?.city || "").toLowerCase().trim();
-      if (!offCity.includes(cityTarget) && !catTargetMatch(offCity, cityTarget)) {
+      const offCity = (offering.city || offering.vendor?.city || "").toLowerCase().trim();
+      const offLoc = (offering.location || "").toLowerCase().trim();
+      if (
+        !offCity.includes(cityTarget) &&
+        !offLoc.includes(cityTarget) &&
+        !catTargetMatch(offCity, cityTarget)
+      ) {
         return false;
       }
     }
@@ -192,9 +297,10 @@ const ServicesSearchContent: React.FC = () => {
       const matchName = offering.name?.toLowerCase().includes(q);
       const matchBus = offering.vendor?.busname?.toLowerCase().includes(q);
       const matchCat = offering.category?.toLowerCase().includes(q);
-      const matchCity = offering.vendor?.city?.toLowerCase().includes(q);
+      const matchCity = (offering.city || offering.vendor?.city || "")?.toLowerCase().includes(q);
+      const matchLoc = offering.location?.toLowerCase().includes(q);
       const matchDesc = offering.description?.toLowerCase().includes(q);
-      if (!matchName && !matchBus && !matchCat && !matchCity && !matchDesc) {
+      if (!matchName && !matchBus && !matchCat && !matchCity && !matchLoc && !matchDesc) {
         return false;
       }
     }

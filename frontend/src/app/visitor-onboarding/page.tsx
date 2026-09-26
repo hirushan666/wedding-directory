@@ -342,17 +342,18 @@ export default function VisitorOnboardingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1.5">
-                  Wedding City / Destination <span className="text-gray-400 font-normal">(Optional)</span>
+                  Wedding District <span className="text-gray-400 font-normal">(Optional)</span>
                 </label>
-                <div className="rounded-xl overflow-hidden">
+                <div>
                   <CityInput
-                    placeholder={city || "Select your primary wedding city"}
+                    placeholder={city || "Select your wedding district"}
+                    value={city}
                     onCityChange={(selectedCity) => setCity(selectedCity)}
-                    className="border-2 border-gray-200 dark:border-zinc-700/80 rounded-xl flex flex-row space-y-1.5 bg-white dark:bg-darkElevated hover:border-orange dark:hover:border-orange transition-colors h-12"
+                    className="border-2 border-gray-200 dark:border-zinc-700/80 rounded-xl bg-white dark:bg-darkElevated hover:border-orange dark:hover:border-orange transition-colors h-12 px-4"
                   />
                 </div>
                 <p className="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">
-                  Helps us suggest vendors available near your location.
+                  Select your primary district in Sri Lanka to find vendors near you.
                 </p>
               </div>
 

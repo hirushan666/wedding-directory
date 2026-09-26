@@ -74,7 +74,7 @@ const VisitorSignup: React.FC<VisitorSignupProps> = ({ isVisible, onClose }) => 
 
       if (token) {
         login(token);
-        router.push('/pageone');
+        router.push('/visitor-onboarding');
       } else {
         throw new Error('Token not found');
       }
