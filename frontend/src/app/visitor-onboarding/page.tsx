@@ -61,8 +61,12 @@ export default function VisitorOnboardingPage() {
 
   useEffect(() => {
     if (data?.findVisitorById) {
-      const v = data.findVisitorById;
-      if (v.isOnboarded === true) {
+      const isAlreadyOnboarded =
+        v.isOnboarded === true ||
+        (v.visitor_fname &&
+          v.visitor_fname !== 'Visitor' &&
+          (v.partner_fname || v.city || v.phone || v.wed_date));
+      if (isAlreadyOnboarded) {
         router.replace('/visitor-dashboard');
         return;
       }
