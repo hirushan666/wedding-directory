@@ -1,4 +1,4 @@
-﻿import { Args, Mutation, Resolver } from "@nestjs/graphql/dist";
+import { Args, Mutation, Resolver } from "@nestjs/graphql/dist";
 import { PackageService } from "../../modules/package/package.service";
 import { PackageModel } from "../models/package.model";
 import { CreatePackageInput } from "../inputs/createPackage.input";
@@ -53,12 +53,9 @@ export class PackageResolver {
     @Args('visitorId', { nullable: true }) visitorId?: string,
     @Args('sessionId', { nullable: true }) sessionId?: string,
     @Args('ipAddress', { nullable: true }) ipAddress?: string,
+    @Args('vendorId', { nullable: true }) vendorId?: string,
   ): Promise<boolean> {
-    const input: TrackPackageViewInput = {
-      visitorId,
-      sessionId,
-      ipAddress,
-    };
+    const input = { visitorId, sessionId, ipAddress, vendorId };
     await this.packageService.trackPackageView(packageId, input);
     return true;
   }
