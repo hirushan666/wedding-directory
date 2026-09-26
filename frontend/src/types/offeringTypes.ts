@@ -40,6 +40,10 @@ export interface Offering {
     bus_email?: string;
     banner: string | null;
     reviews: Review[];
+    city?: string;
+    location?: string;
+    latitude?: number;
+    longitude?: number;
     vendor: {
         id: string;
         busname: string;

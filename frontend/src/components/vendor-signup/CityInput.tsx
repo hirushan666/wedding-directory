@@ -16,11 +16,17 @@ import {
 import cities from '../../utils/city.json';
 import { ChevronDown } from "lucide-react";
 import { CityProps } from "@/types/signupInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const CityInput: React.FC<CityProps> = ({ onCityChange, placeholder, className }) => {
+const CityInput: React.FC<CityProps> = ({ onCityChange, placeholder, className, value }) => {
 
-  const [selectedCity, setSelectedCity] = useState<string | null>(null); // State to store selected city
+  const [selectedCity, setSelectedCity] = useState<string | null>(value || null); // State to store selected city
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedCity(value || null);
+    }
+  }, [value]);
 
   const handleCitySelect = (city: string) => {
     setSelectedCity(city); // Update the selected city

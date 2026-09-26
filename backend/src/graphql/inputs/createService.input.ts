@@ -1,4 +1,4 @@
-﻿import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
 export class CreateServiceInput {
@@ -11,4 +11,16 @@ export class CreateServiceInput {
 
     @Field()
     category: string;
+
+    @Field({ nullable: true })
+    city?: string;
+
+    @Field({ nullable: true })
+    location?: string;
+
+    @Field({ nullable: true })
+    latitude?: number;
+
+    @Field({ nullable: true })
+    longitude?: number;
 }

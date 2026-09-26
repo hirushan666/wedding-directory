@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CategoryInput from "@/components/vendor-signup/CategoryInput";
+import CityInput from "@/components/vendor-signup/CityInput";
+import MapLocationPicker, { LocationResult } from "@/components/shared/MapLocationPicker";
+import { FiMapPin } from "react-icons/fi";
 import VendorHeader from "@/components/shared/Headers/VendorHeader";
 import { CREATE_SERVICE } from "@/graphql/mutations";
 import { FIND_SERVICES_BY_VENDOR } from "@/graphql/queries";
@@ -25,8 +28,13 @@ const AddNewService: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     category: "",
+    city: vendor?.city || "",
+    location: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
 
+  const [isMapOpen, setIsMapOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [createdOfferingId, setCreatedOfferingId] = useState<string | null>(null);
   const [createdServiceName, setCreatedServiceName] = useState<string>("");
@@ -45,18 +53,30 @@ const AddNewService: React.FC = () => {
 
   // Handle category selection from the CategoryInput component
   const handleCategoryChange = (selectedCategory: string) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       category: selectedCategory,
-    });
+    }));
+  };
+
+  const handleMapConfirm = (result: LocationResult) => {
+    setFormData((prev) => ({
+      ...prev,
+      city: result.city || prev.city,
+      location: result.address || prev.location,
+      latitude: result.lat,
+      longitude: result.lng,
+    }));
+    setIsMapOpen(false);
+    toast.success("Location pinned from map!");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -72,13 +92,24 @@ const AddNewService: React.FC = () => {
     }
 
     try {
+      const inputPayload: any = {
+        name: formData.name.trim(),
+        category: formData.category.trim(),
+        vendor_id: vendor?.id,
+      };
+
+      if (formData.city?.trim()) inputPayload.city = formData.city.trim();
+      if (formData.location?.trim()) inputPayload.location = formData.location.trim();
+      if (formData.latitude !== null && formData.latitude !== undefined) {
+        inputPayload.latitude = formData.latitude;
+      }
+      if (formData.longitude !== null && formData.longitude !== undefined) {
+        inputPayload.longitude = formData.longitude;
+      }
+
       const response = await createService({
         variables: {
-          input: {
-            name: formData.name.trim(),
-            category: formData.category.trim(),
-            vendor_id: vendor?.id,
-          },
+          input: inputPayload,
         },
         refetchQueries: [
           { query: FIND_SERVICES_BY_VENDOR, variables: { id: vendor?.id } },
@@ -222,7 +253,60 @@ const AddNewService: React.FC = () => {
                     <CategoryInput onCategoryChange={handleCategoryChange} />
                   </div>
 
-                  <div className="pt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                      City / Region
+                    </label>
+                    <CityInput
+                      placeholder={formData.city || "Select City / Region"}
+                      value={formData.city}
+                      onCityChange={(city) => setFormData((prev) => ({ ...prev, city }))}
+                      className="border border-gray-300 dark:border-zinc-700 rounded-lg p-2.5 flex flex-row space-y-0 bg-white dark:bg-darkElevated w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
+                        Specific Location / Address
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setIsMapOpen(true)}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:text-orange-600 transition-colors"
+                      >
+                        <FiMapPin className="w-3.5 h-3.5" />
+                        Pick on Map
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-orange"
+                        name="location"
+                        placeholder="e.g. 123 Beach Road, Negombo"
+                        value={formData.location}
+                        onChange={handleChange}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsMapOpen(true)}
+                        className="shrink-0 px-3 border-gray-300 dark:border-zinc-700 hover:bg-orange/10 hover:border-orange hover:text-orange text-gray-700 dark:text-zinc-200"
+                        title="Open interactive map to pin location"
+                      >
+                        <FiMapPin className="w-4 h-4 text-orange" />
+                      </Button>
+                    </div>
+                    {formData.latitude !== null && formData.longitude !== null && (
+                      <p className="text-xs text-green-600 dark:text-green-400 mt-1 flex items-center gap-1">
+                        <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                        Map pin set: {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-2">
                     <Button
                       type="submit"
                       variant="signup"
@@ -358,6 +442,16 @@ const AddNewService: React.FC = () => {
           </div>
         </div>
       </div>
+      <MapLocationPicker
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        onConfirm={handleMapConfirm}
+        initialLat={formData.latitude || undefined}
+        initialLng={formData.longitude || undefined}
+        initialCity={formData.city || undefined}
+        initialAddress={formData.location || undefined}
+        title="Pin Service Location"
+      />
       <Footer />
     </div>
   );

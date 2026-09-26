@@ -48,6 +48,10 @@ export const CREATE_SERVICE = gql`
       id
       name
       category
+      city
+      location
+      latitude
+      longitude
       vendor {
         id
       }
@@ -89,6 +93,10 @@ export const UPDATE_SERVICE_PROFILE = gql`
       description
       pricing
       visible
+      city
+      location
+      latitude
+      longitude
     }
   }
 `;

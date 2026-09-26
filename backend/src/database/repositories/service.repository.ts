@@ -1,4 +1,4 @@
-﻿import { DataSource } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { VendorEntity } from '../entities/vendor.entity';
 import { ServiceRepositoryType } from 'src/database/types/serviceTypes';
 import { ServiceEntity } from '../entities/service.entity';
@@ -74,7 +74,7 @@ export const ServiceRepository = (dataSource: DataSource): ServiceRepositoryType
 
       if (city && city.trim()) {
         query.andWhere(
-          '(LOWER(TRIM(vendor.city)) = LOWER(TRIM(:city)) OR vendor.city ILIKE :cityPattern)',
+          '(LOWER(TRIM(COALESCE(NULLIF(service.city, \'\'), vendor.city))) = LOWER(TRIM(:city)) OR COALESCE(NULLIF(service.city, \'\'), vendor.city) ILIKE :cityPattern)',
           {
             city: city.trim(),
             cityPattern: `%${city.trim()}%`,
