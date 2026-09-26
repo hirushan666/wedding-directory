@@ -1,4 +1,4 @@
-﻿import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { VendorEntity } from 'src/database/entities/vendor.entity';
 import { DataSource } from 'typeorm';
 import { VendorRepository } from '../../database/repositories/vendor.repository';
@@ -42,24 +42,7 @@ export class VendorService {
         return osmResponse.data.map((item: any) => item.display_name);
       }
     } catch (osmError) {
-      console.warn('Nominatim autocomplete error, checking Google Places fallback:', osmError?.message);
-    }
-
-    // 2. Fallback to Google Places if configured and working
-    try {
-      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-      if (apiKey) {
-        const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-          input
-        )}&components=country:lk&key=${apiKey}`;
-
-        const response = await firstValueFrom(this.httpService.get(url));
-        if (response.data?.predictions && response.data.predictions.length > 0) {
-          return response.data.predictions.map((p: any) => p.description);
-        }
-      }
-    } catch (gError) {
-      console.warn('Google Places autocomplete fallback failed:', gError?.message);
+      console.warn('Nominatim autocomplete error:', osmError?.message);
     }
 
     return [];

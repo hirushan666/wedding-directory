@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Payment History",
+  description: "View past payments, transaction receipts, and booking invoices.",
+};
 
 const PaymentsHistoryLayout = ({ children }: { children: React.ReactNode }) => {
   return (

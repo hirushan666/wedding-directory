@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Wedding Budget Planner",
+  description: "Track your wedding expenses, manage payment milestones, and stay within your budget.",
+};
 
 const BudgeterLayout = ({ children }: { children: React.ReactNode }) => {
   return (

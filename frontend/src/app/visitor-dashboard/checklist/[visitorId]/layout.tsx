@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Wedding Planning Checklist",
+  description: "Stay organized with your personalized step-by-step wedding planning checklist.",
+};
 
 const ChecklistLayout = ({ children }: { children: React.ReactNode }) => {
   return (

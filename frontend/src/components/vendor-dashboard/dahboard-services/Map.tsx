@@ -146,23 +146,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ serviceId }) =>
           return;
         }
 
-        // 3. Fallback to Google Geocoding if OSM didn't find specific point and API key exists
-        if (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-          const gResponse = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json`,
-            {
-              params: {
-                address: displayLocation,
-                key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-              },
-            }
-          );
 
-          if (gResponse.data?.results?.length > 0) {
-            const { lat, lng } = gResponse.data.results[0].geometry.location;
-            setCoordinates({ lat, lng });
-          }
-        }
       } catch (err) {
         console.warn("Geocoding notice: Using standard location coordinates", err);
       } finally {

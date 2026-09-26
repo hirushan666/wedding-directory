@@ -1,4 +1,4 @@
-﻿import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PackageEntity } from "../../database/entities/package.entity";
 import { PackageRepository } from "../../database/repositories/package.repository";
 import { PackageRepositoryType } from "../../database/types/packageTypes";
@@ -52,13 +52,14 @@ export class PackageService {
     return this.packageRepository.findPackageByService(serviceId);
   }
 
-  async trackPackageView(packageId: string, input: Partial<PackageViewEntity>) {
-    // Create a new view record (duplicates prevention handled at query time)
+  async trackPackageView(
+    packageId: string,
+    input: Partial<PackageViewEntity> & { vendorId?: string },
+  ) {
     return this.packageViewRepository().createView(input, packageId);
   }
 
   async getPackageAnalytics(packageId: string) {
-    // total unique visitors
     const unique = await this.packageViewRepository().countUniqueViewsByPackage(packageId);
     const monthly = await this.packageViewRepository().findMonthlyViews(packageId, 6);
 
@@ -69,7 +70,7 @@ export class PackageService {
   }
 
   async getVendorAnalytics(vendorId: string) {
-    // Find all packages for this vendor's offerings
+    // 1. Load all packages for this vendor in one query
     const packages = await this.dataSource
       .getRepository(PackageEntity)
       .createQueryBuilder('package')
@@ -80,35 +81,21 @@ export class PackageService {
       .getMany();
 
     const packageIds = packages.map(pkg => pkg.id);
-    
-    // Count unique visitors across ALL packages (same person viewing multiple packages = 1 unique visitor)
+
+    // 2. All unique views across vendor (single query)
     const totalUniqueViews = await this.packageViewRepository().countUniqueViewsByPackages(packageIds);
-    
-    const packagesAnalytics = [];
 
-    // Get per-package stats
-    for (const pkg of packages) {
-      const uniqueViews = await this.packageViewRepository().countUniqueViewsByPackage(pkg.id);
-      packagesAnalytics.push({
-        packageId: pkg.id,
-        packageName: pkg.name,
-        uniqueViews,
-      });
-    }
+    // 3. Per-package unique counts (single batch query — was N queries before)
+    const perPackageMap = await this.packageViewRepository().countUniqueViewsPerPackage(packageIds);
 
-    // Aggregate monthly views across all packages
-    const monthlyViewsMap = new Map<string, number>();
-    for (const pkg of packages) {
-      const monthly = await this.packageViewRepository().findMonthlyViews(pkg.id, 6);
-      for (const m of monthly) {
-        monthlyViewsMap.set(m.month, (monthlyViewsMap.get(m.month) || 0) + m.views);
-      }
-    }
-
-    const monthlyViews = Array.from(monthlyViewsMap.entries()).map(([month, views]) => ({
-      month,
-      views,
+    const packagesAnalytics = packages.map(pkg => ({
+      packageId: pkg.id,
+      packageName: pkg.name,
+      uniqueViews: perPackageMap.get(pkg.id) ?? 0,
     }));
+
+    // 4. Monthly views across all packages (single batch query — was N queries before)
+    const monthlyViews = await this.packageViewRepository().findMonthlyViewsBatch(packageIds, 6);
 
     return {
       totalUniqueViews,
@@ -116,4 +103,4 @@ export class PackageService {
       monthlyViews,
     };
   }
-}
+}

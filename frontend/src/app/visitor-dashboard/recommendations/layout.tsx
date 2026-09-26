@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Recommended Vendors",
+  description: "Personalized wedding vendor recommendations tailored for your style and budget.",
+};
 
 const RecommendationsLayout = ({
   children,

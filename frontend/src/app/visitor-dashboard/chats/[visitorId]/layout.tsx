@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import Header from "@/components/shared/Headers/Header";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Messages & Inquiries",
+  description: "Chat with wedding vendors, ask questions, and receive customized quotes.",
+};
 
 const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   return (

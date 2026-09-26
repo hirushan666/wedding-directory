@@ -158,41 +158,27 @@ const Service: React.FC = () => {
   // Track package views when packages are loaded
   useEffect(() => {
     const packagesList = packagesData?.findPackagesByService;
-    if (packagesList && !vendor && clientIp) {
-      // Only track views for non-vendor visitors and when IP is available
+    if (packagesList && clientIp) {
       const sessionId = ensureSessionId();
 
-      console.log("Tracking package views:", {
-        packagesCount: packagesList.length,
-        visitorId: visitor?.id,
-        sessionId,
-        ipAddress: clientIp,
-      });
-
       // Track each package view (fire and forget)
+      // Backend deduplicates: same viewer within 24h is ignored, vendor self-views are skipped
       packagesList.forEach((pkg: Package) => {
-        console.log("Tracking view for package:", pkg.id);
         trackPackageView({
           variables: {
             packageId: pkg.id,
             visitorId: visitor?.id || null,
             sessionId,
             ipAddress: clientIp,
+            vendorId: vendor?.id || null,
           },
-        })
-          .then((result) => {
-            console.log(
-              "Successfully tracked view for package:",
-              pkg.id,
-              result,
-            );
-          })
-          .catch((err) => {
-            console.error("Failed to track package view:", pkg.id, err);
-          });
+        }).catch(() => {
+          // Silently ignore — view tracking is non-critical
+        });
       });
     }
   }, [packagesData, visitor, vendor, trackPackageView, clientIp]);
+
 
   // Listen for cancellation return from PayHere (when user clicks 'Cancel' or 'Back to site')
   useEffect(() => {
@@ -284,6 +270,17 @@ const Service: React.FC = () => {
       setIsInMyVendors(true);
     }
   }, [myVendorData]);
+
+  // Dynamically set tab title to the service and vendor name
+  useEffect(() => {
+    const service = data?.findServiceById;
+    if (service?.name) {
+      const busName = service.vendor?.busname;
+      document.title = busName
+        ? `${service.name} by ${busName} | Say I Do`
+        : `${service.name} | Say I Do`;
+    }
+  }, [data]);
 
   if (loading || myVendorLoading) return <ServiceDetailSkeleton />;
   if (queryError) return <p>Error: {queryError.message}</p>;

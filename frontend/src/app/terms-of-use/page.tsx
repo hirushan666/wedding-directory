@@ -6,7 +6,7 @@ import { FiFileText, FiCalendar, FiMail, FiPhone, FiAlertCircle, FiCheck } from 
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Use - Say I Do",
+  title: "Terms of Use",
   description: "Terms and conditions governing the use of the Say I Do multivendor wedding directory and planning platform.",
 };
 
