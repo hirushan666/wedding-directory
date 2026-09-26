@@ -548,7 +548,12 @@ export const GET_CHAT_VISITOR_DETAILS = gql`
       id
       email
       visitor_fname
+      visitor_lname
       partner_fname
+      partner_lname
+      phone
+      city
+      profile_pic_url
     }
   }
 `;
