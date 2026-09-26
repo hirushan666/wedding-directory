@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import CategoryInput from "@/components/vendor-signup/CategoryInput";
 import CityInput from "@/components/vendor-signup/CityInput";
 import MapLocationPicker, { LocationResult } from "@/components/shared/MapLocationPicker";
-import { FiMapPin } from "react-icons/fi";
+import LocationSearchInput, { LocationSearchResult } from "@/components/shared/LocationSearchInput";
+import { FiMapPin, FiArrowLeft, FiX } from "react-icons/fi";
 import VendorHeader from "@/components/shared/Headers/VendorHeader";
-import { CREATE_SERVICE } from "@/graphql/mutations";
+import { CREATE_SERVICE, UPDATE_SERVICE_PROFILE, DELETE_SERVICE } from "@/graphql/mutations";
 import { FIND_SERVICES_BY_VENDOR } from "@/graphql/queries";
 import { useMutation } from "@apollo/client";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
@@ -24,7 +25,10 @@ const AddNewService: React.FC = () => {
   const { vendor } = useVendorAuth();
   const router = useRouter();
 
-  const [createService, { loading }] = useMutation(CREATE_SERVICE);
+  const [createService, { loading: isCreating }] = useMutation(CREATE_SERVICE);
+  const [updateService, { loading: isUpdating }] = useMutation(UPDATE_SERVICE_PROFILE);
+  const [deleteService] = useMutation(DELETE_SERVICE);
+  const loading = isCreating || isUpdating;
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -68,7 +72,16 @@ const AddNewService: React.FC = () => {
       longitude: result.lng,
     }));
     setIsMapOpen(false);
-    toast.success("Location pinned from map!");
+  };
+
+  const handleLocationSearchSelect = (result: LocationSearchResult) => {
+    setFormData((prev) => ({
+      ...prev,
+      city: result.city || prev.city,
+      location: result.address,
+      latitude: result.lat,
+      longitude: result.lng,
+    }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +105,38 @@ const AddNewService: React.FC = () => {
     }
 
     try {
+      // If service was already created and vendor went back to step 1 to edit
+      if (createdOfferingId) {
+        await updateService({
+          variables: {
+            id: createdOfferingId,
+            input: {
+              name: formData.name.trim(),
+              category: formData.category.trim(),
+              city: formData.city?.trim() || null,
+              location: formData.location?.trim() || null,
+              latitude:
+                formData.latitude !== null && formData.latitude !== undefined
+                  ? Number(formData.latitude)
+                  : null,
+              longitude:
+                formData.longitude !== null && formData.longitude !== undefined
+                  ? Number(formData.longitude)
+                  : null,
+            },
+          },
+          refetchQueries: [
+            { query: FIND_SERVICES_BY_VENDOR, variables: { id: vendor?.id } },
+          ],
+          awaitRefetchQueries: true,
+        });
+
+        setCreatedServiceName(formData.name.trim());
+        setStep(2);
+        toast.success("Service updated!");
+        return;
+      }
+
       const inputPayload: any = {
         name: formData.name.trim(),
         category: formData.category.trim(),
@@ -101,10 +146,10 @@ const AddNewService: React.FC = () => {
       if (formData.city?.trim()) inputPayload.city = formData.city.trim();
       if (formData.location?.trim()) inputPayload.location = formData.location.trim();
       if (formData.latitude !== null && formData.latitude !== undefined) {
-        inputPayload.latitude = formData.latitude;
+        inputPayload.latitude = Number(formData.latitude);
       }
       if (formData.longitude !== null && formData.longitude !== undefined) {
-        inputPayload.longitude = formData.longitude;
+        inputPayload.longitude = Number(formData.longitude);
       }
 
       const response = await createService({
@@ -128,8 +173,8 @@ const AddNewService: React.FC = () => {
         router.push("/vendor-dashboard");
       }
     } catch (err) {
-      console.error("Error creating service:", err);
-      toast.error("Could not create new service");
+      console.error("Error saving service:", err);
+      toast.error(createdOfferingId ? "Could not update service" : "Could not create new service");
     }
   };
 
@@ -192,13 +237,47 @@ const AddNewService: React.FC = () => {
     }
   };
 
+  const handleClose = async () => {
+    // If a service was created in the database during Step 1, delete it to cleanly discard
+    if (createdOfferingId) {
+      try {
+        await deleteService({
+          variables: { id: createdOfferingId },
+          refetchQueries: [
+            { query: FIND_SERVICES_BY_VENDOR, variables: { id: vendor?.id } },
+          ],
+        });
+      } catch (err) {
+        console.warn("Could not delete discarded service:", err);
+      }
+    }
+
+    // Reset all form state completely
+    setFormData({
+      name: "",
+      category: "",
+      city: vendor?.city || "",
+      location: "",
+      latitude: null,
+      longitude: null,
+    });
+    setCreatedOfferingId(null);
+    setCreatedServiceName("");
+    setBannerPreview(null);
+    setShowcasePreviews([null, null, null, null, null]);
+    setStep(1);
+
+    toast("Service creation cancelled", { icon: "ℹ️" });
+    router.push("/vendor-dashboard");
+  };
+
   return (
     <div className="bg-lightYellow dark:bg-darkBg transition-colors duration-200 min-h-screen flex flex-col">
       <VendorHeader />
       <div className="font-title flex-grow flex items-center justify-center py-8 px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row min-h-[650px] w-full md:w-11/12 lg:w-9/12 shadow-lg rounded-2xl overflow-hidden bg-white dark:bg-darkSurface border border-gray-100 dark:border-zinc-800">
+        <div className="flex flex-col md:flex-row min-h-[650px] w-full md:w-11/12 lg:w-9/12 shadow-lg rounded-2xl bg-white dark:bg-darkSurface border border-gray-100 dark:border-zinc-800">
           {/* Left Image Section */}
-          <div className="relative w-full md:w-5/12 min-h-[250px] md:min-h-[650px]">
+          <div className="relative w-full md:w-5/12 min-h-[250px] md:min-h-[650px] overflow-hidden rounded-t-2xl md:rounded-tr-none md:rounded-l-2xl">
             <Image
               src="/images/onBoard1.webp"
               layout="fill"
@@ -223,6 +302,16 @@ const AddNewService: React.FC = () => {
 
           {/* Right Form Section */}
           <div className="relative w-full md:w-7/12 p-8 md:p-10 flex flex-col justify-between">
+            {/* Close 'X' Button */}
+            <button
+              type="button"
+              onClick={handleClose}
+              className="absolute top-5 right-5 sm:top-6 sm:right-6 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-darkElevated dark:hover:bg-zinc-700 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors z-20 cursor-pointer shadow-sm"
+              title="Close and discard"
+              aria-label="Close"
+            >
+              <FiX className="w-5 h-5" />
+            </button>
             {step === 1 ? (
               <div className="flex flex-col items-center justify-center my-auto">
                 <h2 className="text-3xl font-semibold text-center mb-2 text-gray-900 dark:text-zinc-100">Add New Service</h2>
@@ -232,12 +321,12 @@ const AddNewService: React.FC = () => {
 
                 <form onSubmit={onSubmit} className="w-full max-w-md space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">
                       Service Name
                     </label>
                     <Input
                       type="text"
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-orange"
+                      className="h-11 w-full px-3.5 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated text-gray-900 dark:text-zinc-100 rounded-xl text-sm font-normal placeholder:text-gray-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange/20 focus:border-orange hover:border-orange/60 transition-colors"
                       name="name"
                       placeholder="e.g. Elegant Wedding Photography"
                       value={formData.name}
@@ -247,63 +336,60 @@ const AddNewService: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">
                       Category
                     </label>
-                    <CategoryInput onCategoryChange={handleCategoryChange} />
+                    <CategoryInput
+                      value={formData.category}
+                      initialCategory={formData.category}
+                      onCategoryChange={handleCategoryChange}
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">
                       City / Region
                     </label>
                     <CityInput
                       placeholder={formData.city || "Select City / Region"}
                       value={formData.city}
                       onCityChange={(city) => setFormData((prev) => ({ ...prev, city }))}
-                      className="border border-gray-300 dark:border-zinc-700 rounded-lg p-2.5 flex flex-row space-y-0 bg-white dark:bg-darkElevated w-full"
                     />
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1.5">
                       <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">
                         Specific Location / Address
                       </label>
                       <button
                         type="button"
                         onClick={() => setIsMapOpen(true)}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:text-orange-600 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:text-orange-600 transition-colors cursor-pointer"
                       >
                         <FiMapPin className="w-3.5 h-3.5" />
                         Pick on Map
                       </button>
                     </div>
                     <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-orange"
-                        name="location"
-                        placeholder="e.g. 123 Beach Road, Negombo"
-                        value={formData.location}
-                        onChange={handleChange}
-                      />
-                      <Button
+                      <div className="flex-1">
+                        <LocationSearchInput
+                          value={formData.location}
+                          onChange={(val) => setFormData((prev) => ({ ...prev, location: val }))}
+                          onLocationSelect={handleLocationSearchSelect}
+                          district={formData.city || undefined}
+                          placeholder="Search area, landmark or hotel (e.g. Sivali Central, Shangri-La)..."
+                        />
+                      </div>
+                      <button
                         type="button"
-                        variant="outline"
                         onClick={() => setIsMapOpen(true)}
-                        className="shrink-0 px-3 border-gray-300 dark:border-zinc-700 hover:bg-orange/10 hover:border-orange hover:text-orange text-gray-700 dark:text-zinc-200"
+                        className="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated hover:border-orange hover:bg-orange/10 hover:text-orange text-gray-700 dark:text-zinc-200 transition-colors cursor-pointer"
                         title="Open interactive map to pin location"
                       >
                         <FiMapPin className="w-4 h-4 text-orange" />
-                      </Button>
+                      </button>
                     </div>
-                    {formData.latitude !== null && formData.longitude !== null && (
-                      <p className="text-xs text-green-600 dark:text-green-400 mt-1 flex items-center gap-1">
-                        <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
-                        Map pin set: {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}
-                      </p>
-                    )}
                   </div>
 
                   <div className="pt-2">
@@ -313,7 +399,11 @@ const AddNewService: React.FC = () => {
                       className="w-full py-3"
                       disabled={loading}
                     >
-                      {loading ? "Creating Service..." : "Continue to Add Photos"}
+                      {loading
+                        ? createdOfferingId
+                          ? "Updating Service..."
+                          : "Creating Service..."
+                        : "Continue"}
                     </Button>
                   </div>
                 </form>
@@ -323,6 +413,14 @@ const AddNewService: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-start mb-4">
                     <div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-orange dark:text-zinc-400 dark:hover:text-orange mb-2 transition-colors cursor-pointer"
+                      >
+                        <FiArrowLeft className="w-3.5 h-3.5" />
+                        Back to Service Details
+                      </button>
                       <h2 className="text-2xl font-bold text-gray-800 dark:text-zinc-100">
                         Add Photos for {createdServiceName}
                       </h2>
@@ -418,16 +516,27 @@ const AddNewService: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Actions: Upload images right away / Skip step */}
+                {/* Actions: Back / Skip step / Finish */}
                 <div className="pt-4 border-t border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleSkip}
-                    className="w-full sm:w-auto px-6 py-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-darkElevated"
-                  >
-                    Skip this step
-                  </Button>
+                  <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setStep(1)}
+                      className="w-1/2 sm:w-auto px-4 py-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-darkElevated flex items-center justify-center gap-1.5"
+                    >
+                      <FiArrowLeft className="w-4 h-4" />
+                      Back
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleSkip}
+                      className="w-1/2 sm:w-auto px-5 py-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-darkElevated"
+                    >
+                      Skip this step
+                    </Button>
+                  </div>
                   <Button
                     type="button"
                     variant="signup"

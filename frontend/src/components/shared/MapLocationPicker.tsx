@@ -32,31 +32,42 @@ const DEFAULT_CENTER = {
   lng: 79.8612, // Colombo
 };
 
-// Helper: Match a resolved city/district name against local city.json
-const matchSriLankaCity = (rawName?: string): string => {
+// Helper: Match a resolved place/town name against Sri Lanka's 25 official districts
+const matchSriLankaDistrict = (rawName?: string): string => {
   if (!rawName) return '';
   const clean = rawName.toLowerCase().trim();
 
-  // 1. Direct city match
-  const foundCity = cities.find(
-    (c) => c.City.toLowerCase() === clean || clean.includes(c.City.toLowerCase())
-  );
-  if (foundCity) return foundCity.City;
-
-  // 2. District match
+  // 1. Direct district match
   const foundDistrict = cities.find(
     (c) => c.District.toLowerCase() === clean || clean.includes(c.District.toLowerCase())
   );
-  if (foundDistrict) return foundDistrict.City;
+  if (foundDistrict) return foundDistrict.District;
 
-  return rawName.split(',')[0].trim();
+  // 2. If a small town / suburb name was detected, map it to its parent District!
+  const foundCity = cities.find(
+    (c) => c.City.toLowerCase() === clean || clean.includes(c.City.toLowerCase())
+  );
+  if (foundCity) return foundCity.District;
+
+  return '';
 };
 
 // Dynamic Leaflet Map Component (Client-only)
 const LeafletMapPicker = dynamic(
   () =>
     import('react-leaflet').then((mod) => {
-      const { MapContainer, TileLayer, Marker, useMapEvents } = mod;
+      const { MapContainer, TileLayer, Marker, useMapEvents, useMap } = mod;
+
+      // Controller component that programmatically animates/pans map camera when position prop changes
+      function MapViewController({ pos }: { pos: [number, number] }) {
+        const map = useMap();
+        useEffect(() => {
+          if (pos && typeof pos[0] === 'number' && typeof pos[1] === 'number' && !isNaN(pos[0]) && !isNaN(pos[1])) {
+            map.flyTo(pos, 15, { animate: true, duration: 1.2 });
+          }
+        }, [pos, map]);
+        return null;
+      }
 
       return function InnerMap({
         position,
@@ -129,6 +140,7 @@ const LeafletMapPicker = dynamic(
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <Marker
+              key={`${position[0]}-${position[1]}`}
               position={position}
               icon={icon}
               draggable={true}
@@ -140,6 +152,7 @@ const LeafletMapPicker = dynamic(
               }}
             />
             <MapClickHandler />
+            <MapViewController pos={position} />
           </MapContainer>
         );
       };
@@ -210,17 +223,17 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
           addrObj.state_district ||
           '';
 
-        const matchedCity = matchSriLankaCity(detectedCity);
+        const matchedDistrict = matchSriLankaDistrict(detectedCity) || matchSriLankaDistrict(displayName);
 
         // Build a concise clean address
-        const road = addrObj.road || addrObj.suburb || '';
+        const road = addrObj.road || addrObj.suburb || addrObj.neighbourhood || '';
         const shortAddress = road
-          ? `${road}, ${matchedCity || detectedCity}`
+          ? `${road}, ${detectedCity}`
           : displayName.split(',').slice(0, 3).join(', ');
 
         setAddress(shortAddress || displayName);
-        if (matchedCity) {
-          setCity(matchedCity);
+        if (matchedDistrict) {
+          setCity(matchedDistrict);
         }
       }
     } catch (err) {
@@ -249,39 +262,69 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
       setIsSearching(true);
       try {
         // Bias search towards Sri Lanka center coordinates
-        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(
+        const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(
           query.trim()
-        )}&lat=7.8731&lon=80.7718&limit=5`;
-        const res = await fetch(url);
+        )}&lat=7.8731&lon=80.7718&limit=6`;
+        const res = await fetch(photonUrl);
+        let items: any[] = [];
         if (res.ok) {
           const json = await res.json();
-          // Filter to LK if countrycode exists, or take top results
-          const lkFeatures = (json.features || []).filter(
-            (f: any) => !f.properties.countrycode || f.properties.countrycode === 'LK'
+          items = (json.features || []).filter(
+            (f: any) => !f.properties?.countrycode || f.properties?.countrycode === 'LK'
           );
-          setSearchResults(lkFeatures.length > 0 ? lkFeatures : json.features || []);
         }
+
+        // If Photon didn't return results, try Nominatim OpenStreetMap for Sri Lanka
+        if (items.length === 0) {
+          const qWithCountry = query.trim().toLowerCase().includes('sri lanka')
+            ? query.trim()
+            : `${query.trim()}, Sri Lanka`;
+          const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+            qWithCountry
+          )}&format=geojson&limit=5&countrycodes=lk`;
+          const nomRes = await fetch(nomUrl, {
+            headers: { 'Accept-Language': 'en' },
+          });
+          if (nomRes.ok) {
+            const nomJson = await nomRes.json();
+            items = nomJson.features || [];
+          }
+        }
+
+        setSearchResults(items);
       } catch (err) {
-        console.warn('Photon search error:', err);
+        console.warn('Location search error:', err);
       } finally {
         setIsSearching(false);
       }
-    }, 350);
+    }, 300);
   };
 
   const handleSelectSearchResult = (feature: any) => {
-    const coords = feature.geometry.coordinates; // [lng, lat]
-    const lng = coords[0];
-    const lat = coords[1];
-    const props = feature.properties;
-    const name = props.name || '';
-    const cityProp = props.city || props.district || props.state || '';
-    const fullAddr = [name, cityProp, 'Sri Lanka'].filter(Boolean).join(', ');
+    const coords = feature.geometry?.coordinates; // [lng, lat]
+    if (!coords || coords.length < 2) return;
+    const lng = Number(coords[0]);
+    const lat = Number(coords[1]);
+    const props = feature.properties || {};
+    const name = props.name || props.display_name?.split(',')[0] || '';
+    const locality = props.street || props.locality || props.city || props.town || props.village || '';
+    const county = props.county || props.district || props.state || '';
+    const fullAddr = props.display_name || [name, locality, county, 'Sri Lanka'].filter(Boolean).join(', ');
 
     setPosition([lat, lng]);
-    setAddress(fullAddr);
-    if (cityProp) {
-      setCity(matchSriLankaCity(cityProp));
+    setAddress(fullAddr || name || 'Selected Location');
+
+    const matched =
+      matchSriLankaDistrict(props.county) ||
+      matchSriLankaDistrict(props.district) ||
+      matchSriLankaDistrict(props.city) ||
+      matchSriLankaDistrict(props.town) ||
+      matchSriLankaDistrict(locality) ||
+      matchSriLankaDistrict(name) ||
+      matchSriLankaDistrict(props.display_name);
+
+    if (matched) {
+      setCity(matched);
     }
     setSearchResults([]);
     setSearchQuery('');
@@ -357,7 +400,15 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
             <Input
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Search area, landmark or hotel (e.g. Mount Lavinia, Galle Fort)..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (searchResults.length > 0) {
+                    handleSelectSearchResult(searchResults[0]);
+                  }
+                }
+              }}
+              placeholder="Search area, landmark or hotel (e.g. Mount Lavinia, Galle Fort, Kandy)..."
               className="pl-9 pr-8 h-9 text-xs rounded-xl bg-white dark:bg-darkSurface border-gray-200 dark:border-zinc-700"
             />
             {isSearching && (
@@ -366,18 +417,37 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
 
             {/* Autocomplete Dropdown */}
             {searchResults.length > 0 && (
-              <ul className="absolute left-0 top-full mt-1 w-full bg-white dark:bg-darkSurface border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto divide-y divide-gray-100 dark:divide-zinc-800 text-xs">
+              <ul className="absolute left-0 top-full mt-1 w-full bg-white dark:bg-darkSurface border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto divide-y divide-gray-100 dark:divide-zinc-800 text-xs">
                 {searchResults.map((item, index) => {
-                  const props = item.properties;
-                  const label = [props.name, props.city, props.district].filter(Boolean).join(', ');
+                  const props = item.properties || {};
+                  const title = props.name || props.display_name?.split(',')[0] || 'Location';
+                  const subtitle =
+                    props.display_name ||
+                    [props.street, props.city || props.town || props.district, props.county || props.state]
+                      .filter(Boolean)
+                      .join(', ');
+
                   return (
                     <li
                       key={index}
-                      onMouseDown={() => handleSelectSearchResult(item)}
-                      className="p-2.5 hover:bg-orange/10 dark:hover:bg-darkElevated hover:text-orange cursor-pointer transition-colors flex items-center gap-2"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleSelectSearchResult(item);
+                      }}
+                      onClick={() => handleSelectSearchResult(item)}
+                      className="p-2.5 hover:bg-orange/10 dark:hover:bg-darkElevated hover:text-orange cursor-pointer transition-colors flex items-center gap-2.5"
                     >
-                      <FiMapPin className="text-orange shrink-0 text-xs" />
-                      <span className="truncate">{label}</span>
+                      <FiMapPin className="text-orange shrink-0 text-sm" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-semibold text-gray-900 dark:text-zinc-100 truncate">
+                          {title}
+                        </span>
+                        {subtitle && subtitle !== title && (
+                          <span className="text-[11px] text-gray-500 dark:text-zinc-400 truncate">
+                            {subtitle}
+                          </span>
+                        )}
+                      </div>
                     </li>
                   );
                 })}
@@ -430,18 +500,9 @@ const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              onClick={onClose}
-              className="rounded-xl text-xs h-9 px-4 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
               size="sm"
               onClick={handleConfirm}
-              className="rounded-xl text-xs h-9 px-4 bg-orange hover:bg-orange/90 text-white font-semibold flex items-center gap-1.5 shadow-sm"
+              className="rounded-xl text-xs h-9 px-5 bg-orange hover:bg-orange/90 text-white font-semibold flex items-center gap-1.5 shadow-sm active:scale-[0.99]"
             >
               <FiCheck className="text-sm" />
               <span>Confirm Location</span>

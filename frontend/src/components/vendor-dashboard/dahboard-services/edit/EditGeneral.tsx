@@ -3,6 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import BusinessCategory from "@/components/vendor-signup/CategoryInput";
 import CityInput from "@/components/vendor-signup/CityInput";
 import MapLocationPicker, { LocationResult } from "@/components/shared/MapLocationPicker";
+import LocationSearchInput, { LocationSearchResult } from "@/components/shared/LocationSearchInput";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { EditProfileProps, ProfileData } from "@/types/serviceTypes";
@@ -115,7 +116,16 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
       longitude: result.lng,
     }));
     setIsMapOpen(false);
-    toast.success("Location pinned from map!");
+  };
+
+  const handleLocationSearchSelect = (result: LocationSearchResult) => {
+    setProfile((prev) => ({
+      ...prev,
+      city: result.city || prev.city,
+      location: result.address,
+      latitude: result.lat,
+      longitude: result.lng,
+    }));
   };
 
   // Handle form submission
@@ -245,6 +255,7 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
                 {profile.showCategoryDropdown ? (
                   <div className="rounded-xl mt-1">
                     <BusinessCategory
+                      value={profile.category}
                       onCategoryChange={handleCategoryChange}
                       initialCategory={profile.category}
                     />
@@ -292,29 +303,25 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <Input
-                    type="text"
-                    name="location"
-                    value={profile.location || ""}
-                    onChange={handleInputChange}
-                    placeholder="e.g. 123 Beach Road, Negombo"
-                    className="w-full h-11 px-3.5 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated text-gray-800 dark:text-zinc-100 text-sm focus:border-orange focus:ring-2 focus:ring-orange/20"
-                  />
+                  <div className="flex-1">
+                    <LocationSearchInput
+                      value={profile.location || ""}
+                      onChange={(val) => setProfile((prev) => ({ ...prev, location: val }))}
+                      onLocationSelect={handleLocationSearchSelect}
+                      district={profile.city || undefined}
+                      placeholder="Search area, landmark or hotel (e.g. Sivali Central, Shangri-La)..."
+                      className="w-full h-11 px-3.5 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated text-gray-800 dark:text-zinc-100 text-sm focus:border-orange focus:ring-2 focus:ring-orange/20"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() => setIsMapOpen(true)}
-                    className="shrink-0 h-11 px-3.5 rounded-xl border border-gray-300 dark:border-zinc-700 hover:border-orange hover:bg-orange/10 hover:text-orange text-gray-700 dark:text-zinc-300 transition-colors"
+                    className="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-darkElevated hover:border-orange hover:bg-orange/10 hover:text-orange text-gray-700 dark:text-zinc-300 transition-colors cursor-pointer"
                     title="Open map to pin exact location"
                   >
                     <FiMapPin className="w-4 h-4 text-orange" />
                   </button>
                 </div>
-                {profile.latitude !== null && profile.latitude !== undefined && profile.longitude !== null && profile.longitude !== undefined && (
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1.5 flex items-center gap-1.5">
-                    <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
-                    Map pin set: {Number(profile.latitude).toFixed(4)}, {Number(profile.longitude).toFixed(4)}
-                  </p>
-                )}
               </div>
             </div>
 
