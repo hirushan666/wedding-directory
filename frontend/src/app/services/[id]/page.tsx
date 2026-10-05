@@ -755,7 +755,7 @@ const Service: React.FC = () => {
         const { data } = await removeFromMyVendors({
           variables: {
             visitorId: visitor.id,
-            serviceId: id,
+            serviceId: canonicalServiceId,
           },
         });
 
@@ -769,7 +769,7 @@ const Service: React.FC = () => {
         const { data } = await addToMyVendors({
           variables: {
             visitorId: visitor.id,
-            serviceId: id,
+            serviceId: canonicalServiceId,
           },
         });
 
