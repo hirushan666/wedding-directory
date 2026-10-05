@@ -10,48 +10,56 @@ const MasonaryGrid = () => {
       src: "/images/photography.webp",
       alt: "Photographers",
       label: "Browse galleries to find your look",
+      category: "Photographers",
     },
     {
       id: 2,
       src: "/images/cakes.webp",
       alt: "Wedding Cakes",
       label: "Discover the perfect cake for your big day",
+      category: "Cakes",
     },
     {
       id: 3,
       src: "/images/invitation.webp",
       alt: "Invitations",
       label: "Explore elegant invitation designs",
+      category: "Invitations",
     },
     {
       id: 4,
       src: "/images/preshoot.webp",
       alt: "Pre-wedding Shoots",
       label: "Capture memories with a pre-wedding shoot",
+      category: "Photographers",
     },
     {
       id: 5,
       src: "/images/tablesetting.webp",
       alt: "Table Settings",
       label: "Find inspiration for your wedding table settings",
+      category: "Florists",
     },
     {
       id: 6,
       src: "/images/transportation.webp",
       alt: "Transportation",
       label: "Arrange stylish transportation for your wedding",
+      category: "Transportation",
     },
     {
       id: 7,
       src: "/images/DJ.webp",
       alt: "Wedding DJ",
       label: "Find the perfect DJ to keep the party going",
+      category: "Music",
     },
     {
       id: 8,
       src: "/images/bride.webp",
       alt: "Bridal Looks",
       label: "Get inspired by stunning bridal looks",
+      category: "Hair and Makeup",
     },
   ];
 
@@ -74,7 +82,10 @@ const MasonaryGrid = () => {
               key={photo.id}
               className="snap-start shrink-0 w-36 xs:w-40 relative overflow-hidden rounded-xl border border-orange/15 dark:border-zinc-800 shadow-2xs group"
             >
-              <Link href="/services" className="block relative aspect-[4/5]">
+              <Link
+                href={`/services?category=${encodeURIComponent(photo.category)}`}
+                className="block relative aspect-[4/5]"
+              >
                 <Image
                   src={photo.src}
                   alt={photo.alt}
@@ -103,7 +114,10 @@ const MasonaryGrid = () => {
               key={photo.id}
               className="relative overflow-hidden rounded-2xl break-inside-avoid group border border-orange/15 dark:border-zinc-800 shadow-2xs hover:shadow-md transition-all"
             >
-              <Link href="/services" className="block relative">
+              <Link
+                href={`/services?category=${encodeURIComponent(photo.category)}`}
+                className="block relative"
+              >
                 <Image
                   src={photo.src}
                   alt={photo.alt}
