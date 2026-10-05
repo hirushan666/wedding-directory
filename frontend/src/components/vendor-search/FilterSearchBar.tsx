@@ -37,11 +37,11 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-center px-3 sm:px-4 py-1">
-      <div className="flex items-center bg-white dark:bg-darkSurface shadow-xs rounded-full border-2 border-orange/20 dark:border-zinc-700 w-full max-w-2xl h-[52px] sm:h-[56px] px-2.5 sm:px-4 gap-1.5 sm:gap-3">
+    <div className="flex items-center justify-center px-3 sm:px-4 py-0.5 sm:py-1">
+      <div className="flex items-center bg-white dark:bg-darkSurface shadow-xs rounded-full border-2 border-orange/20 dark:border-zinc-700 w-full max-w-2xl h-11 sm:h-[56px] px-2 sm:px-4 gap-1.5 sm:gap-3">
         {/* Category Input */}
         <div className="relative flex-1 min-w-0 flex flex-col justify-center">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-orange/80 px-1 sm:px-2 leading-none truncate">
+          <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-orange/80 px-1 sm:px-2 leading-none truncate">
             Category
           </span>
           <CategoryInput
@@ -51,11 +51,11 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
         </div>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-orange/20 dark:bg-zinc-700 shrink-0" />
+        <div className="w-px h-5 sm:h-6 bg-orange/20 dark:bg-zinc-700 shrink-0" />
 
         {/* Location Input */}
         <div className="relative flex-1 min-w-0 flex flex-col justify-center">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-orange/80 px-1 sm:px-2 leading-none truncate">
+          <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-orange/80 px-1 sm:px-2 leading-none truncate">
             Location
           </span>
           <CityInput
@@ -69,11 +69,11 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
         <button
           type="button"
           onClick={onSearch}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-orange hover:bg-orange/90 text-white flex items-center justify-center shrink-0 transition-transform active:scale-95 shadow-xs cursor-pointer"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange hover:bg-orange/90 text-white flex items-center justify-center shrink-0 transition-transform active:scale-95 shadow-xs cursor-pointer"
           title="Search vendors"
           aria-label="Search vendors"
         >
-          <IoIosSearch className="text-lg sm:text-xl" />
+          <IoIosSearch className="text-base sm:text-xl" />
         </button>
       </div>
     </div>

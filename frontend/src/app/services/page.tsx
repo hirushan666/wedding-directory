@@ -319,11 +319,11 @@ const ServicesSearchContent: React.FC = () => {
     <div className="bg-lightYellow dark:bg-darkBg font-title min-h-screen flex flex-col justify-between">
       <Header />
       <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2 text-center w-full">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-5 pb-1 sm:pb-2 text-center w-full">
+          <h1 className="text-base sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-zinc-100 leading-tight">
             Find the perfect services for your wedding
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-1 font-body">
+          <p className="text-[11px] sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5 sm:mt-1 font-body">
             Filter by Service, Location, or Keyword
           </p>
         </div>
@@ -338,13 +338,13 @@ const ServicesSearchContent: React.FC = () => {
 
         {/* Active Filter Chips */}
         {hasActiveFilters && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 w-full flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 font-body mr-1">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1.5 sm:pt-3 w-full flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            <span className="hidden sm:inline text-xs font-semibold text-gray-500 dark:text-zinc-400 font-body mr-1">
               Active filters:
             </span>
 
             {category && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange/15 text-orange border border-orange/25 font-body">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-orange/15 text-orange border border-orange/25 font-body">
                 <span>Service: {category}</span>
                 <button
                   type="button"
@@ -352,13 +352,13 @@ const ServicesSearchContent: React.FC = () => {
                   className="hover:text-gray-900 dark:hover:text-zinc-100 p-0.5 rounded-full hover:bg-orange/20 transition-colors"
                   title="Remove category filter"
                 >
-                  <IoClose className="w-3.5 h-3.5" />
+                  <IoClose className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </button>
               </span>
             )}
 
             {city && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange/15 text-orange border border-orange/25 font-body">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-orange/15 text-orange border border-orange/25 font-body">
                 <span>City: {city}</span>
                 <button
                   type="button"
@@ -366,13 +366,13 @@ const ServicesSearchContent: React.FC = () => {
                   className="hover:text-gray-900 dark:hover:text-zinc-100 p-0.5 rounded-full hover:bg-orange/20 transition-colors"
                   title="Remove city filter"
                 >
-                  <IoClose className="w-3.5 h-3.5" />
+                  <IoClose className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </button>
               </span>
             )}
 
             {keyword && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange/15 text-orange border border-orange/25 font-body">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-medium bg-orange/15 text-orange border border-orange/25 font-body">
                 <span>Keyword: &quot;{keyword}&quot;</span>
                 <button
                   type="button"
@@ -380,7 +380,7 @@ const ServicesSearchContent: React.FC = () => {
                   className="hover:text-gray-900 dark:hover:text-zinc-100 p-0.5 rounded-full hover:bg-orange/20 transition-colors"
                   title="Remove keyword search"
                 >
-                  <IoClose className="w-3.5 h-3.5" />
+                  <IoClose className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </button>
               </span>
             )}
@@ -388,7 +388,7 @@ const ServicesSearchContent: React.FC = () => {
             <button
               type="button"
               onClick={clearAllFilters}
-              className="text-xs font-semibold text-gray-500 dark:text-zinc-400 hover:text-orange underline ml-2 font-body transition-colors"
+              className="text-[11px] sm:text-xs font-semibold text-gray-500 dark:text-zinc-400 hover:text-orange underline ml-1.5 font-body transition-colors"
             >
               Clear all
             </button>
@@ -396,7 +396,7 @@ const ServicesSearchContent: React.FC = () => {
         )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="border-b border-orange/15 dark:border-zinc-800 my-4" />
+          <div className="border-b border-orange/15 dark:border-zinc-800 my-2 sm:my-4" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 w-full">
@@ -419,18 +419,18 @@ const ServicesSearchContent: React.FC = () => {
               </div>
             ) : visibleOfferings.length > 0 ? (
               <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <h2 className="font-title font-bold text-xl sm:text-2xl text-gray-900 dark:text-zinc-100">
+                <div className="flex items-center justify-between mb-3.5 sm:mb-6">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <h2 className="font-title font-bold text-base sm:text-2xl text-gray-900 dark:text-zinc-100">
                       Available Services
                     </h2>
-                    <span className="px-3 py-0.5 text-xs font-bold rounded-full bg-orange/10 text-orange border border-orange/20 font-body">
+                    <span className="px-2 sm:px-3 py-0.5 text-[11px] sm:text-xs font-bold rounded-full bg-orange/10 text-orange border border-orange/20 font-body">
                       {visibleOfferings.length} found
                     </span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
                   {visibleOfferings.map((offering: Offering) => (
                     <OfferingCard
                       key={offering.id}
