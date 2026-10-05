@@ -56,18 +56,48 @@ const MasonaryGrid = () => {
   ];
 
   return (
-    <section className="bg-lightYellow/60 dark:bg-darkBg py-10 sm:py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-      <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-title text-gray-900 dark:text-zinc-100 tracking-tight">
+    <section className="bg-lightYellow/60 dark:bg-darkBg py-6 sm:py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+      <div className="text-center max-w-2xl mx-auto mb-4 sm:mb-10">
+        <h2 className="text-xl sm:text-3xl md:text-4xl font-bold font-title text-gray-900 dark:text-zinc-100 tracking-tight">
           Locate Vendors For Every Vibe
         </h2>
-        <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-zinc-400 font-body">
+        <p className="mt-1 sm:mt-2 text-xs sm:text-base text-gray-600 dark:text-zinc-400 font-body">
           Find Top-Rated Pros for Every Budget, Background, and Style
         </p>
       </div>
 
       <div className="max-w-7xl mx-auto w-full">
-        <div className="columns-2 lg:columns-3 gap-3 sm:gap-4 space-y-3 sm:space-y-4">
+        {/* Mobile Horizontal Snap Carousel */}
+        <div className="sm:hidden flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 -mx-4 px-4 scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none]">
+          {photos.map((photo) => (
+            <div
+              key={photo.id}
+              className="snap-start shrink-0 w-36 xs:w-40 relative overflow-hidden rounded-xl border border-orange/15 dark:border-zinc-800 shadow-2xs group"
+            >
+              <Link href="/services" className="block relative aspect-[4/5]">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
+                  fill
+                  sizes="160px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2 text-white">
+                  <span className="font-title font-semibold text-xs truncate block leading-tight">
+                    {photo.alt}
+                  </span>
+                  <span className="text-[10px] text-orange font-bold uppercase tracking-wider block mt-0.5">
+                    Explore &rarr;
+                  </span>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Masonry Columns */}
+        <div className="hidden sm:block columns-2 lg:columns-3 gap-3 sm:gap-4 space-y-3 sm:space-y-4">
           {photos.map((photo) => (
             <div
               key={photo.id}
@@ -82,18 +112,8 @@ const MasonaryGrid = () => {
                   height={500}
                 />
 
-                {/* Mobile Persistent Badge (Touchscreens lack hover) */}
-                <div className="sm:hidden absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-xs px-2.5 py-1.5 rounded-xl border border-white/15 text-white flex items-center justify-between">
-                  <span className="font-title font-semibold text-xs truncate">
-                    {photo.alt}
-                  </span>
-                  <span className="text-[10px] text-orange font-bold uppercase tracking-wider shrink-0 ml-1">
-                    Explore
-                  </span>
-                </div>
-
                 {/* Desktop Hover Overlay */}
-                <div className="hidden sm:flex absolute inset-0 items-center justify-center bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 p-4">
+                <div className="flex absolute inset-0 items-center justify-center bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 p-4">
                   <div className="text-center">
                     <h3 className="text-white text-lg sm:text-xl font-bold font-title">
                       {photo.alt}
