@@ -22,16 +22,27 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
   portfolioLink,
   isVendor = false,
 }) => {
+  const FALLBACK_IMAGE = "/images/offeringPlaceholder.webp";
+
   // Filter out any empty/null showcase items
   const validShowcase = (photoShowcase || []).filter((img): img is string => Boolean(img));
-  const defaultCover = banner || validShowcase[0] || "/images/offeringPlaceholder.webp";
+  const defaultCover = banner || validShowcase[0] || FALLBACK_IMAGE;
 
   // State to track actively viewed image in the main full-width cover slot
   const [activeImage, setActiveImage] = useState<string>(defaultCover);
+  // Track images that failed to load so thumbnails can also swap to fallback
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setActiveImage(defaultCover);
   }, [defaultCover]);
+
+  const handleImageError = (failedUrl: string) => {
+    setFailedImages((prev) => ({ ...prev, [failedUrl]: true }));
+    if (activeImage === failedUrl) {
+      setActiveImage(FALLBACK_IMAGE);
+    }
+  };
 
   // Combine cover banner + showcase images for thumbnails
   const allImages = [
@@ -53,12 +64,14 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
       {/* Cover Image - Full Width */}
       <div className="relative w-full h-[240px] sm:h-[340px] md:h-[440px] lg:h-[480px] rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-800 bg-gray-100 dark:bg-darkElevated group">
         <Image
-          src={activeImage}
+          src={failedImages[activeImage] ? FALLBACK_IMAGE : activeImage}
           alt="Service Cover Image"
           className="w-full h-full object-cover transition-all duration-300"
           fill
           priority
           loading="eager"
+          sizes="(max-width: 1280px) 100vw, 1280px"
+          onError={() => handleImageError(activeImage)}
         />
 
 
@@ -88,6 +101,7 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3 mt-2.5 sm:mt-4">
           {visibleThumbnails.map((item, index) => {
             const isSelected = activeImage === item.src;
+            const thumbSrc = failedImages[item.src] ? FALLBACK_IMAGE : item.src;
             const isLastSlot =
               index === visibleThumbnails.length - 1 &&
               (hasMoreMedia || remainingCount > 0);
@@ -101,11 +115,12 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
                   title="View full gallery"
                 >
                   <Image
-                    src={item.src}
+                    src={thumbSrc}
                     alt={item.label}
                     fill
                     sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
                     className="object-cover group-hover:scale-105 transition-transform"
+                    onError={() => handleImageError(item.src)}
                   />
                   <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-white p-1 text-center">
                     <RiGalleryView2 className="text-base sm:text-lg text-orange mb-0.5" />
@@ -131,11 +146,12 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
                 title={`Click to view ${item.label}`}
               >
                 <Image
-                  src={item.src}
+                  src={thumbSrc}
                   alt={item.label}
                   fill
                   sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
                   className="object-cover"
+                  onError={() => handleImageError(item.src)}
                 />
                 {isVendor && item.isBanner && (
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-white text-[8px] sm:text-[9px] font-bold uppercase tracking-wider leading-none shadow-sm pointer-events-none whitespace-nowrap border border-white/20">

@@ -30,12 +30,20 @@ const PortfolioPage: React.FC = () => {
   const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>(
     {},
   );
+  const [failedImages, setFailedImages] = useState<{ [key: string]: boolean }>(
+    {},
+  );
 
   const { loading, error, data } = useQuery(FIND_SERVICE_BY_ID, {
     variables: { id },
   });
 
   const offering = data?.findServiceById;
+
+  const handleImageError = (url: string) => {
+    setFailedImages((prev) => ({ ...prev, [url]: true }));
+    setLoadedImages((prev) => ({ ...prev, [url]: true }));
+  };
 
   const allMedia = useMemo(
     () => [
@@ -169,11 +177,12 @@ const PortfolioPage: React.FC = () => {
                       <div className="m-auto">Loading...</div>
                     </div>
                     <Image
-                      src={media.url}
+                      src={failedImages[media.url] ? "/images/offeringPlaceholder.webp" : media.url}
                       alt={`${offering?.name} - Image ${index}`}
                       className="w-full object-cover hover:scale-105 transition-transform"
                       loading="lazy"
                       onLoad={() => handleImageLoaded(media.url)}
+                      onError={() => handleImageError(media.url)}
                       style={{ minHeight: "150px" }}
                       width={1000}
                       height={1000}
@@ -245,10 +254,10 @@ const PortfolioPage: React.FC = () => {
           <div className="w-full max-w-6xl max-h-[80vh]">
             {selectedMedia.type === "image" ? (
               <Image
-                src={selectedMedia.url}
+                src={failedImages[selectedMedia.url] ? "/images/offeringPlaceholder.webp" : selectedMedia.url}
                 alt={`${offering?.name} - Gallery`}
                 className="w-full h-full object-contain"
-
+                onError={() => handleImageError(selectedMedia.url)}
                 width={1000}
                 height={1000}
               />
