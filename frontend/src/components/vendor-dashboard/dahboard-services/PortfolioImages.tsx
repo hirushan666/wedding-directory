@@ -58,6 +58,7 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
           className="w-full h-full object-cover transition-all duration-300"
           fill
           priority
+          loading="eager"
         />
 
 
