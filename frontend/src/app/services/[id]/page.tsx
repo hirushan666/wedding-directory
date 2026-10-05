@@ -482,56 +482,61 @@ const Service: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-6 mt-6 w-full">
           <div className="w-full lg:w-2/3 xl:w-3/4 min-w-0">
             {/* General Section */}
-            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 mb-4">
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                <div className="flex-1">
-                  <Link
-                    href={`/vendors/${offering?.vendor?.slug || offering?.vendor?.id}`}
-                    className="text-xs font-semibold uppercase tracking-wider text-orange bg-orange/10 px-2.5 py-1 rounded-md inline-block mb-2 hover:bg-orange/20 transition-colors"
+            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 sm:p-6 mb-4">
+              {/* Top Row: Vendor Badge + Favorite Heart */}
+              <div className="flex items-center justify-between gap-3 mb-1.5">
+                <Link
+                  href={`/vendors/${offering?.vendor?.slug || offering?.vendor?.id}`}
+                  className="text-xs font-semibold uppercase tracking-wider text-orange bg-orange/10 px-2.5 py-1 rounded-md inline-block hover:bg-orange/20 transition-colors truncate max-w-[80%]"
+                >
+                  {offering?.vendor.busname || "Vendor name not available"}
+                </Link>
+                {!isVendorsOffering && visitor && (
+                  <button
+                    onClick={handleHeartClick}
+                    className="p-1 rounded-xl hover:bg-gray-100 dark:hover:bg-darkElevated text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                    title={
+                      isInMyVendors
+                        ? "Remove from saved services"
+                        : "Save to shortlisted services"
+                    }
                   >
-                    {offering?.vendor.busname || "Vendor name not available"}
-                  </Link>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h1 className="text-3xl font-title font-bold text-gray-900 dark:text-zinc-100">
-                      {offering?.name}
-                    </h1>
-                    {!isVendorsOffering && visitor && (
-                      <button
-                        onClick={handleHeartClick}
-                        className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-darkElevated text-gray-400 hover:text-red-500 transition-colors"
-                        title={
-                          isInMyVendors
-                            ? "Remove from saved services"
-                            : "Save to shortlisted services"
-                        }
-                      >
-                        {isInMyVendors ? (
-                          <FaHeart className="text-2xl text-red-500 hover:text-red-600 hover:cursor-pointer" />
-                        ) : (
-                          <CiHeart className="text-2xl hover:text-red-500 hover:cursor-pointer" />
-                        )}
-                      </button>
+                    {isInMyVendors ? (
+                      <FaHeart className="text-xl sm:text-2xl text-red-500 hover:text-red-600 hover:cursor-pointer" />
+                    ) : (
+                      <CiHeart className="text-xl sm:text-2xl hover:text-red-500 hover:cursor-pointer" />
                     )}
-                  </div>
-                  <div className="text-gray-500 dark:text-zinc-400 text-sm mt-2 flex items-center gap-1.5">
-                    <FiMapPin className="text-gray-400 dark:text-zinc-500 text-sm flex-shrink-0" />
-                    <span>
-                      {offering?.vendor.city || "Location not specified"}
-                    </span>
-                  </div>
+                  </button>
+                )}
+              </div>
 
-                  {/* Chat Button - Only show for visitors (not vendors viewing their own) */}
-                  {!isVendorsOffering && visitor && (
-                    <button
-                      onClick={() => setIsChatOpen(true)}
-                      className="mt-4 bg-orange text-white px-5 py-2.5 rounded-xl hover:bg-orange/90 shadow-sm shadow-orange/20 font-semibold text-sm transition-all flex items-center gap-2 w-fit active:scale-[0.99]"
-                    >
-                      <FiMessageCircle className="text-lg" />
-                      Chat with Vendor
-                    </button>
-                  )}
-                </div>
-                <div className="flex-shrink-0 pt-1">
+              {/* Service Title */}
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-title font-bold text-gray-900 dark:text-zinc-100 leading-snug">
+                {offering?.name}
+              </h1>
+
+              {/* Location Row */}
+              <div className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm mt-1.5 flex items-center gap-1.5">
+                <FiMapPin className="text-orange text-xs sm:text-sm flex-shrink-0" />
+                <span>
+                  {offering?.vendor.city || "Location not specified"}
+                </span>
+              </div>
+
+              {/* Compact Bottom Action Bar: Chat Button (Left) + Social Icons (Right) */}
+              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between gap-2.5 flex-wrap">
+                {!isVendorsOffering && visitor ? (
+                  <button
+                    onClick={() => setIsChatOpen(true)}
+                    className="bg-orange text-white px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl hover:bg-orange/90 shadow-sm shadow-orange/20 font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 sm:gap-2 active:scale-[0.99] cursor-pointer"
+                  >
+                    <FiMessageCircle className="text-base sm:text-lg" />
+                    <span>Chat with Vendor</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+                <div className="flex-shrink-0">
                   <SocialIcons offering={offering} />
                 </div>
               </div>

@@ -51,7 +51,7 @@ const SocialIcons = ({ offering }: { offering?: SocialTypes }) => {
   };
 
   return (
-    <div className="flex flex-row text-2xl items-center justify-end gap-x-4">
+    <div className="flex flex-row text-xl sm:text-2xl items-center justify-end gap-x-2.5 sm:gap-x-4">
       {socialLinks.map((item) => {
         const Icon = item.icon;
         const hasLink = Boolean(item.url && item.url.trim().length > 0);
