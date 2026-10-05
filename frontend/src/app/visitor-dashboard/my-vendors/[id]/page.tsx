@@ -8,7 +8,7 @@ import { FIND_ALL_MY_VENDORS } from '@/graphql/queries';
 import { useAuth } from '@/contexts/VisitorAuthContext';
 import { CategoryCard, CategoryModal } from '@/components/visitor-dashboard/my-vendors/CategoryDropdown';
 import categories from '@/utils/category.json';
-import { FiSearch, FiBookmark, FiLayers } from 'react-icons/fi';
+import { FiSearch, FiBookmark, FiLayers, FiArrowLeft } from 'react-icons/fi';
 
 const MyVendors = () => {
   const { visitor } = useAuth();
@@ -85,14 +85,15 @@ const MyVendors = () => {
         <div className="absolute top-0 right-0 w-80 h-80 bg-orange/5 dark:bg-orange/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          {/* Breadcrumbs */}
+          {/* Back to Dashboard Button */}
           <div className="mb-4">
-            <Breadcrumbs
-              items={[
-                { label: "Dashboard", href: "/visitor-dashboard" },
-                { label: "Saved Services" },
-              ]}
-            />
+            <Link
+              href="/visitor-dashboard"
+              className="inline-flex items-center gap-2 px-3.5 py-2 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 dark:text-zinc-300 hover:text-orange dark:hover:text-orange bg-orange/5 dark:bg-darkElevated hover:bg-orange/15 dark:hover:bg-orange/15 border border-orange/20 dark:border-zinc-800 transition-all duration-200 active:scale-95 group w-fit"
+            >
+              <FiArrowLeft className="text-base sm:text-sm transition-transform group-hover:-translate-x-1 text-orange" />
+              <span>Back to Dashboard</span>
+            </Link>
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">

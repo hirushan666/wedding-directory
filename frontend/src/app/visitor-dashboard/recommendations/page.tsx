@@ -14,6 +14,7 @@ import {
   FiLayers,
   FiSliders,
   FiAlertCircle,
+  FiArrowLeft,
 } from 'react-icons/fi';
 
 import RecommendedPackageCard, {
@@ -140,16 +141,16 @@ const RecommendationPage = () => {
     <div className="w-full space-y-6">
       {/* 1. Hero Card */}
       <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 shadow-sm p-6 sm:p-8">
-        <div className="space-y-3">
-          <Breadcrumbs
-            items={[
-              { label: 'Dashboard', href: '/visitor-dashboard' },
-              {
-                label: 'AI Recommendations',
-                href: '/visitor-dashboard/recommendations',
-              },
-            ]}
-          />
+        <div className="space-y-4">
+          <div>
+            <Link
+              href="/visitor-dashboard"
+              className="inline-flex items-center gap-2 px-3.5 py-2 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 dark:text-zinc-300 hover:text-orange dark:hover:text-orange bg-orange/5 dark:bg-darkElevated hover:bg-orange/15 dark:hover:bg-orange/15 border border-orange/20 dark:border-zinc-800 transition-all duration-200 active:scale-95 group w-fit"
+            >
+              <FiArrowLeft className="text-base sm:text-sm transition-transform group-hover:-translate-x-1 text-orange" />
+              <span>Back to Dashboard</span>
+            </Link>
+          </div>
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-orange/10 dark:bg-orange/20 flex items-center justify-center text-orange shrink-0">
               <Sparkles size={24} />

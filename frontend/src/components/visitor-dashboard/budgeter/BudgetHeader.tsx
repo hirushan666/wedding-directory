@@ -1,21 +1,23 @@
 import React from 'react';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Link from 'next/link';
+import { FiArrowLeft } from 'react-icons/fi';
 
 const BudgetHeader = ({ budget = 0.00, totalCost = 0.00 }) => {
   const utilizationPercentage = budget > 0 ? ((totalCost / budget) * 100).toFixed(1) : "0.0";
-
-  const breadcrumbItems = [
-    { label: "Dashboard", href: "/visitor-dashboard" },
-    { label: "Budgeter" },
-  ];
 
   return (
     <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 shadow-sm p-6 sm:p-8 relative overflow-hidden w-full">
       <div className="absolute top-0 right-0 w-80 h-80 bg-orange/5 rounded-full blur-3xl pointer-events-none" />
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="mb-3">
-            <Breadcrumbs items={breadcrumbItems} />
+          <div className="mb-4">
+            <Link
+              href="/visitor-dashboard"
+              className="inline-flex items-center gap-2 px-3.5 py-2 sm:py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 dark:text-zinc-300 hover:text-orange dark:hover:text-orange bg-orange/5 dark:bg-darkElevated hover:bg-orange/15 dark:hover:bg-orange/15 border border-orange/20 dark:border-zinc-800 transition-all duration-200 active:scale-95 group w-fit"
+            >
+              <FiArrowLeft className="text-base sm:text-sm transition-transform group-hover:-translate-x-1 text-orange" />
+              <span>Back to Dashboard</span>
+            </Link>
           </div>
           <h1 className="font-title text-3xl sm:text-4xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
             My Budgeting Tool
