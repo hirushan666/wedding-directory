@@ -111,7 +111,7 @@ const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
   return (
     <div
       ref={containerRef}
-      className="font-body space-y-4 mt-6 scroll-mt-24 min-h-[280px]"
+      className="font-body space-y-3 sm:space-y-4 mt-3 sm:mt-6 scroll-mt-24 min-h-[280px]"
       role="list"
       aria-live="polite"
     >
@@ -122,14 +122,14 @@ const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
         <span className="text-xs text-gray-400 dark:text-zinc-500 font-medium">Newest first</span>
       </div>
 
-      <div className={`space-y-4 transition-opacity duration-200 ${reviewsLoading ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
+      <div className={`space-y-3 sm:space-y-4 transition-opacity duration-200 ${reviewsLoading ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
         {reviewData.map((review: Review) => {
           const initials = (review.visitor?.visitor_fname || 'U').charAt(0).toUpperCase();
           return (
             <div
               key={review.id}
               role="listitem"
-              className="rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-3.5 sm:p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Header: Avatar, Name, Verified Badge, Rating & Date */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
