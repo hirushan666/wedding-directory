@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { FaRegStarHalfStroke } from "react-icons/fa6";
 import { FiChevronDown } from "react-icons/fi";
@@ -26,8 +26,6 @@ interface ReviewItem {
   
 const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
-    const cardRef = useRef<HTMLDivElement>(null);
-    const [boxSize, setBoxSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
     const { data: rdata, loading: reviewsLoading, error: reviewsError } = useQuery(FIND_REVIEW_PAGE_BY_SERVICE, {
         variables: { service_id: serviceId, page: 1, limit: 5 },
@@ -43,32 +41,6 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
         skip: !serviceId,
         fetchPolicy: 'cache-and-network',
     });
-
-    useEffect(() => {
-        const el = cardRef.current;
-        if (!el) return;
-
-        const updateSize = () => {
-            if (!cardRef.current) return;
-            const rect = cardRef.current.getBoundingClientRect();
-            setBoxSize({
-                width: Math.round(rect.width),
-                height: Math.round(rect.height),
-            });
-        };
-
-        updateSize();
-
-        const resizeObserver = new ResizeObserver(() => {
-            updateSize();
-        });
-
-        resizeObserver.observe(el);
-
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, [summaryLoading, summaryData, isSummaryExpanded]);
 
     if (reviewsLoading) {
         return (
@@ -206,7 +178,6 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
         </div>
     ) : (
         <div
-            ref={cardRef}
             className='relative rounded-2xl border border-orange-200/60 dark:border-zinc-800 bg-white dark:bg-darkSurface shadow-md transition-all duration-300 hover:shadow-lg overflow-hidden'
         >
             {/* Smooth CSS keyframe animation for border beam */}
@@ -221,31 +192,24 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
             `}</style>
 
             {/* Moving outline beam following the exact outer perimeter */}
-            {boxSize.width > 0 && boxSize.height > 0 && (
-                <svg
-                    className='absolute inset-0 pointer-events-none z-20 w-full h-full'
-                    width={boxSize.width}
-                    height={boxSize.height}
-                    viewBox={`0 0 ${boxSize.width} ${boxSize.height}`}
-                >
-                    <rect
-                        x='1.25'
-                        y='1.25'
-                        width={Math.max(0, boxSize.width - 2.5)}
-                        height={Math.max(0, boxSize.height - 2.5)}
-                        rx='16'
-                        ry='16'
-                        fill='none'
-                        stroke='#f97316'
-                        strokeWidth='2.5'
-                        strokeLinecap='round'
-                        pathLength='1000'
-                        strokeDasharray='220 780'
-                        className='animate-review-beam motion-reduce:animate-none'
-                        style={{ filter: 'drop-shadow(0 0 3px rgba(249, 115, 22, 0.6))' }}
-                    />
-                </svg>
-            )}
+            <svg
+                className='absolute inset-[1.25px] w-[calc(100%-2.5px)] h-[calc(100%-2.5px)] pointer-events-none z-20 overflow-visible'
+            >
+                <rect
+                    width='100%'
+                    height='100%'
+                    rx='15'
+                    ry='15'
+                    fill='none'
+                    stroke='#f97316'
+                    strokeWidth='2.5'
+                    strokeLinecap='round'
+                    pathLength='1000'
+                    strokeDasharray='220 780'
+                    className='animate-review-beam motion-reduce:animate-none'
+                    style={{ filter: 'drop-shadow(0 0 3px rgba(249, 115, 22, 0.6))' }}
+                />
+            </svg>
 
             {/* Card content */}
             <div className='relative z-10 bg-gradient-to-br from-orange-50/40 via-white to-white dark:from-orange-950/20 dark:via-darkSurface dark:to-darkSurface p-4 sm:p-5'>
