@@ -41,6 +41,7 @@ const VisitorDashboardContent: React.FC = () => {
   const [dashboardTab, setDashboardTab] = useState<"overview" | "calendar">(
     tabParam === "calendar" ? "calendar" : "overview"
   );
+  const [mobileTab, setMobileTab] = useState<"overview" | "tools">("overview");
 
   useEffect(() => {
     if (tabParam === "calendar") {
@@ -230,11 +231,17 @@ const VisitorDashboardContent: React.FC = () => {
               budgetPercentage={budgetPercentage}
               myVendorsCount={myVendors.length}
               attendingGuests={attendingGuests}
+              mobileTab={mobileTab}
+              setMobileTab={setMobileTab}
             />
           </div>
 
           {/* Right Column (8 cols): Planning Overview or Booking Calendar */}
-          <div className="lg:col-span-8 flex flex-col h-full">
+          <div
+            className={`lg:col-span-8 flex flex-col h-full ${
+              mobileTab === "tools" ? "hidden lg:flex" : "flex"
+            }`}
+          >
             {/* Tab 1: Planning Overview */}
             {dashboardTab === "overview" && (
               <div className="h-full flex flex-col flex-1">
