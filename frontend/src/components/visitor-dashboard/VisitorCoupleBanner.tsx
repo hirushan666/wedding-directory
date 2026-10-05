@@ -13,6 +13,8 @@ import {
   FiChevronRight,
   FiCalendar,
   FiBookmark,
+  FiGrid,
+  FiLayers,
 } from "react-icons/fi";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { HiOutlineBriefcase } from "react-icons/hi2";
@@ -34,6 +36,8 @@ interface VisitorCoupleBannerProps {
   budgetPercentage: number;
   myVendorsCount: number;
   attendingGuests: number;
+  mobileTab?: "overview" | "tools";
+  setMobileTab?: (tab: "overview" | "tools") => void;
 }
 
 const VisitorCoupleBanner: React.FC<VisitorCoupleBannerProps> = ({
@@ -46,6 +50,8 @@ const VisitorCoupleBanner: React.FC<VisitorCoupleBannerProps> = ({
   budgetPercentage,
   myVendorsCount,
   attendingGuests,
+  mobileTab = "overview",
+  setMobileTab,
 }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -227,8 +233,42 @@ const VisitorCoupleBanner: React.FC<VisitorCoupleBannerProps> = ({
         )}
       </div>
 
+      {/* Mobile Segmented Toggle (Overview vs All Tools) */}
+      {setMobileTab && (
+        <div className="lg:hidden w-full bg-orange/[0.06] dark:bg-darkElevated/60 p-1 rounded-xl flex items-center mb-4 border border-orange/15 dark:border-zinc-800">
+          <button
+            type="button"
+            onClick={() => setMobileTab("overview")}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-title font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              mobileTab === "overview"
+                ? "bg-orange text-white shadow-xs"
+                : "text-gray-600 dark:text-zinc-400 hover:text-orange"
+            }`}
+          >
+            <FiGrid size={14} />
+            <span>Overview</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab("tools")}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-title font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              mobileTab === "tools"
+                ? "bg-orange text-white shadow-xs"
+                : "text-gray-600 dark:text-zinc-400 hover:text-orange"
+            }`}
+          >
+            <FiLayers size={14} />
+            <span>All Tools (9)</span>
+          </button>
+        </div>
+      )}
+
       {/* Integrated Planning Navigation Menu */}
-      <div className="w-full text-left">
+      <div
+        className={`w-full text-left transition-all ${
+          mobileTab === "overview" ? "hidden lg:block" : "block"
+        }`}
+      >
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-title text-xs font-bold text-gray-900 dark:text-zinc-200 uppercase tracking-wider">
             Planning Portal Navigation
