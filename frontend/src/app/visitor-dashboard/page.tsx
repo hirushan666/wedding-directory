@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/VisitorAuthContext";
 import VisitorCoupleBanner from "@/components/visitor-dashboard/VisitorCoupleBanner";
 import VisitorBookingCalendar from "@/components/visitor-dashboard/VisitorBookingCalendar";
 import DashboardWidgets from "@/components/visitor-dashboard/DashBoardWidgets";
+import BottomNavigationBar from "@/components/visitor-dashboard/BottomNavigationBar";
 import { VisitorDashboardSkeleton } from "@/components/ui/shimmer";
 import { StaticImageData } from "next/image";
 import {
@@ -284,6 +285,7 @@ const VisitorDashboardContent: React.FC = () => {
         </div>
       </main>
 
+      <BottomNavigationBar />
       <Footer />
     </div>
   );

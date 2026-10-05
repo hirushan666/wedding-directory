@@ -7,6 +7,7 @@ import { TableSkeleton } from "@/components/ui/shimmer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@apollo/client";
 import { GET_VISITOR_PAYMENTS } from "@/graphql/queries";
+import BottomNavigationBar from "@/components/visitor-dashboard/BottomNavigationBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   FiCreditCard,
@@ -636,6 +637,7 @@ const PaymentsHistoryPage = () => {
         </div>
       )}
 
+      <BottomNavigationBar />
     </div>
   );
 };
