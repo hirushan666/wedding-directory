@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { FaRegStarHalfStroke } from "react-icons/fa6";
+import { FiChevronDown } from "react-icons/fi";
 import { useQuery } from "@apollo/client";
 import {
     FIND_REVIEW_PAGE_BY_SERVICE,
@@ -24,6 +25,8 @@ interface ReviewItem {
 
   
 const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
+    const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+
     const { data: rdata, loading: reviewsLoading, error: reviewsError } = useQuery(FIND_REVIEW_PAGE_BY_SERVICE, {
         variables: { service_id: serviceId, page: 1, limit: 5 },
         skip: !serviceId,
@@ -42,20 +45,20 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
     if (reviewsLoading) {
         return (
             <div className='font-body animate-fade-in'>
-                <div className='rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-6 shadow-sm'>
-                    <div className='grid grid-cols-1 md:grid-cols-12 gap-6 items-center'>
-                        <div className='md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left border-b md:border-b-0 md:border-r border-gray-100 dark:border-zinc-800 pb-5 md:pb-0 md:pr-6 space-y-3 w-full'>
+                <div className='rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-4 sm:p-6 shadow-sm'>
+                    <div className='grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6 items-center'>
+                        <div className='md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left border-b md:border-b-0 md:border-r border-gray-100 dark:border-zinc-800 pb-4 md:pb-0 md:pr-6 space-y-2.5 sm:space-y-3 w-full'>
                             <Skeleton className='h-3 w-24' />
-                            <Skeleton className='h-12 w-28' />
+                            <Skeleton className='h-10 sm:h-12 w-28' />
                             <Skeleton className='h-4 w-32' />
                             <Skeleton className='h-3 w-40' />
                         </div>
-                        <div className='md:col-span-7 space-y-3 w-full'>
+                        <div className='md:col-span-7 space-y-2 sm:space-y-3 w-full'>
                             {[5, 4, 3, 2, 1].map((star) => (
-                                <div key={star} className='flex items-center gap-3'>
-                                    <Skeleton className='w-7 h-4' />
+                                <div key={star} className='flex items-center gap-2.5 sm:gap-3'>
+                                    <Skeleton className='w-6 sm:w-7 h-4' />
                                     <Skeleton className='h-2.5 flex-1 rounded-full' />
-                                    <Skeleton className='w-8 h-4' />
+                                    <Skeleton className='w-7 sm:w-8 h-4' />
                                 </div>
                             ))}
                         </div>
@@ -78,6 +81,8 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
     });
 
     const aiSummary = summaryData?.findServiceReviewSummary;
+    const summaryText = aiSummary?.summaryText || '';
+    const isLongSummary = summaryText.length > 180 || summaryText.split('\n').length > 4;
 
     const renderStars = (avgRating: number) => {
         const fullStars = Math.floor(avgRating);
@@ -103,7 +108,7 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
     if (totalReviews === 0) {
         return (
             <div className='font-body'>
-                <div className='rounded-2xl border border-dashed border-orange/30 bg-gradient-to-br from-white dark:from-darkSurface via-orange-50/20 dark:via-darkElevated/40 to-orange-50/40 dark:to-darkElevated/60 p-8 text-center shadow-sm'>
+                <div className='rounded-2xl border border-dashed border-orange/30 bg-gradient-to-br from-white dark:from-darkSurface via-orange-50/20 dark:via-darkElevated/40 to-orange-50/40 dark:to-darkElevated/60 p-6 sm:p-8 text-center shadow-sm'>
                     <div className='mx-auto w-12 h-12 rounded-full bg-orange/15 text-orange flex items-center justify-center text-xl mb-3'>
                         <FaStar />
                     </div>
@@ -118,20 +123,20 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
 
     return (
         <div className='font-body space-y-4'>
-            <div className='rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-6 shadow-sm'>
-                <div className='grid grid-cols-1 md:grid-cols-12 gap-6 items-center'>
+            <div className='rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-4 sm:p-6 shadow-sm'>
+                <div className='grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6 items-center'>
                     {/* Left: Overall Rating */}
-                    <div className='md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left border-b md:border-b-0 md:border-r border-gray-100 dark:border-zinc-800 pb-5 md:pb-0 md:pr-6'>
-                        <span className='text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500'>
+                    <div className='md:col-span-5 flex flex-col items-center md:items-start text-center md:text-left border-b md:border-b-0 md:border-r border-gray-100 dark:border-zinc-800 pb-4 md:pb-0 md:pr-6'>
+                        <span className='text-[11px] sm:text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500'>
                             Overall Rating
                         </span>
-                        <div className='mt-2 flex items-baseline gap-2'>
-                            <span className='text-5xl font-title font-extrabold text-gray-900 dark:text-zinc-100 leading-none'>
+                        <div className='mt-1.5 sm:mt-2 flex items-baseline gap-2'>
+                            <span className='text-4xl sm:text-5xl font-title font-extrabold text-gray-900 dark:text-zinc-100 leading-none'>
                                 {avgRating.toFixed(1)}
                             </span>
-                            <span className='text-lg text-gray-400 dark:text-zinc-500 font-medium'>/ 5</span>
+                            <span className='text-base sm:text-lg text-gray-400 dark:text-zinc-500 font-medium'>/ 5</span>
                         </div>
-                        <div className='flex text-amber-400 text-xl my-2 gap-1'>
+                        <div className='flex text-amber-400 text-lg sm:text-xl my-1.5 sm:my-2 gap-1'>
                             {renderStars(avgRating)}
                         </div>
                         <p className='text-xs text-gray-500 dark:text-zinc-400 font-medium'>
@@ -140,10 +145,10 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
                     </div>
 
                     {/* Right: Rating Breakdown Bars */}
-                    <div className='md:col-span-7 space-y-2.5'>
+                    <div className='md:col-span-7 space-y-2'>
                         {recentDistribution.map((item) => (
-                            <div key={item.star} className='flex items-center gap-3 text-xs'>
-                                <span className='w-7 font-bold text-gray-700 dark:text-zinc-300 text-right flex items-center justify-end gap-0.5'>
+                            <div key={item.star} className='flex items-center gap-2.5 sm:gap-3 text-xs'>
+                                <span className='w-6 sm:w-7 font-bold text-gray-700 dark:text-zinc-300 text-right flex items-center justify-end gap-0.5'>
                                     {item.star} <FaStar className='text-amber-400 text-[10px]' />
                                 </span>
                                 <div className='h-2 flex-1 rounded-full bg-gray-100 dark:bg-darkElevated overflow-hidden'>
@@ -152,7 +157,7 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
                                         style={{ width: `${item.percentage}%` }}
                                     />
                                 </div>
-                                <span className='w-8 text-right font-medium text-gray-500 dark:text-zinc-400'>
+                                <span className='w-7 sm:w-8 text-right font-medium text-gray-500 dark:text-zinc-400'>
                                     {item.count}
                                 </span>
                             </div>
@@ -162,7 +167,7 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
             </div>
 
     {summaryLoading ? (
-        <div className='rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-5 shadow-sm space-y-3'>
+        <div className='rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-darkSurface p-4 sm:p-5 shadow-sm space-y-3'>
             <div className='flex items-center justify-between gap-4'>
                 <Skeleton className='h-4 w-32' />
                 <Skeleton className='h-4 w-24' />
@@ -205,21 +210,21 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
             </svg>
 
             {/* Card content */}
-            <div className='relative rounded-2xl bg-gradient-to-br from-orange-50/40 via-white to-white dark:from-orange-950/20 dark:via-darkSurface dark:to-darkSurface p-5'>
+            <div className='relative rounded-2xl bg-gradient-to-br from-orange-50/40 via-white to-white dark:from-orange-950/20 dark:via-darkSurface dark:to-darkSurface p-4 sm:p-5'>
 
-                <div className='flex items-center justify-between gap-3 flex-wrap mb-3'>
+                <div className='flex items-center justify-between gap-2.5 flex-wrap mb-2.5 sm:mb-3'>
                     <div>
-                        <h2 className='text-[15px] font-semibold text-gray-900 dark:text-zinc-100 font-title'>
+                        <h2 className='text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-zinc-100 font-title'>
                             AI Review Summary
                         </h2>
 
-                        <p className='text-xs text-gray-400 dark:text-zinc-500'>
+                        <p className='text-[11px] sm:text-xs text-gray-400 dark:text-zinc-500'>
                             Generated from the latest couple reviews
                         </p>
                     </div>
 
                     {aiSummary?.lastReviewAt && (
-                        <span className='text-[11px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-900/30'>
+                        <span className='text-[10px] sm:text-[11px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-orange-200 dark:border-orange-900/30'>
                             Updated {new Date(aiSummary.lastReviewAt).toLocaleDateString()}
                         </span>
                     )}
@@ -229,10 +234,26 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
                     <p className='text-sm text-red-500 dark:text-red-400 leading-relaxed'>
                         AI summary is unavailable right now.
                     </p>
-                ) : aiSummary?.summaryText ? (
-                    <p className='text-sm text-gray-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap'>
-                        {aiSummary.summaryText}
-                    </p>
+                ) : summaryText ? (
+                    <div>
+                        <p className={`text-sm text-gray-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap transition-all ${!isSummaryExpanded ? "line-clamp-5" : ""}`}>
+                            {summaryText}
+                        </p>
+                        {isLongSummary && (
+                            <button
+                                type="button"
+                                onClick={() => setIsSummaryExpanded((prev) => !prev)}
+                                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-orange hover:text-orange/80 transition-colors cursor-pointer select-none"
+                                aria-expanded={isSummaryExpanded}
+                            >
+                                <span>{isSummaryExpanded ? "Show less" : "Read more"}</span>
+                                <FiChevronDown
+                                    className={`transition-transform duration-200 ${isSummaryExpanded ? "rotate-180" : ""}`}
+                                    size={14}
+                                />
+                            </button>
+                        )}
+                    </div>
                 ) : (
                     <p className='text-sm text-gray-500 dark:text-zinc-400 leading-relaxed italic'>
                         No AI summary yet.

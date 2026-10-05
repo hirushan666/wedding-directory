@@ -44,7 +44,7 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
   ];
 
   const totalCount = Math.max(totalMediaCount || 0, allImages.length);
-  const maxThumbnails = 6;
+  const maxThumbnails = 8;
   const visibleThumbnails = allImages.slice(0, maxThumbnails);
   const remainingCount = Math.max(0, totalCount - visibleThumbnails.length);
 
@@ -82,9 +82,9 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
         )}
       </div>
 
-      {/* Other Images (Showcase) as Small Squares Below */}
+      {/* Other Images (Showcase) as Grid: 4 per row on mobile, wrapping below */}
       {allImages.length > 1 && (
-        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4 overflow-x-auto pb-1 scrollbar-thin">
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3 mt-2.5 sm:mt-4">
           {visibleThumbnails.map((item, index) => {
             const isSelected = activeImage === item.src;
             const isLastSlot =
@@ -96,21 +96,22 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
                 <Link
                   key={index}
                   href={portfolioLink}
-                  className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 aspect-square rounded-xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 group cursor-pointer"
+                  className="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-gray-200 dark:border-zinc-700 group cursor-pointer"
                   title="View full gallery"
                 >
                   <Image
                     src={item.src}
                     alt={item.label}
                     fill
+                    sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
                     className="object-cover group-hover:scale-105 transition-transform"
                   />
                   <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-white p-1 text-center">
-                    <RiGalleryView2 className="text-lg text-orange mb-0.5" />
+                    <RiGalleryView2 className="text-base sm:text-lg text-orange mb-0.5" />
                     <span className="text-xs font-bold leading-tight">
                       +{remainingCount > 0 ? remainingCount : "More"}
                     </span>
-                    <span className="text-[10px] text-gray-300">View All</span>
+                    <span className="text-[9px] sm:text-[10px] text-gray-300">View All</span>
                   </div>
                 </Link>
               );
@@ -121,10 +122,10 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
                 key={index}
                 type="button"
                 onClick={() => setActiveImage(item.src)}
-                className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 aspect-square rounded-xl overflow-hidden transition-all duration-150 cursor-pointer border-2 ${
+                className={`relative w-full aspect-square rounded-xl overflow-hidden transition-all duration-150 cursor-pointer border-2 ${
                   isSelected
-                    ? "border-orange shadow-sm opacity-100"
-                    : "border-gray-200 dark:border-zinc-700 hover:border-orange/50 opacity-70 hover:opacity-100"
+                    ? "border-orange shadow-sm opacity-100 ring-2 ring-orange/30"
+                    : "border-gray-200 dark:border-zinc-700 hover:border-orange/50 opacity-75 hover:opacity-100"
                 }`}
                 title={`Click to view ${item.label}`}
               >
@@ -132,10 +133,11 @@ const PortfolioImages: React.FC<PortfolioImagesProps> = ({
                   src={item.src}
                   alt={item.label}
                   fill
+                  sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, 12vw"
                   className="object-cover"
                 />
                 {isVendor && item.isBanner && (
-                  <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider leading-none shadow-sm pointer-events-none whitespace-nowrap border border-white/20">
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-white text-[8px] sm:text-[9px] font-bold uppercase tracking-wider leading-none shadow-sm pointer-events-none whitespace-nowrap border border-white/20">
                     Banner
                   </span>
                 )}
