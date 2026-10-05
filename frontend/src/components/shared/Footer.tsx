@@ -23,29 +23,29 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="w-full border-t border-orange/15 dark:border-zinc-800/80 bg-lightYellow dark:bg-darkBg font-body mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-10 mb-6 sm:mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-10 lg:py-12 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-8 lg:gap-10 mb-4 sm:mb-10">
           {/* Brand & Brief Tagline */}
           <div className="lg:col-span-4">
             {isLoggedIn ? (
-              <div className="inline-block mb-2 sm:mb-3 select-none cursor-default">
-                <span className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
+              <div className="inline-block mb-1 sm:mb-3 select-none cursor-default">
+                <span className="font-title text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
                   Say I Do
                 </span>
               </div>
             ) : (
-              <Link href="/" className="inline-block mb-2 sm:mb-3">
-                <span className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
+              <Link href="/" className="inline-block mb-1 sm:mb-3">
+                <span className="font-title text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
                   Say I Do
                 </span>
               </Link>
             )}
-            <p className="text-gray-600 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-sm mb-3 sm:mb-4">
+            <p className="text-gray-600 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-sm mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
               Sri Lanka&apos;s premier wedding directory and planning companion,
               connecting couples with verified vendors to craft unforgettable
               celebrations.
             </p>
-            <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-orange font-medium bg-orange/10 border border-orange/20 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full">
+            <div className="hidden sm:inline-flex items-center gap-1.5 text-xs text-orange font-medium bg-orange/10 border border-orange/20 px-3 py-1 rounded-full">
               <FiHeart size={11} className="shrink-0" />
               <span>Made with love for weddings</span>
             </div>
@@ -126,6 +126,14 @@ const Footer: React.FC = () => {
                 </li>
                 <li>
                   <Link
+                    href="/vendor-signup"
+                    className="text-orange dark:text-orange font-medium hover:underline transition-colors"
+                  >
+                    Join as a Vendor
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/privacy-policy"
                     className="hover:text-orange dark:hover:text-orange transition-colors"
                   >
@@ -144,8 +152,8 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Vendor Partnership Card */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-4">
+          {/* Vendor Partnership Card: hidden on mobile, visible on desktop/tablet */}
+          <div className="hidden sm:block col-span-1 md:col-span-2 lg:col-span-4">
             <div className="bg-white/80 dark:bg-darkSurface/90 backdrop-blur-xs rounded-xl sm:rounded-2xl border border-orange/20 dark:border-zinc-800 p-4 sm:p-6 shadow-2xs">
               <span className="text-[10px] sm:text-[11px] font-semibold text-orange uppercase tracking-wider block mb-1">
                 For Service Providers
@@ -169,7 +177,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar: Copyright & Socials */}
-        <div className="border-t border-orange/10 dark:border-zinc-800/80 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+        <div className="border-t border-orange/10 dark:border-zinc-800/80 pt-3 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4">
           <p className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-500 text-center sm:text-left">
             &copy; {currentYear} Say I Do. All rights reserved.
           </p>
