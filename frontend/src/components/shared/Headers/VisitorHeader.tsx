@@ -4,15 +4,7 @@ import { Fragment, useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { BiMessageRounded } from "react-icons/bi";
-import {
-  FiCalendar,
-  FiUser,
-  FiLogOut,
-  FiSun,
-  FiMoon,
-  FiMenu,
-  FiX,
-} from "react-icons/fi";
+import { FiCalendar, FiUser, FiLogOut, FiSun, FiMoon } from "react-icons/fi";
 import Image from "next/image";
 import { useAuth } from "@/contexts/VisitorAuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -40,7 +32,6 @@ const VisitorHeader = () => {
   ); // Default placeholder
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotificationMenu, setShowNotificationMenu] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const notificationMenuRef = useRef<HTMLDivElement>(null);
   const previousApprovedCountRef = useRef<number | null>(null);
@@ -219,116 +210,66 @@ const VisitorHeader = () => {
     };
   }, [showProfileMenu, showNotificationMenu]);
 
-  // Close the mobile menu after navigating
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-
-  // Escape to close + lock background scroll while the mobile menu is open
-  useEffect(() => {
-    if (!isMobileMenuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsMobileMenuOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isMobileMenuOpen]);
-
   return (
     <Fragment>
-      <header
-        className="sticky top-0 z-50 text-black dark:text-white backdrop-blur-md transition-colors duration-200"
-        style={{
-          background: "var(--sid-nav)",
-          borderBottom: "1px solid var(--sid-line, #D6CABD)",
-        }}
-      >
-        <div className="max-w-[1540px] mx-auto flex min-h-[76px] items-center gap-3 px-4 sm:px-8 lg:px-12">
-          {/* Hamburger (below lg) */}
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen((open) => !open)}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl lg:hidden transition-colors hover:bg-[var(--sid-panel)]"
-            style={{ color: "var(--sid-ink)" }}
-            aria-label={
-              isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
-            }
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-nav"
-          >
-            {isMobileMenuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
-          </button>
+      <header className="sticky top-0 z-30 py-3.5 xl:py-4 text-black dark:text-white bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 transition-all duration-200 shadow-xs">
+        <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full">
+          {/* Logo - click disabled for logged-in visitor */}
+          <div className="flex items-center select-none cursor-default">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100 font-title">
+              Say I Do
+            </h1>
+          </div>
 
-          {/* Logo */}
-          <Link
-            href="/visitor-dashboard"
-            className="shrink-0 select-none font-title text-2xl font-bold tracking-tight sm:text-[28px]"
-            style={{ color: "var(--sid-ink)" }}
-            aria-label="Go to visitor dashboard"
-          >
-            Say I Do
-          </Link>
-
-          {/* Centered pill navigation (lg and up) */}
-          <nav
-            className="hidden flex-1 items-center justify-center gap-1 lg:flex xl:gap-2"
-            aria-label="Main"
-          >
-            {navLinks.map((link) => {
-              const active = link.isActive(pathname);
-              if (isSignupForm) {
-                return (
-                  <span
-                    key={link.name}
-                    className="min-h-11 cursor-not-allowed select-none rounded-xl px-4 py-2.5 text-[15px] font-semibold text-gray-400 dark:text-zinc-500"
-                    title="Complete sign up to access"
-                  >
-                    {link.name}
-                  </span>
-                );
-              }
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-xl px-4 py-2.5 text-[15px] font-semibold transition-colors xl:px-5 ${
-                    active
-                      ? "bg-orange text-white shadow-sm"
-                      : "text-gray-800 hover:bg-[var(--sid-panel)] dark:text-zinc-200"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Inline search (xl and up) */}
-          <div className="hidden w-64 shrink-0 xl:block">
+          {/* Search bar */}
+          <div className="hidden lg:flex flex-1 justify-center px-6">
             <SearchBar
               showIcon={false}
-              className="max-w-none"
               placehHolderText={
                 isSignupForm
                   ? "Search disabled during sign up"
-                  : "Search venues, caterers…"
+                  : "search venues, caterers, etc."
               }
               disabled={isSignupForm}
             />
           </div>
 
-          {/* Right actions */}
-          <div className="ml-auto flex items-center justify-end gap-1 sm:gap-2 lg:ml-0 font-title text-text dark:text-zinc-200">
+          {/* Dashboard, Notifications, and Profile dropdown */}
+          <div className="flex items-center justify-end gap-3 sm:gap-4 font-title text-text dark:text-zinc-200">
+            <nav className="flex items-center gap-1.5 sm:gap-2.5">
+              {navLinks.map((link) => {
+                const active = link.isActive(pathname);
+                if (isSignupForm) {
+                  return (
+                    <span
+                      key={link.name}
+                      className="px-4 py-2 rounded-xl text-base sm:text-[17px] tracking-wide transition-all text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
+                      title="Complete sign up to access"
+                    >
+                      {link.name}
+                    </span>
+                  );
+                }
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`px-4 py-2 rounded-xl text-base sm:text-[17px] tracking-wide transition-all ${
+                      active
+                        ? "bg-orange text-white shadow-xs font-bold"
+                        : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+            </nav>
+
             {/* Chat icon with unread badge */}
             {isSignupForm ? (
               <span
-                className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-gray-400 dark:text-zinc-500 cursor-not-allowed select-none"
+                className="relative p-2 rounded-xl transition-all flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
                 title="Complete sign up to access"
               >
                 <BiMessageRounded className="w-[26px] h-[26px]" />
@@ -336,13 +277,12 @@ const VisitorHeader = () => {
             ) : (
               <Link
                 href={`/visitor-dashboard/chats/${visitor?.id}`}
-                className={`relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors ${
+                className={`relative p-2 rounded-xl transition-all flex items-center justify-center ${
                   pathname.startsWith("/visitor-dashboard/chats")
-                    ? "bg-orange text-white shadow-sm"
-                    : "text-gray-700 dark:text-zinc-300 hover:bg-[var(--sid-panel)]"
+                    ? "bg-orange text-white shadow-xs font-bold"
+                    : "text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
                 }`}
                 title="Messages"
-                aria-label="Messages"
               >
                 <BiMessageRounded className="w-[26px] h-[26px]" />
                 {unreadCount > 0 && (
@@ -363,7 +303,7 @@ const VisitorHeader = () => {
             <div className="relative" ref={notificationMenuRef}>
               {isSignupForm ? (
                 <span
-                  className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-gray-400 dark:text-zinc-500 cursor-not-allowed select-none"
+                  className="relative p-2 rounded-xl transition-all flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-400 hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-semibold cursor-not-allowed select-none"
                   title="Complete sign up to access"
                 >
                   <IoIosNotificationsOutline className="w-[28px] h-[28px]" />
@@ -372,7 +312,7 @@ const VisitorHeader = () => {
                 <button
                   type="button"
                   onClick={() => setShowNotificationMenu((prev) => !prev)}
-                  className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors text-gray-700 dark:text-zinc-300 hover:bg-[var(--sid-panel)]"
+                  className="relative p-2 rounded-xl hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center text-gray-700 dark:text-zinc-300 hover:text-orange"
                   title={
                     notificationCount > 0
                       ? `${notificationCount} notification${notificationCount === 1 ? "" : "s"}`
@@ -522,12 +462,12 @@ const VisitorHeader = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-gray-700 dark:text-zinc-300 hover:bg-[var(--sid-panel)] transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-gray-700 dark:text-zinc-300 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center cursor-pointer"
               title="Toggle Theme"
               aria-label="Toggle Theme"
             >
-              <FiSun className="hidden dark:block w-[21px] h-[21px]" />
-              <FiMoon className="block dark:hidden w-[21px] h-[21px]" />
+              <FiSun className="hidden dark:block w-[24px] h-[24px] text-amber-400 hover:rotate-45 transition-transform" />
+              <FiMoon className="block dark:hidden w-[24px] h-[24px] text-gray-700 dark:text-zinc-300 hover:text-orange transition-transform" />
             </button>
 
             {/* Profile dropdown */}
@@ -541,7 +481,7 @@ const VisitorHeader = () => {
                 <Image
                   src={profilePic}
                   alt="profile picture"
-                  className={`w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-full object-cover transition-all border-2 ${
+                  className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full object-cover transition-all border-2 ${
                     showProfileMenu
                       ? "border-orange ring-2 ring-orange/30 shadow-sm"
                       : "border-orange/25 dark:border-orange/40 hover:border-orange shadow-xs"
@@ -609,79 +549,6 @@ const VisitorHeader = () => {
             </div>
           </div>
         </div>
-
-        {/* Search row (below xl) */}
-        <div
-          className="border-t px-4 py-3 sm:px-8 xl:hidden"
-          style={{ borderColor: "var(--sid-line, #D6CABD)" }}
-        >
-          <SearchBar
-            showIcon={false}
-            className="max-w-none"
-            placehHolderText={
-              isSignupForm
-                ? "Search disabled during sign up"
-                : "Search venues, caterers…"
-            }
-            disabled={isSignupForm}
-          />
-        </div>
-
-        {/* Mobile navigation menu */}
-        {isMobileMenuOpen && (
-          <>
-            {/* Backdrop: absolute, NOT fixed (backdrop-blur makes the header the
-                containing block for fixed children). Starts right under the header. */}
-            <button
-              type="button"
-              aria-label="Close navigation menu"
-              className="absolute inset-x-0 top-full z-40 h-[100dvh] bg-black/40 lg:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-
-            {/* Solid panel, always above the backdrop */}
-            <div
-              id="mobile-nav"
-              className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-9rem)] overflow-y-auto border-t border-gray-200 bg-white px-3 py-3 shadow-xl dark:border-zinc-800 dark:bg-darkSurface lg:hidden"
-            >
-              <nav
-                className="flex flex-col gap-1.5"
-                aria-label="Mobile visitor navigation"
-              >
-                {navLinks.map((link) => {
-                  const active = link.isActive(pathname);
-
-                  if (isSignupForm) {
-                    return (
-                      <span
-                        key={link.name}
-                        className="flex min-h-12 cursor-not-allowed select-none items-center rounded-xl px-4 text-base font-semibold text-gray-400 dark:text-zinc-500"
-                      >
-                        {link.name}
-                      </span>
-                    );
-                  }
-
-                  return (
-                    <Link
-                      key={link.name}
-                      href={link.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      aria-current={active ? "page" : undefined}
-                      className={`flex min-h-12 items-center rounded-xl px-4 text-base font-semibold transition-colors ${
-                        active
-                          ? "bg-orange text-white shadow-sm"
-                          : "text-gray-800 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                      }`}
-                    >
-                      {link.name}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-          </>
-        )}
       </header>
     </Fragment>
   );
