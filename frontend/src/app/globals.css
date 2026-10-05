@@ -12,7 +12,10 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    --toast-bg: #ffffff;
+    --toast-color: #111827;
+    --toast-border: #f3f4f6;
   }
   .dark {
     color-scheme: dark;
@@ -23,7 +26,10 @@
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    --toast-bg: #221C1A;
+    --toast-color: #f4f4f5;
+    --toast-border: #3f3f46;
   }
 
   input,
