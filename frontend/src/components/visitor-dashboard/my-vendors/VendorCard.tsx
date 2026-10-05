@@ -12,16 +12,23 @@ interface VendorCardProps {
 }
 
 const VendorCard = ({ name, vendor, city, banner, link }: VendorCardProps) => {
+  const [imgSrc, setImgSrc] = React.useState(banner || "/images/offeringPlaceholder.webp");
+
+  React.useEffect(() => {
+    setImgSrc(banner || "/images/offeringPlaceholder.webp");
+  }, [banner]);
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl border-2 border-orange/20 dark:border-zinc-800 hover:border-orange dark:hover:border-orange bg-white dark:bg-darkSurface shadow-xs hover:shadow-md transition-all group w-full">
       <div className="flex items-center gap-4 min-w-0 flex-1">
         <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 overflow-hidden rounded-xl bg-orange/5 dark:bg-darkElevated border border-orange/10 dark:border-zinc-800">
           <Image
-            src={banner}
+            src={imgSrc}
             alt={`${name} banner`}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             fill
             sizes="(max-width: 96px) 100vw, 96px"
+            onError={() => setImgSrc("/images/offeringPlaceholder.webp")}
           />
         </div>
 
