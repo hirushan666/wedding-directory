@@ -867,8 +867,8 @@ const Service: React.FC = () => {
   return (
     <div className="bg-lightYellow dark:bg-darkBg font-body min-h-screen flex flex-col justify-between transition-colors duration-200">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 w-full flex-grow">
-        <div className="mb-4 pt-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-6 w-full flex-grow">
+        <div className="mb-2 sm:mb-4 pt-1 sm:pt-2">
           <Link
             href={dashboardHref}
             className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-orange dark:hover:text-orange transition-colors group"
@@ -927,10 +927,10 @@ const Service: React.FC = () => {
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6 mt-6 w-full">
+        <div className="flex flex-col lg:flex-row gap-3.5 sm:gap-6 mt-3 sm:mt-6 w-full">
           <div className="w-full lg:w-2/3 xl:w-3/4 min-w-0">
             {/* General Section */}
-            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 sm:p-6 mb-4">
+            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-3.5 sm:p-6 mb-2.5 sm:mb-4">
               {/* Top Row: Vendor Badge + Favorite Heart */}
               <div className="flex items-center justify-between gap-3 mb-1.5">
                 <Link
@@ -972,7 +972,7 @@ const Service: React.FC = () => {
               </div>
 
               {/* Compact Bottom Action Bar: Chat Button (Left) + Social Icons (Right) */}
-              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between gap-2.5 flex-wrap">
+              <div className="mt-2.5 pt-2.5 sm:mt-3 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between gap-2.5 flex-wrap">
                 {!isVendorsOffering && visitor ? (
                   <button
                     onClick={() => setIsChatOpen(true)}
@@ -991,44 +991,44 @@ const Service: React.FC = () => {
             </div>
 
             {/* Details Section */}
-            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 mb-4 flex flex-col">
-              <h2 className="mb-2 text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
+            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-3.5 sm:p-6 mb-2.5 sm:mb-4 flex flex-col">
+              <h2 className="mb-1 sm:mb-2 text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
                 About the Vendor
               </h2>
-              <div className="text-gray-600 dark:text-zinc-300 font-body leading-relaxed">
+              <div className="text-gray-600 dark:text-zinc-300 font-body leading-relaxed text-sm sm:text-base">
                 <p>{offering.vendor.about || "About not available"}</p>
               </div>
-              <hr className="border-t border-gray-100 dark:border-zinc-800 my-6" />
+              <hr className="border-t border-gray-100 dark:border-zinc-800 my-3 sm:my-6" />
 
-              <h2 className="mb-2 text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
+              <h2 className="mb-1 sm:mb-2 text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
                 Details
               </h2>
-              <div className="text-gray-600 dark:text-zinc-300 font-body leading-relaxed">
+              <div className="text-gray-600 dark:text-zinc-300 font-body leading-relaxed text-sm sm:text-base">
                 <p>{offering.description || "Description not available"}</p>
               </div>
-              <hr className="border-t border-gray-100 dark:border-zinc-800 my-6" />
+              <hr className="border-t border-gray-100 dark:border-zinc-800 my-3 sm:my-6" />
 
               {/* Packages Section */}
               {packagesData?.findPackagesByService?.some(
                 (pkg: Package) => pkg.visible,
               ) && (
                 <>
-                  <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
-                    <h2 className="text-2xl font-bold font-title text-gray-900 dark:text-zinc-100">
+                  <div className="mb-3 sm:mb-6 flex items-center justify-between flex-wrap gap-2 sm:gap-3">
+                    <h2 className="text-lg sm:text-2xl font-bold font-title text-gray-900 dark:text-zinc-100">
                       Packages
                     </h2>
                     {isVendorsOffering && (
                       <Link
                         href={`/services/edit/${offering?.slug || offering?.id}?section=packages&action=add`}
                       >
-                        <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all">
-                          <FiPlus className="text-sm" />
+                        <button className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all">
+                          <FiPlus className="text-xs sm:text-sm" />
                           <span>Add Package</span>
                         </button>
                       </Link>
                     )}
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-3 sm:mb-8">
                     {packagesData?.findPackagesByService
                       .filter((pkg: Package) => pkg.visible)
                       .map((pkg: Package) => (
@@ -1047,11 +1047,11 @@ const Service: React.FC = () => {
                         />
                       ))}
                   </div>
-                  <hr className="border-t border-gray-100 dark:border-zinc-800 my-6" />
+                  <hr className="border-t border-gray-100 dark:border-zinc-800 my-3 sm:my-6" />
                 </>
               )}
 
-              <h2 className="mb-3 text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
+              <h2 className="mb-2 sm:mb-3 text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
                 Reviews
               </h2>
               <div>
@@ -1065,12 +1065,12 @@ const Service: React.FC = () => {
                 />
               ) : null}
 
-              <div className="mt-4">
+              <div className="mt-2.5 sm:mt-4">
                 <Comments serviceId={offering?.id} />
               </div>
 
-              <hr className="border-t border-gray-100 dark:border-zinc-800 my-6" />
-              <h2 className="mb-3 text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
+              <hr className="border-t border-gray-100 dark:border-zinc-800 my-3 sm:my-6" />
+              <h2 className="mb-2 sm:mb-3 text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
                 Location
               </h2>
               <div className="relative z-0 isolate">
