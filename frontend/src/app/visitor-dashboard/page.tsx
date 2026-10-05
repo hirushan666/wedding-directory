@@ -12,6 +12,7 @@ import VisitorBookingCalendar from "@/components/visitor-dashboard/VisitorBookin
 import DashboardWidgets from "@/components/visitor-dashboard/DashBoardWidgets";
 import { VisitorDashboardSkeleton } from "@/components/ui/shimmer";
 import { StaticImageData } from "next/image";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   GET_VISITOR_BY_ID,
   FIND_ALL_MY_VENDORS,
@@ -19,7 +20,7 @@ import {
   GET_BUDGET_TOOL,
   GET_VISITOR_CHECKLISTS,
 } from "@/graphql/queries";
-import { FiSearch, FiCalendar } from "react-icons/fi";
+import { FiSearch, FiCalendar, FiArrowLeft } from "react-icons/fi";
 
 interface Guest {
   id: string;
@@ -196,7 +197,11 @@ const VisitorDashboardContent: React.FC = () => {
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* Top Header Banner matching Vendor Dashboard */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div
+          className={`flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${
+            dashboardTab === "calendar" ? "hidden lg:flex" : "flex"
+          }`}
+        >
           <div>
             <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
               Wedding Dashboard
@@ -220,7 +225,11 @@ const VisitorDashboardContent: React.FC = () => {
         {/* Asymmetric Profile Hub + Booking Calendar Layout (4 cols + 8 cols) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-10 items-stretch">
           {/* Left Column (4 cols): Couple Profile & Integrated Planning Hub */}
-          <div className="lg:col-span-4 flex flex-col">
+          <div
+            className={`lg:col-span-4 flex-col ${
+              dashboardTab === "calendar" ? "hidden lg:flex" : "flex"
+            }`}
+          >
             <VisitorCoupleBanner
               visitorData={visitorData}
               visitorId={visitor?.id}
@@ -236,10 +245,12 @@ const VisitorDashboardContent: React.FC = () => {
             />
           </div>
 
-          {/* Right Column (8 cols): Planning Overview or Booking Calendar */}
+          {/* Right Column (8 cols on desktop, full-width on mobile): Planning Overview or Booking Calendar */}
           <div
-            className={`lg:col-span-8 flex flex-col h-full ${
-              mobileTab === "tools" ? "hidden lg:flex" : "flex"
+            className={`flex-col h-full ${
+              dashboardTab === "calendar"
+                ? "lg:col-span-8 w-full flex"
+                : `lg:col-span-8 ${mobileTab === "tools" ? "hidden lg:flex" : "flex"}`
             }`}
           >
             {/* Tab 1: Planning Overview */}
@@ -265,17 +276,23 @@ const VisitorDashboardContent: React.FC = () => {
 
             {/* Tab 2: Booking Calendar */}
             {dashboardTab === "calendar" && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between bg-white dark:bg-darkSurface rounded-2xl border border-orange/20 dark:border-zinc-800 px-5 py-3 shadow-xs">
-                  <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-zinc-100 font-title">
-                    <FiCalendar className="text-orange" size={18} />
-                    <span>Booking Calendar</span>
+              <div className="space-y-4 w-full">
+                {/* Navigation Bar matching Checklist / Budgeter */}
+                <div className="bg-white dark:bg-darkSurface rounded-2xl border border-orange/20 dark:border-zinc-800 px-4 sm:px-6 py-3.5 shadow-xs flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <Breadcrumbs
+                      items={[
+                        { label: "Dashboard", href: "/visitor-dashboard" },
+                        { label: "Wedding Calendar", href: "/visitor-dashboard?tab=calendar" },
+                      ]}
+                    />
                   </div>
                   <Link
                     href="/visitor-dashboard"
-                    className="text-xs font-semibold text-orange hover:underline font-body"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-orange bg-orange/10 hover:bg-orange/20 active:scale-95 transition-all shrink-0"
                   >
-                    ← Back to Overview
+                    <FiArrowLeft size={13} />
+                    <span>Back to Dashboard</span>
                   </Link>
                 </div>
                 {visitor?.id ? (
