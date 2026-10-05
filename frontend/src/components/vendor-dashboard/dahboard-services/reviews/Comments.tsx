@@ -1,6 +1,6 @@
 'use client';
 import { FaRegStar, FaStar } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useQuery } from "@apollo/client";
 import { FIND_REVIEW_PAGE_BY_SERVICE } from "@/graphql/queries";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,7 @@ const REVIEWS_PER_PAGE = 5;
 
 const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
   const [page, setPage] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setPage(1);
@@ -48,17 +49,19 @@ const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
   const { data: rdata, loading: reviewsLoading, error: reviewsError } = useQuery(FIND_REVIEW_PAGE_BY_SERVICE, {
     variables: { service_id: serviceId, page, limit: REVIEWS_PER_PAGE },
     skip: !serviceId,
+    notifyOnNetworkStatusChange: true,
   });
 
   useEffect(() => {
-    const reviewPage = rdata?.findReviewsByServicePaginated;
-    const totalPages = reviewPage?.totalPages ?? 1;
-    if (page > totalPages) {
+    const totalPages = rdata?.findReviewsByServicePaginated?.totalPages;
+    if (typeof totalPages === "number" && totalPages > 0 && page > totalPages) {
       setPage(totalPages);
     }
   }, [page, rdata]);
 
-  if (reviewsLoading) {
+  const isInitialLoading = reviewsLoading && !rdata;
+
+  if (isInitialLoading) {
     return (
       <div className="space-y-4 font-body animate-fade-in">
         {[1, 2, 3].map((i) => (
@@ -91,12 +94,27 @@ const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
   const totalPages = reviewPage?.totalPages ?? 1;
   const currentPage = reviewPage?.currentPage ?? 1;
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage === page || newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+    if (containerRef.current) {
+      const yOffset = -90; // accounts for sticky header
+      const y = containerRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+  };
+
   if (reviewData.length === 0) {
     return null;
   }
 
   return (
-    <div className="font-body space-y-4 mt-6" role="list" aria-live="polite">
+    <div
+      ref={containerRef}
+      className="font-body space-y-4 mt-6 scroll-mt-24 min-h-[280px]"
+      role="list"
+      aria-live="polite"
+    >
       <div className="flex items-center justify-between pb-1">
         <h3 className="text-base font-semibold text-gray-900 dark:text-zinc-100 font-title">
           Client Feedback ({totalReviews})
@@ -104,7 +122,7 @@ const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
         <span className="text-xs text-gray-400 dark:text-zinc-500 font-medium">Newest first</span>
       </div>
 
-      <div className="space-y-4">
+      <div className={`space-y-4 transition-opacity duration-200 ${reviewsLoading ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
         {reviewData.map((review: Review) => {
           const initials = (review.visitor?.visitor_fname || 'U').charAt(0).toUpperCase();
           return (
@@ -206,19 +224,21 @@ const Comments: React.FC<CommentsProps> = ({ serviceId }) => {
       {totalReviews > REVIEWS_PER_PAGE && (
         <div className="mt-6 flex items-center justify-between pt-2">
           <Button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage <= 1}
+            type="button"
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page <= 1 || reviewsLoading}
             className="w-28 font-semibold text-sm hover:border-orange hover:text-orange hover:bg-orange/10"
             variant="ornageOutline"
           >
             Previous
           </Button>
           <span className="text-xs text-gray-500 font-medium">
-            Page {currentPage} of {totalPages}
+            Page {page} of {totalPages}
           </span>
           <Button
-            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage >= totalPages}
+            type="button"
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page >= totalPages || reviewsLoading}
             className="w-28 font-semibold text-sm hover:border-orange hover:text-orange hover:bg-orange/10"
             variant="ornageOutline"
           >
