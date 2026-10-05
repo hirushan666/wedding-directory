@@ -72,7 +72,7 @@ const GeneralHeader = () => {
     <Fragment>
       <header
         ref={headerRef}
-        className="sticky top-0 z-50 py-3 sm:py-3.5 xl:py-4 text-gray-900 dark:text-zinc-100 bg-white dark:bg-darkSurface border-b border-orange/20 dark:border-zinc-800 shadow-sm transition-all duration-200 relative"
+        className="sticky top-0 z-50 py-3 sm:py-3.5 xl:py-4 text-gray-900 dark:text-zinc-100 bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 shadow-xs transition-all duration-200 relative"
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full gap-3 sm:gap-4">
           {/* Left Column: Mobile Hamburger Toggle + Brand Logo */}
@@ -154,7 +154,7 @@ const GeneralHeader = () => {
         {isMobileMenuOpen && (
           <div
             id="public-mobile-dropdown"
-            className="xl:hidden absolute top-full left-0 right-0 w-full z-50 bg-white dark:bg-darkSurface border-b-2 border-orange/30 dark:border-orange/40 shadow-2xl transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2"
+            className="xl:hidden absolute top-full left-0 right-0 w-full z-50 bg-lightYellow dark:bg-darkBg border-b-2 border-orange/30 dark:border-orange/40 shadow-2xl transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2"
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 space-y-4">
               {/* Navigation Links Grid (2 columns on tablet/wide mobile, 1 on small screens) */}
@@ -174,7 +174,7 @@ const GeneralHeader = () => {
                       className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm sm:text-base tracking-wide transition-all ${
                         isActive
                           ? "bg-orange text-white shadow-xs font-bold border border-orange"
-                          : "bg-gray-50 dark:bg-darkElevated/70 text-gray-800 dark:text-zinc-200 border border-gray-200/80 dark:border-zinc-800 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                          : "bg-white/90 dark:bg-darkElevated/70 text-gray-800 dark:text-zinc-200 border border-orange/15 dark:border-zinc-800 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
                       }`}
                     >
                       <Icon
@@ -197,7 +197,7 @@ const GeneralHeader = () => {
                   <Link
                     href="/visitor-login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border-2 border-orange/30 dark:border-zinc-700 text-sm font-semibold text-gray-800 dark:text-zinc-200 bg-white dark:bg-darkElevated hover:bg-orange/5 dark:hover:bg-zinc-800 hover:border-orange transition-all shadow-2xs text-center"
+                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border-2 border-orange/30 dark:border-zinc-700 text-sm font-semibold text-gray-800 dark:text-zinc-200 bg-white/90 dark:bg-darkElevated hover:bg-orange/5 dark:hover:bg-zinc-800 hover:border-orange transition-all shadow-2xs text-center"
                   >
                     <FiLogIn size={16} className="text-orange" />
                     <span>Login</span>

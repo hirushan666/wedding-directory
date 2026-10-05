@@ -4,7 +4,18 @@ import { Fragment, useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { BiMessageRounded } from "react-icons/bi";
-import { FiCalendar, FiUser, FiLogOut, FiSun, FiMoon } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiUser,
+  FiLogOut,
+  FiSun,
+  FiMoon,
+  FiHome,
+  FiGrid,
+  FiBookOpen,
+  FiHelpCircle,
+} from "react-icons/fi";
+import { HiMenu, HiX } from "react-icons/hi";
 import Image from "next/image";
 import { useAuth } from "@/contexts/VisitorAuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -32,9 +43,29 @@ const VisitorHeader = () => {
   ); // Default placeholder
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotificationMenu, setShowNotificationMenu] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(64);
+  const headerRef = useRef<HTMLElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const notificationMenuRef = useRef<HTMLDivElement>(null);
   const previousApprovedCountRef = useRef<number | null>(null);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Keep track of header height dynamically for the backdrop overlay
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
 
   // WebSocket hook for unread count
   const { unreadCount } = useChatSocket(visitor?.id, "visitor");
@@ -62,6 +93,7 @@ const VisitorHeader = () => {
   const navLinks = [
     {
       name: "Dashboard",
+      icon: FiHome,
       href: "/visitor-dashboard",
       isActive: (path: string) =>
         path.startsWith("/visitor-dashboard") &&
@@ -70,6 +102,7 @@ const VisitorHeader = () => {
     },
     {
       name: "Services",
+      icon: FiGrid,
       href: visitorDistrict
         ? `/services?city=${encodeURIComponent(visitorDistrict)}`
         : "/services",
@@ -78,11 +111,13 @@ const VisitorHeader = () => {
     },
     {
       name: "Blog",
+      icon: FiBookOpen,
       href: "/blog",
       isActive: (path: string) => path.startsWith("/blog"),
     },
     {
       name: "Help",
+      icon: FiHelpCircle,
       href: "/visitor-dashboard/help",
       isActive: (path: string) =>
         path === "/visitor-dashboard/help" || path === "/help",
@@ -212,16 +247,38 @@ const VisitorHeader = () => {
 
   return (
     <Fragment>
-      <header className="sticky top-0 z-30 py-3.5 xl:py-4 text-black dark:text-white bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 transition-all duration-200 shadow-xs">
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-50 py-3.5 xl:py-4 text-black dark:text-white bg-lightYellow/95 dark:bg-darkBg/95 backdrop-blur-md border-b border-orange/15 dark:border-orange/20 transition-all duration-200 shadow-xs relative"
+      >
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 w-full">
-          {/* Logo - click disabled for logged-in visitor */}
-          <div className="flex items-center select-none cursor-default">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100 font-title">
-              Say I Do
-            </h1>
+          {/* Left section: Hamburger button + Logo */}
+          <div className="flex items-center gap-2 select-none">
+            {/* Mobile menu toggle (Far Left, lg:hidden) */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className="lg:hidden p-2 -ml-2 rounded-xl text-gray-700 dark:text-zinc-200 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-orange/40 cursor-pointer"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="visitor-mobile-dropdown"
+            >
+              {isMobileMenuOpen ? (
+                <HiX className="w-6 h-6 transition-transform duration-200" />
+              ) : (
+                <HiMenu className="w-6 h-6 transition-transform duration-200" />
+              )}
+            </button>
+
+            {/* Logo - click disabled for logged-in visitor */}
+            <div className="flex items-center cursor-default">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100 font-title">
+                Say I Do
+              </h1>
+            </div>
           </div>
 
-          {/* Search bar */}
+          {/* Search bar - hidden on mobile screens */}
           <div className="hidden lg:flex flex-1 justify-center px-6">
             <SearchBar
               showIcon={false}
@@ -236,7 +293,8 @@ const VisitorHeader = () => {
 
           {/* Dashboard, Notifications, and Profile dropdown */}
           <div className="flex items-center justify-end gap-3 sm:gap-4 font-title text-text dark:text-zinc-200">
-            <nav className="flex items-center gap-1.5 sm:gap-2.5">
+            {/* Desktop Navigation Links */}
+            <nav className="hidden lg:flex items-center gap-1.5 sm:gap-2.5">
               {navLinks.map((link) => {
                 const active = link.isActive(pathname);
                 if (isSignupForm) {
@@ -549,7 +607,104 @@ const VisitorHeader = () => {
             </div>
           </div>
         </div>
+
+        {/* Full-Width Auto-Height Mobile Dropdown Menu (Directly attached below header) */}
+        {isMobileMenuOpen && (
+          <div
+            id="visitor-mobile-dropdown"
+            className="lg:hidden absolute top-full left-0 right-0 w-full z-50 bg-lightYellow dark:bg-darkBg border-b-2 border-orange/30 dark:border-orange/40 shadow-2xl transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2"
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 space-y-4">
+              {/* Navigation Links Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-title">
+                {navLinks.map((link) => {
+                  const active = link.isActive(pathname);
+                  const Icon = link.icon;
+                  if (isSignupForm) {
+                    return (
+                      <span
+                        key={link.name}
+                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm sm:text-base tracking-wide bg-white/70 dark:bg-darkElevated/70 text-gray-400 dark:text-zinc-500 border border-orange/15 dark:border-zinc-800 font-semibold cursor-not-allowed select-none"
+                      >
+                        <Icon
+                          size={18}
+                          className="text-gray-400 dark:text-zinc-500"
+                        />
+                        <span>{link.name}</span>
+                      </span>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm sm:text-base tracking-wide transition-all ${
+                        active
+                          ? "bg-orange text-white shadow-xs font-bold border border-orange"
+                          : "bg-white/90 dark:bg-darkElevated/70 text-gray-800 dark:text-zinc-200 border border-orange/15 dark:border-zinc-800 hover:text-orange hover:bg-orange/10 dark:hover:bg-zinc-800 font-semibold"
+                      }`}
+                    >
+                      <Icon
+                        size={18}
+                        className={
+                          active
+                            ? "text-white"
+                            : "text-orange dark:text-orange/80"
+                        }
+                      />
+                      <span>{link.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Account / Quick Actions Section */}
+              <div className="pt-3 border-t border-orange/15 dark:border-zinc-800 space-y-2 font-title">
+                <div className="grid grid-cols-2 gap-2.5">
+                  {isSignupForm ? (
+                    <span className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-orange/15 dark:border-zinc-800 text-sm font-semibold text-gray-400 dark:text-zinc-500 bg-white/70 dark:bg-darkElevated cursor-not-allowed select-none">
+                      <FiUser size={16} />
+                      <span>Profile</span>
+                    </span>
+                  ) : (
+                    <Link
+                      href="/visitor-profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border-2 border-orange/30 dark:border-zinc-700 text-sm font-semibold text-gray-800 dark:text-zinc-200 bg-white/90 dark:bg-darkElevated hover:bg-orange/5 dark:hover:bg-zinc-800 hover:border-orange transition-all shadow-2xs text-center"
+                    >
+                      <FiUser size={16} className="text-orange" />
+                      <span>Profile</span>
+                    </Link>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 hover:bg-red-100 dark:hover:bg-red-900/60 transition-all cursor-pointer text-center"
+                  >
+                    <FiLogOut size={16} />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
+
+      {/* Dimmed Backdrop ONLY below the header so the header remains 100% visible and bright */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-black/45 backdrop-blur-2xs transition-opacity duration-200"
+          style={{ top: `${headerHeight}px` }}
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </Fragment>
   );
 };
