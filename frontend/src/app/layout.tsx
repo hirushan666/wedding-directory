@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import PageTransition from "@/components/PageTransition";
 import { VendorAuthProvider } from "@/contexts/VendorAuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { Toaster } from "react-hot-toast";
+import AppToaster from "@/components/shared/AppToaster";
 import ScrollToTop from "@/components/shared/ScrollToTop";
 import LeafletGlobalGuard from "@/components/shared/LeafletGlobalGuard";
 import GoogleAuthProviderWrapper from "@/components/auth/GoogleAuthProviderWrapper";
@@ -248,7 +248,7 @@ export default function RootLayout({
                 <ThemeProvider>
                   <PageTransition>
                     {children}
-                    <Toaster reverseOrder={false} />
+                    <AppToaster />
                     <ScrollToTop />
                     <LeafletGlobalGuard />
                   </PageTransition>
