@@ -103,6 +103,7 @@ const PackageCardItem: React.FC<PackageCardItemProps> = ({
   formatRemaining,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [pkgImgSrc, setPkgImgSrc] = useState(pkg.image || "/images/offeringPlaceholder.webp");
 
   const renderBadge = (size: "sm" | "md" = "md") => {
     const sizeClasses =
@@ -372,10 +373,12 @@ const PackageCardItem: React.FC<PackageCardItemProps> = ({
           {pkg.image && (
             <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100 dark:border-zinc-700 bg-gray-50 dark:bg-darkSurface shadow-xs">
               <Image
-                src={pkg.image}
+                src={pkgImgSrc}
                 alt={pkg.name}
                 fill
+                sizes="(max-width: 640px) 80px, 96px"
                 className="object-cover"
+                onError={() => setPkgImgSrc("/images/offeringPlaceholder.webp")}
               />
             </div>
           )}
@@ -461,10 +464,12 @@ const PackageCardItem: React.FC<PackageCardItemProps> = ({
         {pkg.image && (
           <div className="relative w-full h-44 overflow-hidden border-b border-gray-200 dark:border-zinc-700">
             <Image
-              src={pkg.image}
+              src={pkgImgSrc}
               alt={pkg.name}
               fill
+              sizes="(max-width: 1024px) 50vw, 33vw"
               className="object-cover"
+              onError={() => setPkgImgSrc("/images/offeringPlaceholder.webp")}
             />
           </div>
         )}

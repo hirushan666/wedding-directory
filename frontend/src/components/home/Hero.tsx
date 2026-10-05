@@ -9,6 +9,7 @@ const Hero = () => {
       <Image
         src="/images/hero.webp"
         fill
+        sizes="100vw"
         className="object-cover w-full h-full"
         alt="hero image"
         priority

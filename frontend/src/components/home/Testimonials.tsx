@@ -126,6 +126,7 @@ const Testimonials = () => {
                     alt={testimonials[currentTestimonial].name}
                     className="object-cover"
                     fill
+                    sizes="128px"
                   />
                 </div>
                 <div className="flex flex-col text-left flex-1 min-w-0">

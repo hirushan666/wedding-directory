@@ -298,6 +298,7 @@ export default function BlogPostPage() {
                   src={imageUrl}
                   alt={postTitle}
                   fill
+                  sizes="(max-width: 896px) 100vw, 896px"
                   style={{ objectFit: "cover" }}
                   priority
                   className="brightness-90"
