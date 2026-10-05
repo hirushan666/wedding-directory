@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { FaRegStarHalfStroke } from "react-icons/fa6";
 import { FiChevronDown } from "react-icons/fi";
@@ -26,6 +26,8 @@ interface ReviewItem {
   
 const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [boxSize, setBoxSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
     const { data: rdata, loading: reviewsLoading, error: reviewsError } = useQuery(FIND_REVIEW_PAGE_BY_SERVICE, {
         variables: { service_id: serviceId, page: 1, limit: 5 },
@@ -41,6 +43,32 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
         skip: !serviceId,
         fetchPolicy: 'cache-and-network',
     });
+
+    useEffect(() => {
+        const el = cardRef.current;
+        if (!el) return;
+
+        const updateSize = () => {
+            if (!cardRef.current) return;
+            const rect = cardRef.current.getBoundingClientRect();
+            setBoxSize({
+                width: Math.round(rect.width),
+                height: Math.round(rect.height),
+            });
+        };
+
+        updateSize();
+
+        const resizeObserver = new ResizeObserver(() => {
+            updateSize();
+        });
+
+        resizeObserver.observe(el);
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [summaryLoading, summaryData, isSummaryExpanded]);
 
     if (reviewsLoading) {
         return (
@@ -177,40 +205,50 @@ const Reviews: React.FC<ReviewsProps> = ({ serviceId }) => {
             <Skeleton className='h-4 w-9/12' />
         </div>
     ) : (
-        <div className='relative rounded-2xl bg-white dark:bg-darkSurface shadow-md transition-all duration-300 hover:shadow-lg'>
+        <div
+            ref={cardRef}
+            className='relative rounded-2xl border border-orange-200/60 dark:border-zinc-800 bg-white dark:bg-darkSurface shadow-md transition-all duration-300 hover:shadow-lg overflow-hidden'
+        >
+            {/* Smooth CSS keyframe animation for border beam */}
+            <style>{`
+                @keyframes reviewBeamMove {
+                    from { stroke-dashoffset: 0; }
+                    to { stroke-dashoffset: -1000; }
+                }
+                .animate-review-beam {
+                    animation: reviewBeamMove 6s linear infinite;
+                }
+            `}</style>
 
-            {/* Animated orange line following the entire border */}
-            <svg
-                className='absolute inset-0 w-full h-full pointer-events-none z-20'
-                viewBox='0 0 1000 300'
-                preserveAspectRatio='none'
-            >
-                <rect
-                    x='2'
-                    y='2'
-                    width='996'
-                    height='296'
-                    rx='28'
-                    ry='28'
-                    fill='none'
-                    stroke='#f97316'
-                    strokeWidth='4'
-                    pathLength='1000'
-                    strokeDasharray='250 750'
-                    strokeLinecap='round'
+            {/* Moving outline beam following the exact outer perimeter */}
+            {boxSize.width > 0 && boxSize.height > 0 && (
+                <svg
+                    className='absolute inset-0 pointer-events-none z-20 w-full h-full'
+                    width={boxSize.width}
+                    height={boxSize.height}
+                    viewBox={`0 0 ${boxSize.width} ${boxSize.height}`}
                 >
-                    <animate
-                        attributeName='stroke-dashoffset'
-                        from='0'
-                        to='-1000'
-                        dur='7s'
-                        repeatCount='indefinite'
+                    <rect
+                        x='1.25'
+                        y='1.25'
+                        width={Math.max(0, boxSize.width - 2.5)}
+                        height={Math.max(0, boxSize.height - 2.5)}
+                        rx='16'
+                        ry='16'
+                        fill='none'
+                        stroke='#f97316'
+                        strokeWidth='2.5'
+                        strokeLinecap='round'
+                        pathLength='1000'
+                        strokeDasharray='220 780'
+                        className='animate-review-beam motion-reduce:animate-none'
+                        style={{ filter: 'drop-shadow(0 0 3px rgba(249, 115, 22, 0.6))' }}
                     />
-                </rect>
-            </svg>
+                </svg>
+            )}
 
             {/* Card content */}
-            <div className='relative rounded-2xl bg-gradient-to-br from-orange-50/40 via-white to-white dark:from-orange-950/20 dark:via-darkSurface dark:to-darkSurface p-4 sm:p-5'>
+            <div className='relative z-10 bg-gradient-to-br from-orange-50/40 via-white to-white dark:from-orange-950/20 dark:via-darkSurface dark:to-darkSurface p-4 sm:p-5'>
 
                 <div className='flex items-center justify-between gap-2.5 flex-wrap mb-2.5 sm:mb-3'>
                     <div>
