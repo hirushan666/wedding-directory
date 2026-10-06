@@ -194,21 +194,21 @@ export default function PaymentSuccess({
 
   if (!orderId) {
     return (
-      <div className="py-16 px-4 flex justify-center">
-        <div className="bg-white dark:bg-darkSurface p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle size={32} />
+      <div className="py-6 sm:py-16 px-3 sm:px-4 flex justify-center">
+        <div className="bg-white dark:bg-darkSurface p-5 sm:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 max-w-md w-full text-center">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
+            <AlertCircle size={28} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100 mb-2 font-merriweather">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-zinc-100 mb-1.5 font-merriweather">
             Invalid Payment Reference
           </h1>
-          <p className="text-gray-600 dark:text-zinc-400 mb-6 text-sm">
+          <p className="text-gray-600 dark:text-zinc-400 mb-4 sm:mb-6 text-xs sm:text-sm">
             No valid order reference was detected in the URL. If you believe
             this is an error, please check your payments history.
           </p>
           <Link
             href="/visitor-dashboard/payments-history"
-            className="inline-block w-full bg-orange text-white py-3 px-4 rounded-xl font-medium hover:opacity-90 transition-all text-center"
+            className="inline-block w-full bg-orange text-white py-2.5 sm:py-3 px-4 rounded-xl font-medium text-sm hover:opacity-90 transition-all text-center"
           >
             Check Payment History
           </Link>
@@ -219,12 +219,12 @@ export default function PaymentSuccess({
 
   if (loading && !payment) {
     return (
-      <div className="py-20 px-4 flex flex-col items-center justify-center text-center">
-        <div className="w-14 h-14 border-4 border-orange/20 border-t-orange rounded-full animate-spin mb-4" />
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-zinc-200 font-merriweather mb-2">
+      <div className="py-10 sm:py-20 px-3 sm:px-4 flex flex-col items-center justify-center text-center">
+        <div className="w-10 h-10 sm:w-14 sm:h-14 border-3 sm:border-4 border-orange/20 border-t-orange rounded-full animate-spin mb-3" />
+        <h2 className="text-base sm:text-xl font-semibold text-gray-800 dark:text-zinc-200 font-merriweather mb-1 sm:mb-2">
           Verifying Payment with PayHere...
         </h2>
-        <p className="text-gray-500 dark:text-zinc-400 text-sm max-w-sm">
+        <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm max-w-sm">
           Please wait a moment while we retrieve your transaction confirmation.
         </p>
       </div>
@@ -233,28 +233,28 @@ export default function PaymentSuccess({
 
   if (fetchError && !payment) {
     return (
-      <div className="py-16 px-4 flex justify-center">
-        <div className="bg-white dark:bg-darkSurface p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle size={32} />
+      <div className="py-6 sm:py-16 px-3 sm:px-4 flex justify-center">
+        <div className="bg-white dark:bg-darkSurface p-5 sm:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 max-w-md w-full text-center">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
+            <AlertCircle size={28} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100 mb-2 font-merriweather">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-zinc-100 mb-1.5 font-merriweather">
             Payment Not Found
           </h1>
-          <p className="text-gray-600 dark:text-zinc-400 mb-6 text-sm">
+          <p className="text-gray-600 dark:text-zinc-400 mb-4 sm:mb-6 text-xs sm:text-sm">
             {fetchError ||
               "We could not find records for this payment reference."}
           </p>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <button
               onClick={() => fetchPayment()}
-              className="w-full bg-orange text-white py-3 px-4 rounded-xl font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2"
+              className="w-full bg-orange text-white py-2.5 sm:py-3 px-4 rounded-xl font-medium text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2"
             >
-              <RotateCw size={16} /> Try Again
+              <RotateCw size={15} /> Try Again
             </button>
             <Link
               href="/visitor-dashboard"
-              className="inline-block w-full border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-darkElevated transition-all text-center"
+              className="inline-block w-full border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-2.5 sm:py-3 px-4 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-darkElevated transition-all text-center"
             >
               Go to Dashboard
             </Link>
@@ -273,11 +273,11 @@ export default function PaymentSuccess({
       {/* ============================================================ */}
       {/* 1. ON-SCREEN INTERACTIVE VIEW (Hidden during print)          */}
       {/* ============================================================ */}
-      <div className="w-full max-w-2xl mx-auto px-0 py-2 sm:py-4 print:hidden">
+      <div className="w-full max-w-2xl mx-auto px-0 py-1 sm:py-4 print:hidden">
         <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl shadow-[0_16px_45px_rgba(31,65,127,0.08)] dark:shadow-black/20 border border-orange/15 dark:border-zinc-800 overflow-hidden">
           {/* Status Header Banner */}
           <div
-            className={`px-5 py-7 sm:px-8 sm:py-9 text-center ${
+            className={`px-4 py-4 sm:px-8 sm:py-8 text-center ${
               isCompleted
                 ? "bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-950/50 dark:to-darkSurface"
                 : isFailed
@@ -285,29 +285,28 @@ export default function PaymentSuccess({
                   : "bg-gradient-to-b from-amber-50 to-white dark:from-amber-950/50 dark:to-darkSurface"
             }`}
           >
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-2.5 sm:mb-4">
               {isCompleted && (
-                <div className="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-emerald-200/50 animate-in zoom-in-50 duration-300">
-                  <CheckCircle2 size={44} strokeWidth={2.2} />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-md sm:shadow-lg shadow-emerald-200/50 animate-in zoom-in-50 duration-300">
+                  <CheckCircle2 className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11" strokeWidth={2.2} />
                 </div>
               )}
               {isFailed && (
-                <div className="w-20 h-20 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-red-200/50">
-                  <AlertCircle size={44} strokeWidth={2.2} />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md sm:shadow-lg shadow-red-200/50">
+                  <AlertCircle className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11" strokeWidth={2.2} />
                 </div>
               )}
               {isPending && (
-                <div className="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-amber-200/50">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-md sm:shadow-lg shadow-amber-200/50">
                   <Clock
-                    size={44}
+                    className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 animate-pulse"
                     strokeWidth={2.2}
-                    className="animate-pulse"
                   />
                 </div>
               )}
             </div>
 
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 font-merriweather mb-2 leading-tight">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-zinc-100 font-merriweather mb-1 sm:mb-2 leading-tight">
               {isCompleted
                 ? "Advance Payment Successful!"
                 : isFailed
@@ -315,7 +314,7 @@ export default function PaymentSuccess({
                   : "Payment Being Processed"}
             </h1>
 
-            <p className="text-gray-600 dark:text-zinc-400 text-sm sm:text-base max-w-md mx-auto">
+            <p className="text-gray-600 dark:text-zinc-400 text-xs sm:text-sm md:text-base max-w-md mx-auto leading-relaxed">
               {isCompleted &&
                 "Thank you! Your advance booking has been confirmed and the vendor has been notified."}
               {isFailed &&
@@ -325,20 +324,18 @@ export default function PaymentSuccess({
             </p>
 
             {isPending && isPolling && (
-              <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100/70 text-amber-800 rounded-full text-xs font-medium">
-                <RotateCw size={13} className="animate-spin" />
-                Awaiting confirmation from PayHere (Attempt {pollCount + 1}
-                /10)...
+              <div className="mt-2.5 sm:mt-4 inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-4 sm:py-1.5 bg-amber-100/70 text-amber-800 rounded-full text-[11px] sm:text-xs font-medium">
+                <RotateCw size={12} className="animate-spin" />
+                Awaiting confirmation from PayHere (Attempt {pollCount + 1}/10)...
               </div>
             )}
 
             {isPending && !isPolling && pollCount >= 10 && (
-              <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-800 rounded-xl text-xs font-medium text-left max-w-md">
-                <Clock size={16} className="shrink-0" />
+              <div className="mt-2.5 sm:mt-4 inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-50 text-blue-800 rounded-xl text-[11px] sm:text-xs font-medium text-left max-w-md">
+                <Clock size={14} className="shrink-0" />
                 <span>
                   PayHere is still processing this transaction. The status will
-                  automatically update in your dashboard as soon as the gateway
-                  sends confirmation.
+                  automatically update in your dashboard as soon as confirmation arrives.
                 </span>
               </div>
             )}
@@ -346,13 +343,13 @@ export default function PaymentSuccess({
 
           {/* Receipt / Details Section */}
           {payment && (
-            <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
-              <div className="bg-[#fffaf7] dark:bg-darkElevated rounded-2xl p-4 sm:p-5 border border-orange/10 dark:border-zinc-700">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-orange/10">
-                  <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-zinc-400 font-semibold">
+            <div className="p-3.5 sm:p-6 md:p-8 space-y-3.5 sm:space-y-6">
+              <div className="bg-[#fffaf7] dark:bg-darkElevated rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-orange/10 dark:border-zinc-700">
+                <div className="flex items-center justify-between pb-2.5 sm:pb-4 border-b border-orange/10">
+                  <span className="text-[11px] sm:text-xs uppercase tracking-wider text-gray-500 dark:text-zinc-400 font-semibold">
                     Amount Paid
                   </span>
-                  <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-zinc-100 font-merriweather">
+                  <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-zinc-100 font-merriweather">
                     LKR{" "}
                     {Number(payment.amount).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
@@ -360,51 +357,51 @@ export default function PaymentSuccess({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 text-sm min-w-0">
-                  <div>
-                    <span className="text-gray-500 dark:text-zinc-400 text-xs block mb-1">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-2.5 sm:pt-4 text-xs sm:text-sm min-w-0">
+                  <div className="col-span-2 sm:col-span-1 min-w-0">
+                    <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs block mb-0.5">
                       Order Reference
                     </span>
-                    <div className="flex items-center gap-2 font-mono text-xs font-semibold text-gray-800 dark:text-zinc-200 bg-white dark:bg-darkSurface px-2.5 py-1.5 rounded-lg border border-orange/10 dark:border-zinc-700 min-w-0">
+                    <div className="flex items-center justify-between gap-1.5 font-mono text-[11px] sm:text-xs font-semibold text-gray-800 dark:text-zinc-200 bg-white dark:bg-darkSurface px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border border-orange/10 dark:border-zinc-700 min-w-0">
                       <span className="truncate min-w-0">
                         {payment.orderId}
                       </span>
                       <button
                         onClick={() => handleCopy(payment.orderId)}
                         title="Copy Order ID"
-                        className="text-gray-400 hover:text-gray-700 transition"
+                        className="text-gray-400 hover:text-gray-700 transition shrink-0"
                       >
                         {copied ? (
-                          <Check size={14} className="text-emerald-500" />
+                          <Check size={13} className="text-emerald-500" />
                         ) : (
-                          <Copy size={14} />
+                          <Copy size={13} />
                         )}
                       </button>
                     </div>
                   </div>
 
                   {payment.gatewayPaymentId && (
-                    <div>
-                      <span className="text-gray-500 dark:text-zinc-400 text-xs block mb-1">
+                    <div className="col-span-2 sm:col-span-1 min-w-0">
+                      <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs block mb-0.5">
                         PayHere Payment ID
                       </span>
-                      <div className="font-mono text-xs font-semibold text-gray-800 dark:text-zinc-200 bg-white dark:bg-darkSurface px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700">
+                      <div className="font-mono text-[11px] sm:text-xs font-semibold text-gray-800 dark:text-zinc-200 bg-white dark:bg-darkSurface px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700 truncate">
                         {payment.gatewayPaymentId}
                       </div>
                     </div>
                   )}
 
                   {payment.vendorName && (
-                    <div className="flex items-start gap-2">
+                    <div className="flex items-start gap-1.5 sm:gap-2 min-w-0">
                       <Building2
-                        size={16}
+                        size={14}
                         className="text-orange shrink-0 mt-0.5"
                       />
-                      <div>
-                        <span className="text-gray-500 dark:text-zinc-400 text-xs block">
+                      <div className="min-w-0">
+                        <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs block">
                           Vendor
                         </span>
-                        <span className="font-medium text-gray-900 dark:text-zinc-100 break-words">
+                        <span className="font-medium text-xs sm:text-sm text-gray-900 dark:text-zinc-100 truncate block">
                           {payment.vendorName}
                         </span>
                       </div>
@@ -412,13 +409,13 @@ export default function PaymentSuccess({
                   )}
 
                   {(payment.offeringName || payment.packageName) && (
-                    <div className="flex items-start gap-2">
-                      <Tag size={16} className="text-orange shrink-0 mt-0.5" />
-                      <div>
-                        <span className="text-gray-500 dark:text-zinc-400 text-xs block">
+                    <div className="flex items-start gap-1.5 sm:gap-2 min-w-0">
+                      <Tag size={14} className="text-orange shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs block">
                           Service & Package
                         </span>
-                        <span className="font-medium text-gray-900 dark:text-zinc-100 break-words">
+                        <span className="font-medium text-xs sm:text-sm text-gray-900 dark:text-zinc-100 truncate block">
                           {payment.offeringName
                             ? `${payment.offeringName} - `
                             : ""}
@@ -429,16 +426,16 @@ export default function PaymentSuccess({
                   )}
 
                   {payment.bookingDate && (
-                    <div className="flex items-start gap-2">
+                    <div className="flex items-start gap-1.5 sm:gap-2 min-w-0">
                       <Calendar
-                        size={16}
+                        size={14}
                         className="text-orange shrink-0 mt-0.5"
                       />
-                      <div>
-                        <span className="text-gray-500 dark:text-zinc-400 text-xs block">
-                          Booked Wedding Date
+                      <div className="min-w-0">
+                        <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs block">
+                          Booked Date
                         </span>
-                        <span className="font-medium text-gray-900 dark:text-zinc-100">
+                        <span className="font-medium text-xs sm:text-sm text-gray-900 dark:text-zinc-100 block">
                           {new Date(payment.bookingDate).toLocaleDateString(
                             "en-US",
                             {
@@ -453,17 +450,17 @@ export default function PaymentSuccess({
                     </div>
                   )}
 
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-1.5 sm:gap-2 min-w-0">
                     <ShieldCheck
-                      size={16}
+                      size={14}
                       className="text-emerald-600 shrink-0 mt-0.5"
                     />
                     <div>
-                      <span className="text-gray-500 dark:text-zinc-400 text-xs block">
-                        Payment Status
+                      <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs block">
+                        Status
                       </span>
                       <span
-                        className={`inline-block px-2 py-0.5 rounded text-xs font-semibold uppercase ${
+                        className={`inline-block px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-semibold uppercase ${
                           isCompleted
                             ? "bg-emerald-100 text-emerald-800"
                             : isFailed
@@ -480,26 +477,26 @@ export default function PaymentSuccess({
 
               {/* Actions for Completed Payment */}
               {isCompleted && (
-                <div className="space-y-3 pt-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-2 sm:space-y-3 pt-1 sm:pt-2">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     <Link
                       href="/visitor-dashboard/payments-history"
-                      className="w-full bg-orange text-white py-3.5 px-4 rounded-xl hover:opacity-90 transition-all font-medium text-sm flex items-center justify-center gap-2 text-center shadow-md shadow-orange/20"
+                      className="w-full bg-orange text-white py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:opacity-90 transition-all font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 text-center shadow-md shadow-orange/20"
                     >
-                      View My Bookings <ArrowRight size={16} />
+                      <span className="truncate">View Bookings</span> <ArrowRight size={14} className="shrink-0" />
                     </Link>
 
                     <button
                       onClick={handlePrint}
-                      className="w-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-3.5 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-darkElevated transition-all font-medium text-sm flex items-center justify-center gap-2"
+                      className="w-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-darkElevated transition-all font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2"
                     >
-                      <Printer size={16} /> Print Receipt
+                      <Printer size={14} className="shrink-0" /> <span className="truncate">Print Receipt</span>
                     </button>
                   </div>
 
                   <Link
                     href="/services"
-                    className="block text-center text-xs text-gray-500 hover:text-orange transition-colors pt-2"
+                    className="block text-center text-[11px] sm:text-xs text-gray-500 hover:text-orange transition-colors pt-1"
                   >
                     Explore more wedding vendors &amp; services &rarr;
                   </Link>
@@ -508,48 +505,48 @@ export default function PaymentSuccess({
 
               {/* Actions for Pending State */}
               {isPending && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-1 sm:pt-2">
                   <button
                     onClick={() => {
                       setPollCount(0);
                       fetchPayment();
                     }}
-                    className="w-full bg-orange text-white py-3.5 px-4 rounded-xl hover:opacity-90 transition-all font-medium text-sm flex items-center justify-center gap-2 shadow-md shadow-orange/20"
+                    className="w-full bg-orange text-white py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:opacity-90 transition-all font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-orange/20"
                   >
-                    <RotateCw size={16} /> Refresh Payment Status
+                    <RotateCw size={14} className="shrink-0" /> <span className="truncate">Refresh Status</span>
                   </button>
                   <Link
                     href="/visitor-dashboard"
-                    className="w-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-3.5 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-darkElevated transition-all font-medium text-sm flex items-center justify-center text-center"
+                    className="w-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-darkElevated transition-all font-medium text-xs sm:text-sm flex items-center justify-center text-center"
                   >
-                    Go to Dashboard
+                    <span className="truncate">Dashboard</span>
                   </Link>
                 </div>
               )}
 
               {/* Actions for Failed State */}
               {isFailed && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 pt-1 sm:pt-2">
                   {payment.offeringId ? (
                     <Link
                       href={`/services/${payment.offeringId}`}
-                      className="w-full bg-orange text-white py-3.5 px-4 rounded-xl hover:opacity-90 transition-all font-medium text-sm flex items-center justify-center gap-2 text-center shadow-md shadow-orange/20"
+                      className="w-full bg-orange text-white py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:opacity-90 transition-all font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 text-center shadow-md shadow-orange/20"
                     >
-                      Try Booking Again
+                      <span className="truncate">Try Again</span>
                     </Link>
                   ) : (
                     <Link
                       href="/services"
-                      className="w-full bg-orange text-white py-3.5 px-4 rounded-xl hover:opacity-90 transition-all font-medium text-sm flex items-center justify-center gap-2 text-center shadow-md shadow-orange/20"
+                      className="w-full bg-orange text-white py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:opacity-90 transition-all font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 text-center shadow-md shadow-orange/20"
                     >
-                      Browse Services
+                      <span className="truncate">Browse Services</span>
                     </Link>
                   )}
                   <Link
                     href="/visitor-dashboard"
-                    className="w-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-3.5 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-darkElevated transition-all font-medium text-sm flex items-center justify-center text-center"
+                    className="w-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-darkElevated transition-all font-medium text-xs sm:text-sm flex items-center justify-center text-center"
                   >
-                    Back to Dashboard
+                    <span className="truncate">Dashboard</span>
                   </Link>
                 </div>
               )}

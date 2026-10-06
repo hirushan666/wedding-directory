@@ -18,7 +18,7 @@ export default function PaymentFailedLayout({
       <div className="w-full print:hidden">
         <Header />
       </div>
-      <main className="min-h-[calc(100vh-5rem)] bg-lightYellow dark:bg-darkBg px-3 py-6 sm:px-6 sm:py-10 lg:px-8">
+      <main className="min-h-[calc(100vh-5rem)] bg-lightYellow dark:bg-darkBg px-2.5 py-2.5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         <div className="mx-auto w-full max-w-6xl">{children}</div>
       </main>
       <div className="print:hidden">
