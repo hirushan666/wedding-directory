@@ -78,7 +78,7 @@ const VendorServicesPage: React.FC = () => {
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200 flex flex-col font-body">
       <VendorHeader />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full space-y-4 sm:space-y-8">
         {/* Page Header */}
         <VendorPageHeader
           title="My Services"

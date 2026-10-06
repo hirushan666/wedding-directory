@@ -84,9 +84,9 @@ const VendorDashBoardContent: React.FC = () => {
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col font-body">
       <VendorHeader />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         {/* Top Header Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
           <div>
             <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
               Vendor Dashboard

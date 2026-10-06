@@ -39,7 +39,7 @@ const RecommendationPage = () => {
 
   if (!isInitialized) {
     return (
-      <div className="w-full max-w-lg mx-auto py-16">
+      <div className="w-full max-w-lg mx-auto py-6 sm:py-12">
         <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 shadow-sm p-8 text-center space-y-4">
           <div className="w-14 h-14 rounded-2xl bg-orange/10 dark:bg-orange/20 flex items-center justify-center text-orange mx-auto">
             <Sparkles size={28} />
@@ -115,7 +115,7 @@ const RecommendationPage = () => {
 
   if (!canRequest) {
     return (
-      <div className="w-full max-w-lg mx-auto py-16">
+      <div className="w-full max-w-lg mx-auto py-6 sm:py-12">
         <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 shadow-sm p-8 text-center space-y-4">
           <div className="w-14 h-14 rounded-2xl bg-orange/10 dark:bg-orange/20 flex items-center justify-center text-orange mx-auto">
             <Sparkles size={28} />
@@ -273,7 +273,7 @@ const RecommendationPage = () => {
       </form>
 
       {/* 3. Recommended Packages */}
-      <div className="space-y-4 pb-12">
+      <div className="space-y-4 pb-4 sm:pb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-2.5 h-2.5 rounded-full bg-orange animate-pulse" />

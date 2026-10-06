@@ -311,7 +311,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({ initialRole, isPublic })
 
   return (
     <div className="flex-grow flex flex-col font-body">
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full">
+      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         {/* Minimized Header Banner (hidden on public site) */}
         {!isPublic && (
           <div className="mb-6 pb-4 border-b border-orange/15 dark:border-zinc-800">

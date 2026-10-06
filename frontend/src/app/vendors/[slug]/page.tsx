@@ -182,7 +182,7 @@ const VendorPublicPage: React.FC = () => {
     return (
       <div className="bg-lightYellow dark:bg-darkBg font-body min-h-screen flex flex-col transition-colors duration-200">
         <Header />
-        <main className="flex-1 flex items-center justify-center px-4 py-16">
+        <main className="flex-1 flex items-center justify-center px-4 py-8 sm:py-16">
           <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 p-8 sm:p-12 text-center max-w-md w-full shadow-sm">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-orange/10 dark:bg-orange/15 flex items-center justify-center text-orange">
               <FiBriefcase className="w-8 h-8" />
@@ -223,7 +223,7 @@ const VendorPublicPage: React.FC = () => {
     <div className="bg-lightYellow dark:bg-darkBg font-body min-h-screen flex flex-col transition-colors duration-200">
       <Header />
 
-      <main className="flex-1 pb-12 sm:pb-16">
+      <main className="flex-1 pb-6 sm:pb-12 lg:pb-16">
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3 sm:py-6 w-full">
           {/* Back Navigation */}
           <div className="mb-3 sm:mb-4 pt-1">

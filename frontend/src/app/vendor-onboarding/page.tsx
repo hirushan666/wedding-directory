@@ -176,7 +176,7 @@ export default function VendorOnboardingPage() {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[350px] bg-orange/15 dark:bg-orange/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[300px] h-[250px] bg-orange/10 dark:bg-orange/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="container mx-auto px-4 py-8 max-w-3xl relative z-10">
+      <div className="container mx-auto px-4 py-4 sm:py-8 max-w-3xl relative z-10">
         {/* Progress indicator */}
         <div className="mb-6 bg-white dark:bg-darkSurface rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-zinc-800 flex items-center justify-between transition-colors">
           <div className="flex items-center gap-3">

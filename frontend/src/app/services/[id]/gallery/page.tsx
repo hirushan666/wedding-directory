@@ -113,7 +113,7 @@ const PortfolioPage: React.FC = () => {
     return (
       <div className="bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 transition-colors duration-200 min-h-screen font-body flex flex-col">
         <Header />
-        <div className="w-11/12 md:w-10/12 lg:w-3/4 xl:w-2/3 mx-auto py-6 px-4 flex-grow space-y-6">
+        <div className="w-11/12 md:w-10/12 lg:w-3/4 xl:w-2/3 mx-auto py-3.5 sm:py-6 px-3 sm:px-4 flex-grow space-y-6">
           <Skeleton className="h-5 w-44 rounded-lg" />
           <Skeleton className="h-8 w-60 rounded-xl" />
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -135,7 +135,7 @@ const PortfolioPage: React.FC = () => {
   return (
     <div className="bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 transition-colors duration-200 min-h-screen font-body flex flex-col">
       <Header />
-      <div className="w-11/12 md:w-10/12 lg:w-3/4 xl:w-2/3 mx-auto py-6 px-4 flex-grow">
+      <div className="w-11/12 md:w-10/12 lg:w-3/4 xl:w-2/3 mx-auto py-3.5 sm:py-6 px-3 sm:px-4 flex-grow">
         <Link
           href={
             vendor
@@ -215,7 +215,7 @@ const PortfolioPage: React.FC = () => {
           </Masonry>
         </ResponsiveMasonry>
 
-        <div className="text-center mt-12 mb-6 py-8 border-t border-gray-200">
+        <div className="text-center mt-6 sm:mt-12 mb-4 sm:mb-6 py-4 sm:py-8 border-t border-gray-200">
           <p className="text-xl font-medium text-gray-600">
             You&apos;ve seen it all!
           </p>
