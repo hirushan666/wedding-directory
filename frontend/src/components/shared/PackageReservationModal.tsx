@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { X, ShieldCheck, Lock, Loader2 } from "lucide-react";
+import { X, ShieldCheck, Lock, Loader2, ChevronDown, ChevronUp, CheckCircle2, MessageSquare } from "lucide-react";
 import { format, isSameDay, parseISO } from "date-fns";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_CHAT } from "@/graphql/queries";
@@ -36,6 +36,8 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
+  const [showNoteInput, setShowNoteInput] = useState(false);
 
   const { sendMessage: sendSocketMessage } = useChatSocket(
     visitorId,
@@ -108,8 +110,13 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
   const advanceAmount = pkg.pricing * 0.2;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-darkSurface rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden relative border border-transparent dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 my-8">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !isSubmitting) onClose();
+      }}
+    >
+      <div className="relative w-full max-w-lg sm:max-w-4xl max-h-[90dvh] flex flex-col bg-white dark:bg-darkSurface rounded-2xl shadow-2xl overflow-hidden border border-transparent dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 my-auto">
         {/* Redirecting Overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-white/95 dark:bg-darkSurface/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 md:p-8 text-center animate-in fade-in duration-200">
@@ -137,22 +144,157 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
           </div>
         )}
 
-        <div className="p-6 md:p-8">
-          <div className="flex items-center justify-between gap-3 mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-zinc-100 font-title">
-              {pkg.requiresReservation ? "Book Reservation Package" : "Book Package"}
-            </h2>
-            <button
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-darkElevated text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
+        {/* Fixed Header */}
+        <div className="shrink-0 flex items-center justify-between gap-3 p-3.5 sm:p-6 border-b border-gray-100 dark:border-zinc-800">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-zinc-100 font-title truncate">
+            {pkg.requiresReservation ? "Book Reservation Package" : "Book Package"}
+          </h2>
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-darkElevated text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable Content Body with min-h-0 */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-6 md:p-8">
+          {/* ======================================================== */}
+          {/* MOBILE VIEW (< md): Calendar-First + Compact Structure   */}
+          {/* ======================================================== */}
+          <div className="md:hidden flex flex-col space-y-3">
+            {/* Package Summary Card */}
+            <div className="bg-orange/5 dark:bg-orange/10 border border-orange/20 dark:border-zinc-700/80 rounded-xl p-3 flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-zinc-100 font-title truncate">
+                  {pkg.name}
+                </h3>
+                <span
+                  className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${
+                    pkg.requiresReservation
+                      ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                      : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                  }`}
+                >
+                  {pkg.requiresReservation ? "Reservation" : "Standard"}
+                </span>
+              </div>
+
+              {/* Collapsible Features Toggle */}
+              {pkg.features && pkg.features.length > 0 && (
+                <div className="pt-1.5 border-t border-orange/15 dark:border-zinc-700/60">
+                  <button
+                    type="button"
+                    onClick={() => setShowFeatures(!showFeatures)}
+                    className="w-full flex items-center justify-between text-xs font-semibold text-orange hover:text-orange/80 transition-colors"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle2 size={12} className="text-emerald-500" />
+                      <span>Included Features ({pkg.features.length})</span>
+                    </span>
+                    <span className="text-[11px] font-normal text-gray-500 dark:text-zinc-400 flex items-center gap-0.5">
+                      {showFeatures ? "Hide" : "View all"}
+                      {showFeatures ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                    </span>
+                  </button>
+
+                  {showFeatures && (
+                    <div className="space-y-1 mt-1.5 pt-1 border-t border-orange/10 dark:border-zinc-700/40 animate-in fade-in duration-150">
+                      {pkg.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start text-xs text-gray-700 dark:text-zinc-300">
+                          <svg
+                            className="w-3.5 h-3.5 text-green-500 mr-1.5 flex-shrink-0 mt-0.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span className="font-body text-[11px] leading-snug">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Calendar Section (Front & Center) */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5 px-0.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-700 dark:text-zinc-300 font-title">
+                  Select Event Date
+                </span>
+                {selectedDate && (
+                  <span className="text-xs font-semibold text-orange">
+                    {format(selectedDate, "MMM d, yyyy")}
+                  </span>
+                )}
+              </div>
+
+              <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-2 bg-white dark:bg-darkElevated shadow-xs">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={isDateDisabled}
+                  className="w-full p-0"
+                  classNames={{
+                    months: "w-full",
+                    month: "w-full space-y-2",
+                    table: "w-full border-collapse space-y-0.5",
+                    head_row: "flex w-full",
+                    head_cell: "text-gray-500 dark:text-zinc-400 rounded-md flex-1 font-normal text-xs text-center",
+                    row: "flex w-full mt-1",
+                    cell: "flex-1 text-center text-xs p-0 relative flex items-center justify-center bg-transparent focus-within:relative focus-within:z-20",
+                    day: "h-7 w-7 text-xs font-medium rounded-lg text-gray-800 dark:text-zinc-100 transition-colors [&:not([aria-selected])]:hover:bg-gray-100 dark:[&:not([aria-selected])]:hover:bg-zinc-800/80 cursor-pointer aria-selected:opacity-100",
+                    day_selected: "!bg-orange !text-white font-bold hover:!bg-orange-600 hover:!text-white focus:!bg-orange focus:!text-white dark:!bg-orange dark:!text-white dark:hover:!bg-orange-600 shadow-sm",
+                    day_today: "border-2 border-orange/80 dark:border-orange font-bold text-orange dark:text-orange bg-orange/5 dark:bg-orange/10 aria-selected:!bg-orange aria-selected:!text-white aria-selected:!border-orange",
+                    day_disabled: "text-gray-300 dark:text-zinc-600 opacity-40 hover:bg-transparent dark:hover:bg-transparent cursor-not-allowed pointer-events-none",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Note to vendor (Collapsible on Mobile) */}
+            {visitorId && offeringId && (
+              <div className="border border-gray-200 dark:border-zinc-700/80 rounded-xl p-2.5 bg-gray-50/50 dark:bg-darkElevated/50">
+                <button
+                  type="button"
+                  onClick={() => setShowNoteInput(!showNoteInput)}
+                  className="w-full flex items-center justify-between text-xs font-semibold text-gray-700 dark:text-zinc-300"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <MessageSquare size={12} className="text-orange" />
+                    <span>Add note to vendor (optional)</span>
+                  </span>
+                  <span className="text-[11px] text-gray-400">
+                    {showNoteInput || note ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                  </span>
+                </button>
+
+                {(showNoteInput || note) && (
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="Write a message to the vendor (optional)"
+                    rows={2}
+                    className="w-full mt-2 resize-none rounded-lg border border-gray-200 dark:border-zinc-700 dark:bg-darkElevated px-2.5 py-1.5 text-xs text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-orange/40 focus:border-orange font-body"
+                  />
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* ======================================================== */}
+          {/* DESKTOP VIEW (>= md): 2-Column Side-by-Side (Unchanged)  */}
+          {/* ======================================================== */}
+          <div className="hidden md:grid md:grid-cols-2 md:gap-8">
             {/* Left Column - Package Details */}
             <div className="space-y-6">
               <div className="bg-gradient-to-r from-orange/5 to-orange/10 dark:from-orange/10 dark:to-orange/5 border border-orange/20 dark:border-zinc-700 rounded-xl p-6">
@@ -201,7 +343,7 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
                 )}
               </div>
 
-              {/* Note to vendor - sent automatically on Pay */}
+              {/* Note to vendor */}
               {visitorId && offeringId && (
                 <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 space-y-2">
                   <p className="text-sm font-semibold text-gray-600 dark:text-zinc-300">
@@ -281,6 +423,47 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* MOBILE STICKY FOOTER (< md): Pinned Advance & Pay Button  */}
+        {/* ======================================================== */}
+        <div className="md:hidden shrink-0 p-3 pb-4 sm:pb-3 bg-white dark:bg-darkSurface border-t border-gray-200/80 dark:border-zinc-800 shadow-lg">
+          <div className="flex items-center justify-between mb-1.5 px-0.5">
+            <div>
+              <span className="text-[10px] text-gray-500 dark:text-zinc-400 uppercase tracking-wider block font-body">
+                Advance (20%)
+              </span>
+              <span className="text-base font-bold text-orange font-title leading-tight">
+                LKR {advanceAmount.toLocaleString()}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] text-gray-400 dark:text-zinc-500 block font-body">
+                Package Price
+              </span>
+              <span className="text-xs font-semibold text-gray-700 dark:text-zinc-300">
+                LKR {pkg.pricing.toLocaleString()}
+              </span>
+            </div>
+          </div>
+
+          <Button
+            onClick={handlePay}
+            disabled={!selectedDate || isSubmitting}
+            className="w-full bg-orange hover:bg-orange-600 text-white font-bold py-2.5 text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Redirecting to PayHere...</span>
+              </>
+            ) : selectedDate ? (
+              `Pay Advance for ${format(selectedDate, "MMM d, yyyy")}`
+            ) : (
+              "Select a Date to Continue"
+            )}
+          </Button>
         </div>
       </div>
     </div>
