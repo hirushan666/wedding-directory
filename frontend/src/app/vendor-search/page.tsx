@@ -14,7 +14,7 @@ function VendorSearchRedirect() {
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen bg-lightYellow dark:bg-darkBg p-8 max-w-7xl mx-auto pt-24">
+    <div className="min-h-screen bg-lightYellow dark:bg-darkBg px-4 py-6 sm:p-8 max-w-7xl mx-auto pt-16 sm:pt-24">
       <OfferingGridSkeleton count={8} />
     </div>
   );
@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-lightYellow dark:bg-darkBg p-8 max-w-7xl mx-auto pt-24">
+        <div className="min-h-screen bg-lightYellow dark:bg-darkBg px-4 py-6 sm:p-8 max-w-7xl mx-auto pt-16 sm:pt-24">
           <OfferingGridSkeleton count={8} />
         </div>
       }

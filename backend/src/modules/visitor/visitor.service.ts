@@ -1,4 +1,4 @@
-import { Injectable,NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { VisitorEntity } from '../../database/entities/visitor.entity';
@@ -46,10 +46,37 @@ export class VisitorService {
   ): Promise<VisitorEntity> {
     // Check if a password is provided in the update input
     if (updateVisitorInput.password) {
-      // Hash the password before updating
-      updateVisitorInput.password = bcrypt.hashSync(updateVisitorInput.password, 12);
+      if (!updateVisitorInput.currentPassword) {
+        throw new BadRequestException('Current password is required to change password');
+      }
+
+      const visitor = await this.visitorRepository.findOne({ where: { id } });
+      if (!visitor) {
+        throw new NotFoundException('Visitor not found');
+      }
+
+      const isCurrentPasswordValid = await bcrypt.compare(
+        updateVisitorInput.currentPassword,
+        visitor.password,
+      );
+
+      if (!isCurrentPasswordValid) {
+        throw new BadRequestException('Current password is incorrect');
+      }
+
+      // Hash the new password before updating
+      updateVisitorInput.password = bcrypt.hashSync(
+        updateVisitorInput.password,
+        12,
+      );
     }
-    
+
+    // Remove currentPassword so TypeORM doesn't attempt to update a non-existent column
+    delete updateVisitorInput.currentPassword;
+
+    // Disallow email change
+    delete updateVisitorInput.email;
+
     await this.visitorRepository.update(id, updateVisitorInput);
     return this.findVisitorById(id);
   }

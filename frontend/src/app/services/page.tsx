@@ -399,7 +399,7 @@ const ServicesSearchContent: React.FC = () => {
           <div className="border-b border-orange/15 dark:border-zinc-800 my-2 sm:my-4" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5 sm:pb-10 w-full">
           {/* Main Content - Full Width Catalog */}
           <div className="w-full">
             {/* Data Loading/Error/Result State */}
@@ -491,7 +491,7 @@ const ServicesPage: React.FC = () => {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-lightYellow dark:bg-darkBg p-8 max-w-7xl mx-auto pt-24">
+        <div className="min-h-screen bg-lightYellow dark:bg-darkBg px-4 py-6 sm:p-8 max-w-7xl mx-auto pt-16 sm:pt-24">
           <OfferingGridSkeleton count={8} />
         </div>
       }

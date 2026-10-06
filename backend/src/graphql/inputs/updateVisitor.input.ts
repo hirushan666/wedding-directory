@@ -18,6 +18,11 @@ export class UpdateVisitorInput {
   password?: string;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  currentPassword?: string;
+
+  @Field({ nullable: true })
   @SanitizeString({ maxLength: 60, optional: true })
   visitor_fname?: string;
 

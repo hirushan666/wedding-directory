@@ -274,7 +274,7 @@ const AddNewService: React.FC = () => {
   return (
     <div className="bg-lightYellow dark:bg-darkBg transition-colors duration-200 min-h-screen flex flex-col">
       <VendorHeader />
-      <div className="font-title flex-grow flex items-center justify-center py-8 px-4 sm:px-6">
+      <div className="font-title flex-grow flex items-center justify-center py-4 sm:py-8 px-3.5 sm:px-6">
         <div className="flex flex-col md:flex-row min-h-[650px] w-full md:w-11/12 lg:w-9/12 shadow-lg rounded-2xl bg-white dark:bg-darkSurface border border-gray-100 dark:border-zinc-800">
           {/* Left Image Section */}
           <div className="relative w-full md:w-5/12 min-h-[250px] md:min-h-[650px] overflow-hidden rounded-t-2xl md:rounded-tr-none md:rounded-l-2xl">
@@ -285,7 +285,7 @@ const AddNewService: React.FC = () => {
               alt="onboard image"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-8 text-white">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-5 sm:p-8 text-white">
               <span className="text-xs uppercase tracking-widest text-orange font-semibold">
                 {step === 1 ? "Step 1 of 2" : "Step 2 of 2"}
               </span>
@@ -301,7 +301,7 @@ const AddNewService: React.FC = () => {
           </div>
 
           {/* Right Form Section */}
-          <div className="relative w-full md:w-7/12 p-8 md:p-10 flex flex-col justify-between">
+          <div className="relative w-full md:w-7/12 p-4 sm:p-8 md:p-10 flex flex-col justify-between">
             {/* Close 'X' Button */}
             <button
               type="button"

@@ -52,7 +52,7 @@ const EditServiceContent = () => {
     <div className="flex flex-col min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200">
       <VendorHeader />
       <div className="bg-lightYellow dark:bg-darkBg flex-grow">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-3.5 sm:px-4 py-3.5 sm:py-8">
           <div className="mb-6">
             <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">Edit Service</h1>
             <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">

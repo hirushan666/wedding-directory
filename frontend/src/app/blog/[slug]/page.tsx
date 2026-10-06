@@ -221,7 +221,7 @@ export default function BlogPostPage() {
     return (
       <div className="min-h-screen flex flex-col bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 font-body transition-colors duration-200">
         <Header />
-        <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full flex items-center justify-center">
+        <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 w-full flex items-center justify-center">
           <div className="bg-white dark:bg-darkSurface border border-gray-100 dark:border-zinc-800 p-8 sm:p-10 rounded-2xl shadow-sm max-w-md w-full text-center">
             <svg
               className="w-16 h-16 text-orange mx-auto mb-4"
@@ -265,7 +265,7 @@ export default function BlogPostPage() {
         style={{ width: `${readingProgress}%` }}
       ></div>
 
-      <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full">
+      <div className="flex-1 max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         <div>
           <Link
             href="/blog"

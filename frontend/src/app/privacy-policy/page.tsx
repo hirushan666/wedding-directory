@@ -169,7 +169,7 @@ const PrivacyPolicy = () => {
     <div className="min-h-screen flex flex-col bg-lightYellow dark:bg-darkBg text-gray-900 dark:text-zinc-100 font-body transition-colors duration-200">
       <Header />
 
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full space-y-6 sm:space-y-8">
+      <main className="flex-1 max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-8 md:py-12 w-full space-y-4 sm:space-y-8">
         {/* Hero Card */}
         <div className="bg-white dark:bg-darkSurface rounded-3xl border-2 border-orange/20 dark:border-zinc-800 shadow-sm p-6 sm:p-10 text-center relative overflow-hidden">
           <div className="w-14 h-14 rounded-2xl bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center mx-auto mb-4 border border-orange/20 shadow-xs">

@@ -1,4 +1,4 @@
-﻿import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -190,6 +190,7 @@ describe('VisitorService Integration Tests', () => {
       
       const newPassword = 'NewSecurePassword456!';
       const updateVisitorInput: UpdateVisitorInput = {
+        currentPassword: 'TestPassword123!',
         password: newPassword,
       };
       

@@ -39,6 +39,7 @@ export interface WeddingDetailsData {
 
 export interface AccountDetailsData {
   email: string;
-  password: string;
-  retypePassword: string;
+  currentPassword?: string;
+  password?: string;
+  retypePassword?: string;
 }

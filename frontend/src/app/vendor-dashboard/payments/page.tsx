@@ -228,7 +228,7 @@ const PaymentsPage = () => {
     return (
       <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col transition-colors duration-200 font-body">
         <VendorHeader />
-        <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+        <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full space-y-4 sm:space-y-8">
           <div className="space-y-2">
             <div className="h-8 w-56 rounded-lg bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
             <div className="h-4 w-96 rounded bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
@@ -284,9 +284,9 @@ const PaymentsPage = () => {
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col transition-colors duration-200">
       <VendorHeader />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
           <div>
             <div className="flex items-center gap-3">
               <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">

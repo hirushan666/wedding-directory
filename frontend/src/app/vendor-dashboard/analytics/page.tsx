@@ -346,7 +346,7 @@ const VendorAnalytics: React.FC = () => {
     return (
       <div className="min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200 font-body flex flex-col">
         <VendorHeader />
-        <div className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 max-w-7xl">
+        <div className="flex-grow container mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 space-y-4 sm:space-y-8 max-w-7xl">
           <div className="space-y-2">
             <Skeleton className="h-8 w-64 rounded-lg" />
             <Skeleton className="h-4 w-80 rounded" />
@@ -387,7 +387,7 @@ const VendorAnalytics: React.FC = () => {
     return (
       <div className="min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200 flex flex-col font-body">
         <VendorHeader />
-        <div className="flex-grow container mx-auto px-4 py-16 max-w-xl text-center">
+        <div className="flex-grow container mx-auto px-4 py-8 sm:py-16 max-w-xl text-center">
           <div className="bg-white dark:bg-darkSurface rounded-3xl p-8 border border-red-200 dark:border-red-900/40 shadow-xs">
             <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center mb-4">
               <FiShield className="text-xl" />
@@ -413,7 +413,7 @@ const VendorAnalytics: React.FC = () => {
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200 flex flex-col font-body">
       <VendorHeader />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full space-y-4 sm:space-y-8">
         {/* Page Header */}
         <VendorPageHeader
           title="Analytics Overview"
