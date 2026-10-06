@@ -195,35 +195,35 @@ const VisitorDashboardContent: React.FC = () => {
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg flex flex-col font-body transition-colors duration-200">
       <VisitorHeader />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         {/* Top Header Banner matching Vendor Dashboard */}
         <div
-          className={`flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${
+          className={`flex items-center justify-between gap-3 mb-3.5 sm:mb-8 ${
             dashboardTab === "calendar" ? "hidden lg:flex" : "flex"
           }`}
         >
-          <div>
-            <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
+          <div className="min-w-0 flex-1">
+            <h1 className="font-title text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 truncate">
               Wedding Dashboard
             </h1>
-            <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+            <p className="text-gray-500 dark:text-zinc-400 font-body text-xs sm:text-sm mt-0.5 truncate">
               Welcome back, {welcomeNames}!
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               href="/services"
-              className="inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange/90 text-white font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm text-xs"
+              className="inline-flex items-center justify-center gap-1.5 bg-orange hover:bg-orange/90 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl transition-all shadow-xs text-xs active:scale-95"
             >
-              <FiSearch size={15} />
-              <span>Explore Services</span>
+              <FiSearch size={13} className="shrink-0" />
+              <span>Explore<span className="hidden sm:inline"> Services</span></span>
             </Link>
           </div>
         </div>
 
         {/* Asymmetric Profile Hub + Booking Calendar Layout (4 cols + 8 cols) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-10 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-5 lg:mb-10 items-stretch">
           {/* Left Column (4 cols): Couple Profile & Integrated Planning Hub */}
           <div
             className={`lg:col-span-4 flex-col ${

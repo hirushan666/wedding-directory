@@ -6,7 +6,17 @@ import { uploadProfilePicture } from "@/api/upload/visitor.upload";
 import { ProfilePictureProps } from "@/types/uploadTypes";
 import { Camera, Loader2 } from "lucide-react";
 
-const ProfilePicture: React.FC<ProfilePictureProps> = ({ profilePic, setProfilePic }) => {
+interface ExtendedProfilePictureProps extends ProfilePictureProps {
+  className?: string;
+  compact?: boolean;
+}
+
+const ProfilePicture: React.FC<ExtendedProfilePictureProps> = ({
+  profilePic,
+  setProfilePic,
+  className,
+  compact = false,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { visitor } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
@@ -34,7 +44,10 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ profilePic, setProfileP
 
   return (
     <div
-      className="relative w-64 sm:w-72 h-44 sm:h-48 rounded-2xl overflow-hidden shadow-md cursor-pointer group border border-amber-100/60 bg-gray-50 shrink-0"
+      className={
+        className ||
+        "relative w-52 sm:w-72 h-36 sm:h-48 rounded-2xl overflow-hidden shadow-md cursor-pointer group border border-amber-100/60 bg-gray-50 shrink-0"
+      }
       onClick={handleProfilePicClick}
       title="Click to change couple photo"
     >
@@ -49,21 +62,21 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ profilePic, setProfileP
 
       {/* Hover or Uploading Overlay */}
       <div
-        className={`absolute inset-0 bg-black/40 transition-opacity duration-200 flex flex-col items-center justify-center text-white gap-1.5 ${
+        className={`absolute inset-0 bg-black/40 transition-opacity duration-200 flex flex-col items-center justify-center text-white gap-1 ${
           isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
         }`}
       >
         {isUploading ? (
           <>
-            <Loader2 size={24} className="animate-spin text-orange" />
-            <span className="text-xs font-medium">Uploading...</span>
+            <Loader2 size={compact ? 16 : 24} className="animate-spin text-orange" />
+            {!compact && <span className="text-xs font-medium">Uploading...</span>}
           </>
         ) : (
           <>
-            <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Camera size={18} />
+            <div className={`${compact ? 'w-6 h-6' : 'w-9 h-9'} rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center`}>
+              <Camera size={compact ? 13 : 18} />
             </div>
-            <span className="text-xs font-medium tracking-wide">Change Photo</span>
+            {!compact && <span className="text-xs font-medium tracking-wide">Change Photo</span>}
           </>
         )}
       </div>
