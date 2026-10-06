@@ -7,6 +7,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_CHAT } from "@/graphql/queries";
 import { SEND_MESSAGE } from "@/graphql/mutations";
 import { useChatSocket } from "@/hooks/useChatSocket";
+import PayHereBanner from "@/components/shared/PayHereBanner";
 
 interface PackageReservationModalProps {
   isOpen: boolean;
@@ -116,7 +117,7 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
         if (e.target === e.currentTarget && !isSubmitting) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg sm:max-w-4xl max-h-[90dvh] flex flex-col bg-white dark:bg-darkSurface rounded-2xl shadow-2xl overflow-hidden border border-transparent dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 my-auto">
+      <div className="relative w-full max-w-lg md:max-w-4xl max-h-[92dvh] md:max-h-[95vh] flex flex-col bg-white dark:bg-darkSurface rounded-2xl shadow-2xl overflow-hidden border border-transparent dark:border-zinc-800 animate-in fade-in zoom-in-95 duration-200 my-auto">
         {/* Redirecting Overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-white/95 dark:bg-darkSurface/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 md:p-8 text-center animate-in fade-in duration-200">
@@ -145,8 +146,8 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
         )}
 
         {/* Fixed Header */}
-        <div className="shrink-0 flex items-center justify-between gap-3 p-3.5 sm:p-6 border-b border-gray-100 dark:border-zinc-800">
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-zinc-100 font-title truncate">
+        <div className="shrink-0 flex items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 dark:border-zinc-800">
+          <h2 className="text-base sm:text-xl font-bold text-gray-800 dark:text-zinc-100 font-title truncate">
             {pkg.requiresReservation ? "Book Reservation Package" : "Book Package"}
           </h2>
           <button
@@ -160,7 +161,7 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
         </div>
 
         {/* Scrollable Content Body with min-h-0 */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-6 md:p-8">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-5 md:py-4 md:px-6">
           {/* ======================================================== */}
           {/* MOBILE VIEW (< md): Calendar-First + Compact Structure   */}
           {/* ======================================================== */}
@@ -292,113 +293,118 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
           </div>
 
           {/* ======================================================== */}
-          {/* DESKTOP VIEW (>= md): 2-Column Side-by-Side (Unchanged)  */}
+          {/* DESKTOP VIEW (>= md): 2-Column Side-by-Side (Compact)     */}
           {/* ======================================================== */}
-          <div className="hidden md:grid md:grid-cols-2 md:gap-8">
+          <div className="hidden md:grid md:grid-cols-2 md:gap-6">
             {/* Left Column - Package Details */}
-            <div className="space-y-6">
-              <div className="bg-gradient-to-r from-orange/5 to-orange/10 dark:from-orange/10 dark:to-orange/5 border border-orange/20 dark:border-zinc-700 rounded-xl p-6">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-zinc-100 mb-2 font-title">
-                  {pkg.name}
-                </h3>
-                <div className="mb-3">
+            <div className="flex flex-col justify-between space-y-3">
+              <div className="bg-gradient-to-r from-orange/5 to-orange/10 dark:from-orange/10 dark:to-orange/5 border border-orange/20 dark:border-zinc-700 rounded-xl p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-zinc-100 font-title truncate">
+                    {pkg.name}
+                  </h3>
                   <span
-                    className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border whitespace-nowrap ${
+                    className={`inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
                       pkg.requiresReservation
                         ? "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
                         : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
                     }`}
                   >
-                    {pkg.requiresReservation ? "Requires Reservation" : "Normal Package"}
+                    {pkg.requiresReservation ? "Reservation" : "Standard"}
                   </span>
                 </div>
+
                 {pkg.description && (
-                  <p className="text-gray-600 dark:text-zinc-300 leading-relaxed mb-4 text-sm font-body">
+                  <p className="text-gray-600 dark:text-zinc-300 leading-relaxed mb-3 text-xs sm:text-sm font-body line-clamp-3">
                     {pkg.description}
                   </p>
                 )}
 
                 {pkg.features && pkg.features.length > 0 && (
-                  <div className="space-y-3 mt-4 pt-4 border-t border-orange/10 dark:border-zinc-700">
-                    <h4 className="text-sm font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wide mb-2">
-                      Included Features
+                  <div className="pt-2.5 border-t border-orange/10 dark:border-zinc-700">
+                    <h4 className="text-[11px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5">
+                      Included Features ({pkg.features.length})
                     </h4>
-                    {pkg.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start">
-                        <svg
-                          className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="text-gray-700 dark:text-zinc-300 text-sm font-body">{feature}</span>
-                      </div>
-                    ))}
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      {pkg.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start text-xs">
+                          <svg
+                            className="w-4 h-4 text-green-500 mr-1.5 flex-shrink-0 mt-0.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span className="text-gray-700 dark:text-zinc-300 font-body leading-tight">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Note to vendor */}
               {visitorId && offeringId && (
-                <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 space-y-2">
-                  <p className="text-sm font-semibold text-gray-600 dark:text-zinc-300">
-                    Add a note
+                <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-3 space-y-1.5">
+                  <p className="text-xs font-semibold text-gray-600 dark:text-zinc-300">
+                    Add a note to vendor (optional)
                   </p>
 
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="Write a message to the vendor (optional)"
-                    rows={3}
-                    className="w-full resize-none rounded-lg border border-gray-200 dark:border-zinc-700 dark:bg-darkElevated px-3 py-2 text-sm text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange/30 focus:border-orange"
+                    rows={2}
+                    className="w-full resize-none rounded-lg border border-gray-200 dark:border-zinc-700 dark:bg-darkElevated px-2.5 py-1.5 text-xs text-gray-800 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-orange/40 focus:border-orange font-body"
                   />
                 </div>
               )}
             </div>
 
             {/* Right Column - Calendar & Payment */}
-            <div className="flex flex-col h-full">
-              <p className="text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-3 font-body">
-                Select Event Date
-              </p>
+            <div className="flex flex-col justify-between h-full">
+              <div>
+                <p className="text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1.5 font-body uppercase tracking-wider">
+                  Select Event Date
+                </p>
 
-              <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 mb-6 bg-white dark:bg-darkElevated shadow-sm">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  disabled={isDateDisabled}
-                  className="w-full p-0"
-                  classNames={{
-                    months: "w-full",
-                    month: "w-full space-y-4",
-                    table: "w-full border-collapse space-y-1",
-                    head_row: "flex w-full",
-                    head_cell: "text-gray-500 dark:text-zinc-400 rounded-md flex-1 font-normal text-xs text-center",
-                    row: "flex w-full mt-2",
-                    cell: "flex-1 text-center text-sm p-0 relative flex items-center justify-center bg-transparent focus-within:relative focus-within:z-20",
-                    day: "h-9 w-9 md:h-10 md:w-10 p-0 font-normal rounded-lg text-gray-800 dark:text-zinc-100 transition-colors [&:not([aria-selected])]:hover:bg-gray-100 dark:[&:not([aria-selected])]:hover:bg-zinc-800/80 cursor-pointer aria-selected:opacity-100",
-                    day_selected: "!bg-orange !text-white font-bold hover:!bg-orange-600 hover:!text-white focus:!bg-orange focus:!text-white dark:!bg-orange dark:!text-white dark:hover:!bg-orange-600 shadow-sm",
-                    day_today: "border-2 border-orange/80 dark:border-orange font-bold text-orange dark:text-orange bg-orange/5 dark:bg-orange/10 aria-selected:!bg-orange aria-selected:!text-white aria-selected:!border-orange",
-                    day_disabled: "text-gray-300 dark:text-zinc-600 opacity-40 hover:bg-transparent dark:hover:bg-transparent cursor-not-allowed pointer-events-none",
-                  }}
-                />
+                <div className="border border-gray-200 dark:border-zinc-700 rounded-xl p-2.5 mb-2.5 bg-white dark:bg-darkElevated shadow-2xs">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    disabled={isDateDisabled}
+                    className="w-full p-0"
+                    classNames={{
+                      months: "w-full",
+                      month: "w-full space-y-1.5",
+                      table: "w-full border-collapse space-y-0.5",
+                      head_row: "flex w-full",
+                      head_cell: "text-gray-500 dark:text-zinc-400 rounded-md flex-1 font-normal text-xs text-center",
+                      row: "flex w-full mt-1",
+                      cell: "flex-1 text-center text-xs p-0 relative flex items-center justify-center bg-transparent focus-within:relative focus-within:z-20",
+                      day: "h-7.5 w-7.5 md:h-8 md:w-8 p-0 text-xs font-medium rounded-lg text-gray-800 dark:text-zinc-100 transition-colors [&:not([aria-selected])]:hover:bg-gray-100 dark:[&:not([aria-selected])]:hover:bg-zinc-800/80 cursor-pointer aria-selected:opacity-100",
+                      day_selected: "!bg-orange !text-white font-bold hover:!bg-orange-600 hover:!text-white focus:!bg-orange focus:!text-white dark:!bg-orange dark:!text-white dark:hover:!bg-orange-600 shadow-sm",
+                      day_today: "border-2 border-orange/80 dark:border-orange font-bold text-orange dark:text-orange bg-orange/5 dark:bg-orange/10 aria-selected:!bg-orange aria-selected:!text-white aria-selected:!border-orange",
+                      day_disabled: "text-gray-300 dark:text-zinc-600 opacity-40 hover:bg-transparent dark:hover:bg-transparent cursor-not-allowed pointer-events-none",
+                    }}
+                  />
+                </div>
               </div>
 
-              <div className="mt-auto space-y-4">
-                <div className="bg-orange/10 dark:bg-orange/15 p-4 rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-600 dark:text-zinc-400">Package Price</span>
-                    <span className="font-semibold text-gray-900 dark:text-zinc-100">
+              <div className="mt-auto space-y-2">
+                <div className="bg-orange/10 dark:bg-orange/15 p-2.5 rounded-lg">
+                  <div className="flex justify-between items-center mb-0.5">
+                    <span className="text-xs text-gray-600 dark:text-zinc-400">Package Price</span>
+                    <span className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-zinc-100">
                       LKR {pkg.pricing.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-orange font-bold text-lg">
+                  <div className="flex justify-between items-center text-orange font-bold text-sm sm:text-base">
                     <span>Advance (20%)</span>
                     <span>LKR {advanceAmount.toLocaleString()}</span>
                   </div>
@@ -407,11 +413,11 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
                 <Button
                   onClick={handlePay}
                   disabled={!selectedDate || isSubmitting}
-                  className="w-full bg-orange hover:bg-orange-600 text-white font-bold py-6 text-lg rounded-full flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
+                  className="w-full bg-orange hover:bg-orange-600 text-white font-bold py-2.5 sm:py-3 text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Redirecting to PayHere...</span>
                     </>
                   ) : selectedDate ? (
@@ -420,6 +426,10 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
                     "Select a Date to Continue"
                   )}
                 </Button>
+
+                <div className="pt-0.5 flex justify-center">
+                  <PayHereBanner variant="short" className="scale-90 origin-center" />
+                </div>
               </div>
             </div>
           </div>
@@ -464,6 +474,10 @@ const PackageReservationModal: React.FC<PackageReservationModalProps> = ({
               "Select a Date to Continue"
             )}
           </Button>
+
+          <div className="pt-2 flex justify-center">
+            <PayHereBanner variant="short" />
+          </div>
         </div>
       </div>
     </div>

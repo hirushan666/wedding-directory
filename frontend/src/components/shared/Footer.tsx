@@ -8,6 +8,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FiArrowRight, FiHeart } from "react-icons/fi";
 import { useAuth as useVisitorAuth } from "@/contexts/VisitorAuthContext";
 import { useVendorAuth } from "@/contexts/VendorAuthContext";
+import PayHereBanner from "@/components/shared/PayHereBanner";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -176,13 +177,18 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Socials */}
-        <div className="border-t border-orange/10 dark:border-zinc-800/80 pt-3 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4">
-          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-500 text-center sm:text-left">
+        {/* Bottom Bar: Copyright, PayHere Trust Banner, & Socials */}
+        <div className="border-t border-orange/10 dark:border-zinc-800/80 pt-3 sm:pt-6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-500 text-center md:text-left order-3 md:order-1">
             &copy; {currentYear} Say I Do. All rights reserved.
           </p>
 
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* PayHere Security & Payment Methods Banner */}
+          <div className="order-1 md:order-2 flex items-center justify-center">
+            <PayHereBanner variant="auto" />
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-2.5 order-2 md:order-3">
             <a
               href="https://facebook.com"
               target="_blank"
