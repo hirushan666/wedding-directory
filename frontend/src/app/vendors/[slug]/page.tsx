@@ -223,23 +223,23 @@ const VendorPublicPage: React.FC = () => {
     <div className="bg-lightYellow dark:bg-darkBg font-body min-h-screen flex flex-col transition-colors duration-200">
       <Header />
 
-      <main className="flex-1 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 w-full">
+      <main className="flex-1 pb-12 sm:pb-16">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3 sm:py-6 w-full">
           {/* Back Navigation */}
-          <div className="mb-4 pt-1">
+          <div className="mb-3 sm:mb-4 pt-1">
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-orange dark:hover:text-orange transition-colors group"
+              className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-orange dark:hover:text-orange transition-colors group"
             >
-              <FiArrowLeft className="text-base group-hover:-translate-x-1 transition-transform" />
+              <FiArrowLeft className="text-sm sm:text-base group-hover:-translate-x-1 transition-transform" />
               <span>Back to Services</span>
             </Link>
           </div>
 
           {/* Optimized Vendor Profile Card */}
-          <section className="bg-white dark:bg-darkSurface rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden mb-10 transition-colors">
+          <section className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden mb-6 sm:mb-10 transition-colors">
             {/* Top Cover Banner */}
-            <div className="relative h-36 sm:h-48 w-full bg-gradient-to-r from-orange/20 via-amber-100/50 to-orange/10 dark:from-orange/25 dark:via-zinc-900/90 dark:to-darkElevated overflow-hidden border-b border-orange/10 dark:border-zinc-800/80">
+            <div className="relative h-28 sm:h-44 md:h-48 w-full bg-gradient-to-r from-orange/20 via-amber-100/50 to-orange/10 dark:from-orange/25 dark:via-zinc-900/90 dark:to-darkElevated overflow-hidden border-b border-orange/10 dark:border-zinc-800/80">
               {heroCoverImage && (
                 <div className="absolute inset-0 opacity-20 dark:opacity-15 blur-[2px] scale-105 pointer-events-none">
                   <Image
@@ -256,43 +256,65 @@ const VendorPublicPage: React.FC = () => {
             </div>
 
             {/* Profile Content Body */}
-            <div className="px-6 sm:px-8 pb-8 pt-0">
+            <div className="px-4 sm:px-8 pb-5 sm:pb-8 pt-0">
               {/* Header row with Avatar + Info + Action Button */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 sm:gap-6 mb-6">
-                {/* Avatar and Main Identity */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 min-w-0">
-                  <div className="-mt-12 sm:-mt-14 relative z-10 flex-shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-white dark:bg-darkElevated ring-4 ring-white dark:ring-darkSurface shadow-md border border-orange/20 dark:border-zinc-700">
-                    {profilePic ? (
-                      <Image
-                        src={profilePic}
-                        alt={vendor.busname}
-                        fill
-                        className="object-cover"
-                        onError={() => setImgError(true)}
-                        priority
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange/15 to-orange/5 dark:from-darkElevated dark:to-darkSurface">
-                        <span className="text-3xl sm:text-4xl font-title font-bold text-orange">
-                          {(vendor?.busname?.[0] || "V").toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 mb-4 sm:mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 min-w-0">
+                  {/* Top bar on mobile: Avatar on left, Share button on right */}
+                  <div className="flex items-end justify-between sm:block">
+                    <div className="-mt-10 sm:-mt-14 relative z-10 flex-shrink-0 w-20 h-20 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-white dark:bg-darkElevated ring-4 ring-white dark:ring-darkSurface shadow-md border border-orange/20 dark:border-zinc-700">
+                      {profilePic ? (
+                        <Image
+                          src={profilePic}
+                          alt={vendor.busname}
+                          fill
+                          className="object-cover"
+                          onError={() => setImgError(true)}
+                          priority
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange/15 to-orange/5 dark:from-darkElevated dark:to-darkSurface">
+                          <span className="text-2xl sm:text-4xl font-title font-bold text-orange">
+                            {(vendor?.busname?.[0] || "V").toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Mobile-only share button */}
+                    <button
+                      type="button"
+                      onClick={handleShare}
+                      className="sm:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange hover:bg-orange/90 text-white font-semibold text-xs transition-all shadow-xs active:scale-95 cursor-pointer mb-1"
+                      title="Share vendor profile"
+                    >
+                      {copied ? (
+                        <>
+                          <FiCheck className="text-white text-sm" />
+                          <span>Link Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiShare2 className="text-white text-sm" />
+                          <span>Share Profile</span>
+                        </>
+                      )}
+                    </button>
                   </div>
 
-                  <div className="pt-2 sm:pt-4 min-w-0">
-                    <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
-                      <h1 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
+                  <div className="min-w-0 sm:pt-4">
+                    <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap mb-1 sm:mb-1.5">
+                      <h1 className="font-title text-xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">
                         {vendor.busname}
                       </h1>
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 font-body">
+                        <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 font-body">
                           <FiCheckCircle className="text-emerald-600 dark:text-emerald-400" />
                           Verified Vendor
                         </span>
                         {avgRating >= 4.5 && totalReviews > 0 && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60 font-body">
-                            <FaStar className="text-amber-500 text-xs" />
+                          <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60 font-body">
+                            <FaStar className="text-amber-500 text-[10px] sm:text-xs" />
                             Top Rated
                           </span>
                         )}
@@ -300,28 +322,28 @@ const VendorPublicPage: React.FC = () => {
                     </div>
 
                     {/* Metadata tags */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-600 dark:text-zinc-400 font-body">
+                    <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 sm:gap-y-1.5 text-xs sm:text-sm text-gray-600 dark:text-zinc-400 font-body">
                       {contactName && (
-                        <div className="flex items-center gap-1.5">
-                          <FiUser className="text-orange flex-shrink-0" />
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          <FiUser className="text-orange flex-shrink-0 text-xs sm:text-sm" />
                           <span>Owner: {contactName}</span>
                         </div>
                       )}
                       {vendor.city && (
-                        <div className="flex items-center gap-1.5">
-                          <FiMapPin className="text-orange flex-shrink-0" />
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          <FiMapPin className="text-orange flex-shrink-0 text-xs sm:text-sm" />
                           <span>{vendor.city}</span>
                         </div>
                       )}
                       {joinedYear && (
-                        <div className="flex items-center gap-1.5">
-                          <FiCalendar className="text-orange flex-shrink-0" />
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          <FiCalendar className="text-orange flex-shrink-0 text-xs sm:text-sm" />
                           <span>Member since {joinedYear}</span>
                         </div>
                       )}
                       {totalReviews > 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <FaStar className="text-amber-400 flex-shrink-0 text-xs" />
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          <FaStar className="text-amber-400 flex-shrink-0 text-[11px] sm:text-xs" />
                           <span className="font-semibold text-gray-900 dark:text-zinc-200">
                             {avgRating.toFixed(1)}
                           </span>
@@ -335,8 +357,8 @@ const VendorPublicPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Share Profile Action Button */}
-                <div className="flex items-center flex-shrink-0 pt-2 sm:pt-4">
+                {/* Desktop-only Share Profile Action Button */}
+                <div className="hidden sm:flex items-center flex-shrink-0 pt-4">
                   <button
                     type="button"
                     onClick={handleShare}
@@ -359,81 +381,81 @@ const VendorPublicPage: React.FC = () => {
               </div>
 
               {/* 4-Item Quick Stats Bar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 my-6">
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-zinc-400 mb-1">
-                    <FiBriefcase className="text-orange text-sm flex-shrink-0" />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 my-3.5 sm:my-6">
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-gray-500 dark:text-zinc-400 mb-0.5 sm:mb-1">
+                    <FiBriefcase className="text-orange text-xs sm:text-sm flex-shrink-0" />
                     <span>Listings</span>
                   </div>
-                  <p className="font-title text-lg sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
+                  <p className="font-title text-base sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
                     {visibleServices.length}{" "}
-                    <span className="text-xs font-normal text-gray-500 dark:text-zinc-400 font-body">
+                    <span className="text-[11px] sm:text-xs font-normal text-gray-500 dark:text-zinc-400 font-body">
                       {visibleServices.length === 1 ? "service" : "services"}
                     </span>
                   </p>
                 </div>
 
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-zinc-400 mb-1">
-                    <FaStar className="text-amber-400 text-sm flex-shrink-0" />
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-gray-500 dark:text-zinc-400 mb-0.5 sm:mb-1">
+                    <FaStar className="text-amber-400 text-xs sm:text-sm flex-shrink-0" />
                     <span>Average Rating</span>
                   </div>
-                  <p className="font-title text-lg sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
+                  <p className="font-title text-base sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
                     {totalReviews > 0 ? avgRating.toFixed(1) : "New"}{" "}
-                    <span className="text-xs font-normal text-gray-500 dark:text-zinc-400 font-body">
+                    <span className="text-[11px] sm:text-xs font-normal text-gray-500 dark:text-zinc-400 font-body">
                       {totalReviews > 0
-                        ? `(${totalReviews} ${totalReviews === 1 ? "review" : "reviews"})`
-                        : "No reviews yet"}
+                        ? `(${totalReviews})`
+                        : "No reviews"}
                     </span>
                   </p>
                 </div>
 
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-zinc-400 mb-1">
-                    <FiTag className="text-orange text-sm flex-shrink-0" />
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-gray-500 dark:text-zinc-400 mb-0.5 sm:mb-1">
+                    <FiTag className="text-orange text-xs sm:text-sm flex-shrink-0" />
                     <span>Specialties</span>
                   </div>
-                  <p className="font-title text-lg sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
+                  <p className="font-title text-base sm:text-xl font-bold text-gray-900 dark:text-zinc-100">
                     {categories.length}{" "}
-                    <span className="text-xs font-normal text-gray-500 dark:text-zinc-400 font-body">
+                    <span className="text-[11px] sm:text-xs font-normal text-gray-500 dark:text-zinc-400 font-body">
                       {categories.length === 1 ? "category" : "categories"}
                     </span>
                   </p>
                 </div>
 
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-zinc-400 mb-1">
-                    <FiMapPin className="text-orange text-sm flex-shrink-0" />
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50/80 dark:bg-darkElevated/60 border border-gray-100 dark:border-zinc-800/80 transition-colors">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-medium text-gray-500 dark:text-zinc-400 mb-0.5 sm:mb-1">
+                    <FiMapPin className="text-orange text-xs sm:text-sm flex-shrink-0" />
                     <span>Base Location</span>
                   </div>
-                  <p className="font-title text-lg sm:text-xl font-bold text-gray-900 dark:text-zinc-100 truncate">
+                  <p className="font-title text-base sm:text-xl font-bold text-gray-900 dark:text-zinc-100 truncate">
                     {vendor.city || "Sri Lanka"}
                   </p>
                 </div>
               </div>
 
               {/* About and Specialties Box */}
-              <div className="rounded-2xl bg-gray-50/70 dark:bg-darkElevated/40 border border-gray-100 dark:border-zinc-800/80 p-5 sm:p-6 transition-colors">
-                <h2 className="font-title font-bold text-base sm:text-lg text-gray-900 dark:text-zinc-100 mb-2.5">
+              <div className="rounded-xl sm:rounded-2xl bg-gray-50/70 dark:bg-darkElevated/40 border border-gray-100 dark:border-zinc-800/80 p-3.5 sm:p-6 transition-colors">
+                <h2 className="font-title font-bold text-sm sm:text-lg text-gray-900 dark:text-zinc-100 mb-1.5 sm:mb-2.5">
                   About {vendor.busname}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-zinc-300 leading-relaxed font-body">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-zinc-300 leading-relaxed font-body">
                   {vendor.about ||
                     `Welcome to ${vendor.busname}'s official portfolio on Say I Do. Explore all wedding services below or connect directly for custom packages and availability.`}
                 </p>
 
                 {/* Category Specialties tags */}
                 {categories.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200/60 dark:border-zinc-800">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 mr-1">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200/60 dark:border-zinc-800">
+                    <span className="text-[11px] sm:text-xs font-semibold text-gray-500 dark:text-zinc-400 mr-1">
                       Specialties:
                     </span>
                     {categories.map((cat) => (
                       <span
                         key={cat}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-orange/5 dark:bg-orange/10 border border-orange/20 text-xs font-medium text-orange"
+                        className="inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-orange/5 dark:bg-orange/10 border border-orange/20 text-[11px] sm:text-xs font-medium text-orange"
                       >
-                        <FiTag className="text-xs" />
+                        <FiTag className="text-[10px] sm:text-xs" />
                         <span>{cat}</span>
                       </span>
                     ))}
@@ -446,12 +468,12 @@ const VendorPublicPage: React.FC = () => {
           {/* Services Portfolio Section */}
           <section>
             {/* Header + Search & Category Filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <h2 className="font-title font-bold text-xl sm:text-2xl text-gray-900 dark:text-zinc-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <h2 className="font-title font-bold text-lg sm:text-2xl text-gray-900 dark:text-zinc-100">
                   Services offered
                 </h2>
-                <span className="px-3 py-0.5 text-xs font-bold rounded-full bg-orange/10 dark:bg-orange/15 text-orange border border-orange/20 dark:border-orange/25 font-body">
+                <span className="px-2.5 sm:px-3 py-0.5 text-xs font-bold rounded-full bg-orange/10 dark:bg-orange/15 text-orange border border-orange/20 dark:border-orange/25 font-body">
                   {visibleServices.length}{" "}
                   {visibleServices.length === 1 ? "service" : "services"}
                 </span>
@@ -459,14 +481,14 @@ const VendorPublicPage: React.FC = () => {
 
               {/* Search input if multiple services */}
               {visibleServices.length > 2 && (
-                <div className="relative w-full md:w-72">
+                <div className="relative w-full sm:w-72">
                   <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-sm" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search vendor services..."
-                    className="w-full pl-9 pr-4 py-2 text-sm rounded-xl bg-white dark:bg-darkSurface border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-zinc-100 placeholder:text-gray-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange/40 focus:border-orange transition-all font-body"
+                    className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-darkSurface border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-zinc-100 placeholder:text-gray-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange/40 focus:border-orange transition-all font-body"
                   />
                   {searchQuery && (
                     <button
@@ -483,11 +505,11 @@ const VendorPublicPage: React.FC = () => {
 
             {/* Category Filter Pills (if more than 1 category) */}
             {categories.length > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-3 mb-4 sm:mb-6 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                 <button
                   type="button"
                   onClick={() => setSelectedCategory("All")}
-                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shrink-0 ${
                     selectedCategory === "All"
                       ? "bg-orange text-white shadow-xs"
                       : "bg-white dark:bg-darkSurface border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 hover:border-orange hover:text-orange"
@@ -505,7 +527,7 @@ const VendorPublicPage: React.FC = () => {
                       key={cat}
                       type="button"
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shrink-0 ${
                         isSelected
                           ? "bg-orange text-white shadow-xs"
                           : "bg-white dark:bg-darkSurface border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 hover:border-orange hover:text-orange"
