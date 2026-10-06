@@ -1,4 +1,4 @@
-﻿import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { VisitorService } from 'src/modules/visitor/visitor.service';
 import { VisitorEntity } from 'src/database/entities/visitor.entity';
@@ -21,9 +21,10 @@ const mockChecklistService = {
   handleWeddingDateChange: jest.fn(),
 };
 
-// Mock bcrypt.hashSync to return a consistent hash
+// Mock bcrypt to return a consistent hash and resolve compare
 jest.mock('bcryptjs', () => ({
   hashSync: jest.fn().mockReturnValue('hashedpassword'),
+  compare: jest.fn().mockResolvedValue(true),
 }));
 
 describe('VisitorService', () => {
@@ -94,6 +95,7 @@ describe('VisitorService', () => {
       const id = '1';
       const updateVisitorInput: UpdateVisitorInput = {
         email: 'updated@example.com',
+        currentPassword: 'oldpassword',
         password: 'newpassword',
         visitor_fname: 'Updated John',
         visitor_lname: 'Updated Doe',
@@ -108,7 +110,15 @@ describe('VisitorService', () => {
 
       const visitor = {
         id,
-        ...updateVisitorInput,
+        visitor_fname: 'Updated John',
+        visitor_lname: 'Updated Doe',
+        partner_fname: 'Updated Jane',
+        partner_lname: 'Updated Doe',
+        engaged_date: '2023-02-01',
+        wed_date: '2024-02-01',
+        wed_venue: 'Updated Venue',
+        phone: '0987654321',
+        city: 'Updated City',
         password: 'hashedpassword',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -121,12 +131,52 @@ describe('VisitorService', () => {
 
       expect(result).toEqual(visitor);
       expect(mockVisitorRepository.update).toHaveBeenCalledWith(id, {
-        ...updateVisitorInput,
+        visitor_fname: 'Updated John',
+        visitor_lname: 'Updated Doe',
+        partner_fname: 'Updated Jane',
+        partner_lname: 'Updated Doe',
+        engaged_date: '2023-02-01',
+        wed_date: '2024-02-01',
+        wed_venue: 'Updated Venue',
+        phone: '0987654321',
+        city: 'Updated City',
         password: 'hashedpassword',
       });
       expect(mockVisitorRepository.findOne).toHaveBeenCalledWith({
         where: { id },
       });
+    });
+
+    it('should throw BadRequestException if password is provided without currentPassword', async () => {
+      const id = '1';
+      const updateVisitorInput: UpdateVisitorInput = {
+        password: 'newpassword',
+      };
+
+      await expect(service.updateVisitor(id, updateVisitorInput)).rejects.toThrow(
+        'Current password is required to change password',
+      );
+    });
+
+    it('should throw BadRequestException if currentPassword is incorrect', async () => {
+      const id = '1';
+      const updateVisitorInput: UpdateVisitorInput = {
+        currentPassword: 'wrongpassword',
+        password: 'newpassword',
+      };
+
+      const visitor = {
+        id,
+        password: 'hashedpassword',
+      } as VisitorEntity;
+
+      mockVisitorRepository.findOne.mockResolvedValue(visitor);
+      const bcrypt = require('bcryptjs');
+      bcrypt.compare.mockResolvedValueOnce(false);
+
+      await expect(service.updateVisitor(id, updateVisitorInput)).rejects.toThrow(
+        'Current password is incorrect',
+      );
     });
   });
 
