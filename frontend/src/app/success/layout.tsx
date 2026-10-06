@@ -16,7 +16,7 @@ const SuccessLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <div className="bg-lightYellow dark:bg-darkBg min-h-[calc(100vh-5rem)] print:bg-white print:min-h-0 print:p-0">
-        <div className="w-full max-w-6xl mx-auto px-3 py-6 sm:px-6 sm:py-10 lg:px-8 print:max-w-full print:p-0 print:m-0">
+        <div className="w-full max-w-6xl mx-auto px-2.5 py-2.5 sm:px-6 sm:py-8 lg:px-8 lg:py-10 print:max-w-full print:p-0 print:m-0">
           {children}
         </div>
       </div>
