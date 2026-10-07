@@ -150,34 +150,34 @@ const EditSocialLinks: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-8 font-body">
+    <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 sm:p-8 font-body">
       {/* Header section matching Settings theme */}
-      <div className="pb-6 mb-6 border-b border-gray-100 dark:border-zinc-800">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
-            <FiShare2 className="text-lg" />
+      <div className="pb-4 sm:pb-6 mb-4 sm:mb-6 border-b border-gray-100 dark:border-zinc-800">
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange shrink-0">
+            <FiShare2 className="text-base sm:text-lg" />
           </div>
-          <h2 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+          <h2 className="font-title text-lg sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
             Social & Web Links
           </h2>
         </div>
-        <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+        <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
           Connect your official website and social media profiles so couples can
           easily discover and follow your storefront.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         {socialFields.map((field) => {
           const Icon = field.icon;
           return (
             <div key={field.name}>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
                 {field.label}
               </label>
               <div className="relative flex items-center">
-                <div className="h-11 px-3.5 rounded-l-xl bg-gray-50 dark:bg-darkElevated border border-r-0 border-gray-300 dark:border-zinc-700 flex items-center justify-center text-gray-400 select-none">
-                  <Icon className="text-base text-gray-500 dark:text-zinc-400" />
+                <div className="h-10 sm:h-11 px-3 sm:px-3.5 rounded-l-xl bg-gray-50 dark:bg-darkElevated border border-r-0 border-gray-300 dark:border-zinc-700 flex items-center justify-center text-gray-400 select-none">
+                  <Icon className="text-sm sm:text-base text-gray-500 dark:text-zinc-400" />
                 </div>
                 <input
                   type="url"
@@ -185,7 +185,7 @@ const EditSocialLinks: React.FC = () => {
                   value={field.value}
                   onChange={handleInputChange}
                   placeholder={field.placeholder}
-                  className="w-full h-11 px-3.5 text-sm rounded-r-xl border border-gray-300 dark:border-zinc-700 focus:border-orange focus:ring-2 focus:ring-orange/20 outline-none transition-all text-gray-800 dark:text-zinc-100 dark:bg-darkElevated placeholder:text-gray-400 dark:placeholder:text-zinc-600"
+                  className="w-full h-10 sm:h-11 px-3 sm:px-3.5 text-xs sm:text-sm rounded-r-xl border border-gray-300 dark:border-zinc-700 focus:border-orange focus:ring-2 focus:ring-orange/20 outline-none transition-all text-gray-800 dark:text-zinc-100 dark:bg-darkElevated placeholder:text-gray-400 dark:placeholder:text-zinc-600"
                 />
               </div>
             </div>
@@ -193,11 +193,11 @@ const EditSocialLinks: React.FC = () => {
         })}
 
         {/* Footer save button integrated inside the card */}
-        <div className="flex justify-end pt-6 mt-6 border-t border-gray-100 dark:border-zinc-800">
+        <div className="flex justify-end pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-gray-100 dark:border-zinc-800">
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all disabled:opacity-50"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all disabled:opacity-50"
           >
             {isSaving ? (
               <>

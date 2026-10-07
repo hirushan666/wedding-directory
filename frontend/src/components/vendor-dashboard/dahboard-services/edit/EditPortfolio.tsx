@@ -247,19 +247,20 @@ const EditPortfolio: React.FC = () => {
 
   return (
     <Fragment>
-      <div className="bg-white dark:bg-darkSurface rounded-2xl p-6 px-8 shadow-lg mb-20 dark:border dark:border-zinc-800">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="font-title text-[30px] font-bold dark:text-zinc-100">
+      <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-sm border border-gray-100 dark:border-zinc-800 mb-8 font-body">
+        <div className="pb-4 sm:pb-6 mb-4 sm:mb-6 border-b border-gray-100 dark:border-zinc-800">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange shrink-0">
+              <IoMdCloudUpload className="text-base sm:text-lg" />
+            </div>
+            <h2 className="font-title text-lg sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
               Photos & Media
             </h2>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">
-              Manage your service banner, photo showcase gallery, and
-              promotional video.
-            </p>
           </div>
+          <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+            Manage your service banner, photo showcase gallery, and promotional video.
+          </p>
         </div>
-        <hr className="w-[180px] h-px my-4 bg-gray-500 border-0 dark:bg-zinc-700"></hr>
 
         {/* Upload Banner Section */}
         <div className="mb-8">
@@ -295,7 +296,7 @@ const EditPortfolio: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="mt-2 w-full h-[250px] border-2 border-dashed border-gray-300 dark:border-zinc-700 hover:border-orange rounded-xl flex justify-center items-center relative overflow-hidden bg-gray-50 dark:bg-darkElevated transition-colors">
+          <div className="mt-2 w-full h-44 sm:h-[250px] border-2 border-dashed border-gray-300 dark:border-zinc-700 hover:border-orange rounded-xl flex justify-center items-center relative overflow-hidden bg-gray-50 dark:bg-darkElevated transition-colors">
             <input
               id="bannerUpload"
               type="file"
@@ -466,7 +467,7 @@ const EditPortfolio: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="mt-2 w-full h-[250px] border-2 border-dashed border-gray-300 dark:border-zinc-700 hover:border-orange rounded-xl flex justify-center items-center relative overflow-hidden bg-gray-50 dark:bg-darkElevated transition-colors">
+          <div className="mt-2 w-full h-44 sm:h-[250px] border-2 border-dashed border-gray-300 dark:border-zinc-700 hover:border-orange rounded-xl flex justify-center items-center relative overflow-hidden bg-gray-50 dark:bg-darkElevated transition-colors">
             <input
               id="videoUpload"
               type="file"
