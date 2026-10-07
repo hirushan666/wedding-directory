@@ -17,11 +17,11 @@ export const VendorPageHeader: React.FC<VendorPageHeaderProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-3 sm:mb-8 ${className}`}
+      className={`flex items-center justify-between gap-2.5 sm:gap-4 mb-3 sm:mb-8 ${className}`}
     >
-      <div>
-        <div className="flex items-center gap-3">
-          <h1 className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <h1 className="font-title text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100 truncate">
             {title}
           </h1>
           {badge}
@@ -32,7 +32,7 @@ export const VendorPageHeader: React.FC<VendorPageHeaderProps> = ({
       </div>
 
       {actions && (
-        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           {actions}
         </div>
       )}
