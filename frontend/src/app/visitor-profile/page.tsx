@@ -59,8 +59,8 @@ const VisitorProfile = () => {
           </div>
 
           {/* Page Header matching Vendor Settings */}
-          <div className="mb-6">
-            <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
+          <div className="mb-3 sm:mb-6">
+            <h1 className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
               Profile Settings
             </h1>
             <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
@@ -69,8 +69,8 @@ const VisitorProfile = () => {
           </div>
 
           {/* Settings Grid */}
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* Sidebar */}
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-start">
+            {/* Sidebar / Tab nav */}
             <aside className="w-full lg:w-72 flex-shrink-0">
               <ProfileMenu
                 setActiveSection={setActiveSection}

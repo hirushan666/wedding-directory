@@ -32,16 +32,63 @@ const WeddingCoupleCard: React.FC<WeddingCoupleProps> = ({
     : null;
 
   return (
-    <div className="w-full bg-white dark:bg-darkSurface shadow-sm rounded-2xl sm:rounded-3xl p-6 sm:p-7 border-2 border-orange/20">
-      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6">
+    <div className="w-full bg-white dark:bg-darkSurface shadow-sm rounded-2xl sm:rounded-3xl p-4 sm:p-7 border-2 border-orange/20">
+      {/* Mobile: compact two-column layout */}
+      <div className="flex items-center gap-4 md:hidden">
+        {/* Profile picture — compact on mobile */}
+        <div className="flex-shrink-0">
+          <ProfilePicture
+            profilePic={profilePic}
+            setProfilePic={setProfilePic}
+            compact
+            className="relative w-24 h-16 rounded-xl overflow-hidden shadow-md cursor-pointer group border border-amber-100/60 bg-gray-50 shrink-0"
+          />
+        </div>
+        {/* Names + countdown stacked */}
+        <div className="flex flex-col gap-2 min-w-0">
+          {groomName && brideName ? (
+            <div>
+              <span className="text-[10px] font-semibold text-orange uppercase tracking-wider block font-body">
+                The marriage of
+              </span>
+              <h2 className="text-xl font-marck text-gray-900 dark:text-zinc-100 capitalize leading-tight truncate">
+                {groomName} <span className="text-xs text-orange font-body font-semibold not-italic">&amp;</span> {brideName}
+              </h2>
+            </div>
+          ) : (
+            <h2 className="text-xl font-marck text-gray-900 dark:text-zinc-100 capitalize leading-tight">
+              {groomName || brideName ? `${groomName || brideName}'s Wedding` : "Our Wedding"}
+            </h2>
+          )}
+          {/* Compact countdown */}
+          <div className="bg-orange/[0.04] dark:bg-orange/[0.08] border border-orange/20 rounded-xl px-3 py-2 inline-flex items-center gap-2">
+            {weddingDate ? (
+              <>
+                <span className="text-2xl font-bold font-title text-orange leading-none">{daysLeft}</span>
+                <div>
+                  <p className="text-[10px] text-gray-500 dark:text-zinc-400 font-body leading-none">days left</p>
+                  {formattedWeddingDate && (
+                    <p className="text-[10px] text-gray-400 dark:text-zinc-500 font-body">{formattedWeddingDate}</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <p className="text-xs font-semibold text-gray-700 dark:text-zinc-300 font-body">Wedding date not set</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop: original 3-column grid */}
+      <div className="hidden md:grid grid-cols-3 items-center gap-6">
         {/* Couple Names - Left column */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left justify-center px-2">
+        <div className="flex flex-col items-start text-left justify-center px-2">
           {groomName && brideName ? (
             <>
               <span className="text-[11px] font-semibold text-orange uppercase tracking-wider block mb-1 font-body">
                 The marriage of
               </span>
-              <div className="flex flex-col items-center md:items-start">
+              <div className="flex flex-col items-start">
                 <h2 className="text-3xl lg:text-4xl font-marck text-gray-900 dark:text-zinc-100 capitalize tracking-wide break-words max-w-full">
                   {groomName}
                 </h2>
@@ -94,7 +141,7 @@ const WeddingCoupleCard: React.FC<WeddingCoupleProps> = ({
         </div>
 
         {/* Profile Picture Upload - Right column */}
-        <div className="flex justify-center md:justify-end">
+        <div className="flex justify-end">
           <ProfilePicture profilePic={profilePic} setProfilePic={setProfilePic} />
         </div>
       </div>
