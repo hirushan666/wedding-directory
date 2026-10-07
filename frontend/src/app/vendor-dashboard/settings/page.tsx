@@ -40,14 +40,14 @@ const VendorDashBoardSettings = () => {
       <VendorHeader />
       <div className="bg-lightYellow dark:bg-darkBg flex-grow">
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
-          <div className="mb-4 sm:mb-8">
-            <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">Settings</h1>
+          <div className="mb-3 sm:mb-8">
+            <h1 className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">Settings</h1>
             <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
               Manage your business storefront, contact information, and account security.
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-start">
             {/* Sidebar */}
             <div className="w-full lg:w-72 flex-shrink-0">
               <SettingsMenu
