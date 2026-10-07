@@ -78,23 +78,23 @@ const VendorServicesPage: React.FC = () => {
     <div className="min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200 flex flex-col font-body">
       <VendorHeader />
 
-      <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full space-y-4 sm:space-y-8">
+      <main className="flex-grow max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-8 w-full space-y-3 sm:space-y-8">
         {/* Page Header */}
         <VendorPageHeader
           title="My Services"
           subtitle="Manage your published wedding services, edit packages, and keep your storefront up to date."
           badge={
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange/10 text-orange border border-orange/20">
+            <span className="text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-orange/10 text-orange border border-orange/20">
               {services.length} {services.length === 1 ? "Listing" : "Listings"}
             </span>
           }
           actions={
             <Link
               href="/vendor-dashboard/new-service"
-              className="inline-flex items-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-4 py-2.5 rounded-xl transition-all text-sm shadow-xs self-start sm:self-auto shrink-0"
+              className="inline-flex items-center gap-1.5 sm:gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl transition-all text-xs sm:text-sm shadow-xs shrink-0"
             >
-              <FiPlus size={18} />
-              <span>Add New Service</span>
+              <FiPlus size={16} />
+              <span>Add Service</span>
             </Link>
           }
           className="mb-0"
@@ -102,17 +102,17 @@ const VendorServicesPage: React.FC = () => {
 
         {/* Search & Category Filter Toolbar */}
         {services.length > 0 && (
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-4 sm:p-5 border border-orange/15 dark:border-zinc-800 shadow-xs space-y-3">
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 border border-orange/15 dark:border-zinc-800 shadow-xs space-y-2 sm:space-y-3">
             {/* Search Input & Category Dropdown */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="relative flex-1">
-                <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-base" />
+                <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-sm sm:text-base" />
                 <input
                   type="text"
                   placeholder="Search services by title, category, or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-9 py-2.5 rounded-2xl text-xs sm:text-sm bg-lightYellow/60 dark:bg-darkElevated border border-orange/15 dark:border-zinc-700 text-gray-900 dark:text-zinc-100 focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange/30 placeholder:text-gray-400 dark:placeholder:text-zinc-500 transition-all"
+                  className="w-full pl-9 sm:pl-10 pr-8 sm:pr-9 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm bg-lightYellow/60 dark:bg-darkElevated border border-orange/15 dark:border-zinc-700 text-gray-900 dark:text-zinc-100 focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange/30 placeholder:text-gray-400 dark:placeholder:text-zinc-500 transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -120,14 +120,14 @@ const VendorServicesPage: React.FC = () => {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 p-0.5 rounded-full hover:bg-gray-200/50 dark:hover:bg-zinc-700 transition-colors"
                     title="Clear search"
                   >
-                    <FiX size={15} />
+                    <FiX size={14} />
                   </button>
                 )}
               </div>
 
-              {/* Category Dropdown (Compact, No Overflow) */}
+              {/* Category Dropdown (Desktop only, mobile uses the horizontal chips below) */}
               {categories.length > 0 && (
-                <div className="relative shrink-0 sm:w-56">
+                <div className="hidden sm:block relative shrink-0 sm:w-56">
                   <FiFilter className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange text-xs pointer-events-none" />
                   <select
                     value={selectedCategory}
@@ -151,15 +151,15 @@ const VendorServicesPage: React.FC = () => {
               )}
             </div>
 
-            {/* Quick Filter Badges (Flex Wrap - No Horizontal Scroll) */}
+            {/* Quick Filter Badges (Horizontal scroll on mobile, flex wrap on desktop) */}
             {categories.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100 dark:border-zinc-800/80">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500 mr-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 sm:flex-wrap pt-1.5 sm:pt-2 border-t border-gray-100 dark:border-zinc-800/80 overflow-x-auto scrollbar-none py-0.5">
+                <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500 mr-1 shrink-0">
                   Quick Filter:
                 </span>
                 <button
                   onClick={() => setSelectedCategory("all")}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                  className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap shrink-0 ${
                     selectedCategory === "all"
                       ? "bg-orange text-white shadow-2xs"
                       : "bg-gray-100 dark:bg-darkElevated text-gray-600 dark:text-zinc-400 hover:bg-orange/10 hover:text-orange"
@@ -177,7 +177,7 @@ const VendorServicesPage: React.FC = () => {
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(isSelected ? "all" : cat)}
-                      className={`px-3 py-1 rounded-full text-xs font-semibold transition-all capitalize ${
+                      className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all capitalize whitespace-nowrap shrink-0 ${
                         isSelected
                           ? "bg-orange text-white shadow-2xs"
                           : "bg-gray-100 dark:bg-darkElevated text-gray-600 dark:text-zinc-400 hover:bg-orange/10 hover:text-orange"
@@ -194,9 +194,9 @@ const VendorServicesPage: React.FC = () => {
                       setSearchQuery("");
                       setSelectedCategory("all");
                     }}
-                    className="ml-auto text-xs font-semibold text-orange hover:underline pt-0.5"
+                    className="ml-auto text-[11px] sm:text-xs font-semibold text-orange hover:underline whitespace-nowrap shrink-0 pl-2"
                   >
-                    Reset Filters
+                    Reset
                   </button>
                 )}
               </div>
@@ -206,20 +206,20 @@ const VendorServicesPage: React.FC = () => {
 
         {/* Loading State */}
         {(servicesLoading || vendorLoading) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-darkSurface rounded-3xl overflow-hidden border border-orange/15 dark:border-zinc-800 p-4 space-y-4 shadow-xs"
+                className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl overflow-hidden border border-orange/15 dark:border-zinc-800 p-2.5 sm:p-4 space-y-2 sm:space-y-4 shadow-xs"
               >
-                <Skeleton className="h-48 w-full rounded-2xl" />
-                <div className="space-y-2">
-                  <Skeleton className="h-5 w-3/4 rounded" />
-                  <Skeleton className="h-4 w-1/2 rounded" />
+                <Skeleton className="h-28 xs:h-32 sm:h-48 w-full rounded-xl sm:rounded-2xl" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Skeleton className="h-4 sm:h-5 w-3/4 rounded" />
+                  <Skeleton className="h-3 sm:h-4 w-1/2 rounded" />
                 </div>
-                <div className="pt-2 flex items-center gap-2">
-                  <Skeleton className="h-9 w-full rounded-xl" />
-                  <Skeleton className="h-9 w-full rounded-xl" />
+                <div className="pt-1 sm:pt-2 flex items-center gap-1.5 sm:gap-2">
+                  <Skeleton className="h-7 sm:h-9 w-full rounded-lg sm:rounded-xl" />
+                  <Skeleton className="h-7 sm:h-9 w-8 sm:w-16 rounded-lg sm:rounded-xl shrink-0" />
                 </div>
               </div>
             ))}
@@ -228,7 +228,7 @@ const VendorServicesPage: React.FC = () => {
 
         {/* Error State */}
         {servicesError && (
-          <div className="p-6 rounded-3xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-center">
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-center">
             <p className="text-sm font-semibold text-red-600 dark:text-red-400">
               Error loading services: {servicesError.message}
             </p>
@@ -239,7 +239,7 @@ const VendorServicesPage: React.FC = () => {
         {!servicesLoading && !servicesError && (
           <>
             {filteredServices.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
                 {filteredServices.map((service) => {
                   const rating = Number(service.reviews?.[0]?.rating) || 0;
                   const reviewsCount = service.reviews?.length || 0;
@@ -247,10 +247,10 @@ const VendorServicesPage: React.FC = () => {
                   return (
                     <div
                       key={service.id}
-                      className="bg-white dark:bg-darkSurface rounded-3xl overflow-hidden border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all flex flex-col group"
+                      className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl overflow-hidden border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all flex flex-col group"
                     >
                       {/* Image Banner */}
-                      <div className="relative h-48 sm:h-52 w-full bg-gray-100 dark:bg-zinc-800 overflow-hidden">
+                      <div className="relative h-28 xs:h-32 sm:h-52 w-full bg-gray-100 dark:bg-zinc-800 overflow-hidden">
                         <Image
                           src={service.banner || "/images/offeringPlaceholder.webp"}
                           alt={service.name}
@@ -259,63 +259,64 @@ const VendorServicesPage: React.FC = () => {
                         />
                         {/* Category Badge */}
                         {service.category && (
-                          <div className="absolute top-3 left-3 bg-white/95 dark:bg-darkSurface/95 backdrop-blur-xs px-3 py-1 rounded-full text-[11px] font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wider shadow-xs">
+                          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/95 dark:bg-darkSurface/95 backdrop-blur-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[11px] font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wider shadow-xs">
                             {service.category}
                           </div>
                         )}
                       </div>
 
                       {/* Content Area */}
-                      <div className="p-5 sm:p-6 flex-grow flex flex-col justify-between space-y-4">
-                        <div className="space-y-2">
-                          <h2 className="font-title text-lg sm:text-xl font-bold text-gray-900 dark:text-zinc-100 group-hover:text-orange transition-colors line-clamp-1">
+                      <div className="p-2.5 sm:p-6 flex-grow flex flex-col justify-between space-y-2 sm:space-y-4">
+                        <div className="space-y-1 sm:space-y-2">
+                          <h2 className="font-title text-xs sm:text-xl font-bold text-gray-900 dark:text-zinc-100 group-hover:text-orange transition-colors line-clamp-1 leading-tight">
                             {service.name}
                           </h2>
 
                           {/* City & Rating */}
-                          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400">
-                            <span className="flex items-center gap-1">
-                              <FiMapPin className="text-orange" />
-                              {service.vendor?.city || vendorInfo?.city || "Location available"}
+                          <div className="flex flex-col xs:flex-row xs:items-center justify-between text-[10px] sm:text-xs text-gray-500 dark:text-zinc-400 gap-0.5 xs:gap-1">
+                            <span className="flex items-center gap-1 truncate">
+                              <FiMapPin className="text-orange shrink-0" size={11} />
+                              <span className="truncate">{service.vendor?.city || vendorInfo?.city || "Location available"}</span>
                             </span>
 
                             {rating > 0 ? (
-                              <span className="flex items-center gap-1 font-semibold text-amber-500">
-                                <FiStar className="fill-amber-500" />
+                              <span className="flex items-center gap-0.5 sm:gap-1 font-semibold text-amber-500 shrink-0">
+                                <FiStar className="fill-amber-500 text-[10px] sm:text-xs" />
                                 {rating.toFixed(1)}
                                 <span className="text-gray-400 dark:text-zinc-500 font-normal">
                                   ({reviewsCount})
                                 </span>
                               </span>
                             ) : (
-                              <span className="text-gray-400 dark:text-zinc-500">New Listing</span>
+                              <span className="text-gray-400 dark:text-zinc-500 shrink-0">New</span>
                             )}
                           </div>
 
-                          {/* Description snippet */}
+                          {/* Description snippet - hidden on mobile 2-col to maintain equal height */}
                           {service.description && (
-                            <p className="text-xs text-gray-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                            <p className="hidden sm:block text-xs text-gray-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                               {service.description}
                             </p>
                           )}
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center gap-2">
+                        <div className="pt-2 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center gap-1.5 sm:gap-2">
                           <Link
                             href={`/services/edit/${service.slug || service.id}`}
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-orange hover:bg-orange/90 text-white text-xs font-semibold transition-all shadow-2xs"
+                            className="flex-1 inline-flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 px-2 sm:px-3 rounded-lg sm:rounded-xl bg-orange hover:bg-orange/90 text-white text-[10px] sm:text-xs font-semibold transition-all shadow-2xs"
                           >
-                            <FiEdit size={13} />
-                            <span>Edit Service</span>
+                            <FiEdit size={12} className="shrink-0" />
+                            <span className="hidden sm:inline">Edit Service</span>
+                            <span className="sm:hidden">Edit</span>
                           </Link>
 
                           <Link
                             href={getServiceUrl(service)}
-                            className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-lightYellow dark:bg-darkElevated hover:bg-orange/10 dark:hover:bg-darkElevated/80 border border-orange/15 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-semibold transition-all"
+                            className="inline-flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 px-2 sm:px-3 rounded-lg sm:rounded-xl bg-lightYellow dark:bg-darkElevated hover:bg-orange/10 dark:hover:bg-darkElevated/80 border border-orange/15 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 text-[10px] sm:text-xs font-semibold transition-all shrink-0"
                             title="View public visitor page"
                           >
-                            <FiExternalLink size={13} />
+                            <FiExternalLink size={12} />
                             <span className="hidden sm:inline">Preview</span>
                           </Link>
                         </div>
