@@ -17,16 +17,16 @@ export const VendorPageHeader: React.FC<VendorPageHeaderProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${className}`}
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-3 sm:mb-8 ${className}`}
     >
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
+          <h1 className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
             {title}
           </h1>
           {badge}
         </div>
-        <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1 max-w-2xl">
+        <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1 max-w-2xl">
           {subtitle}
         </p>
       </div>
