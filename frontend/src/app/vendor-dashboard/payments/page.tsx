@@ -233,15 +233,15 @@ const PaymentsPage = () => {
             <div className="h-8 w-56 rounded-lg bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
             <div className="h-4 w-96 rounded bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-darkSurface rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-zinc-800 space-y-3"
+                className="bg-white dark:bg-darkSurface rounded-2xl p-3 sm:p-6 shadow-sm border border-gray-100 dark:border-zinc-800 space-y-2 sm:space-y-3"
               >
-                <div className="h-4 w-28 rounded bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
-                <div className="h-8 w-32 rounded-lg bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
-                <div className="h-3 w-20 rounded bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
+                <div className="h-3 sm:h-4 w-20 sm:w-28 rounded bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
+                <div className="h-6 sm:h-8 w-24 sm:w-32 rounded-lg bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
+                <div className="hidden sm:block h-3 w-20 rounded bg-gray-200/80 dark:bg-darkElevated animate-pulse" />
               </div>
             ))}
           </div>
@@ -286,34 +286,37 @@ const PaymentsPage = () => {
 
       <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
+        <div className="flex items-center justify-between gap-3 mb-3.5 sm:mb-8">
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
+            <div className="flex items-center gap-2">
+              <h1 className="font-title text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
                 Payment History
               </h1>
             </div>
-            <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+            <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
               Track your client 20% advance payments, verify transaction
               statuses, and review total revenue.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {/* Export Dropdown Menu */}
             <div className="relative">
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
                 disabled={isExporting}
-                className="inline-flex items-center gap-2 bg-white dark:bg-darkSurface hover:bg-gray-50 dark:hover:bg-darkElevated text-gray-700 dark:text-zinc-300 font-medium px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all text-sm shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 bg-white dark:bg-darkSurface hover:bg-gray-50 dark:hover:bg-darkElevated text-gray-700 dark:text-zinc-300 font-medium px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all text-xs sm:text-sm shadow-xs disabled:opacity-50"
                 title="Download financial statement"
               >
-                <FiDownload size={15} className="text-orange" />
-                <span>
+                <FiDownload size={14} className="text-orange" />
+                <span className="hidden sm:inline">
                   {isExporting ? "Generating..." : "Export Statement"}
                 </span>
+                <span className="sm:hidden text-xs">
+                  {isExporting ? "Exporting..." : "Export"}
+                </span>
                 <FiChevronDown
-                  size={14}
+                  size={13}
                   className={`text-gray-400 dark:text-zinc-500 transition-transform duration-200 ${
                     showExportMenu ? "rotate-180" : ""
                   }`}
@@ -415,119 +418,120 @@ const PaymentsPage = () => {
 
             <button
               onClick={() => refetch()}
-              className="inline-flex items-center gap-2 bg-white dark:bg-darkSurface hover:bg-gray-50 dark:hover:bg-darkElevated text-gray-700 dark:text-zinc-300 font-medium px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all text-sm shadow-xs"
+              className="inline-flex items-center gap-1.5 bg-white dark:bg-darkSurface hover:bg-gray-50 dark:hover:bg-darkElevated text-gray-700 dark:text-zinc-300 font-medium px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all text-xs sm:text-sm shadow-xs"
               title="Refresh payments"
             >
-              <FiRefreshCw size={15} />
-              <span>Refresh</span>
+              <FiRefreshCw size={14} />
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
 
         {/* Summary Metrics Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 mb-3.5 sm:mb-8">
           {/* Card 1: Total Completed Revenue */}
-          <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-5 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-1">
-                Completed Revenue
+          <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-3 sm:p-5 flex items-center justify-between">
+            <div className="min-w-0 pr-1">
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5 sm:mb-1 truncate">
+                Completed Rev.
               </p>
-              <h3 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+              <h3 className="font-title text-base sm:text-2xl font-bold text-gray-900 dark:text-zinc-100 truncate">
                 {formatLKR(totalRevenue)}
               </h3>
-              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
-                <FiCheckCircle size={12} /> {completedCount} confirmed advance{" "}
-                {completedCount === 1 ? "payment" : "payments"}
+              <p className="text-[10px] sm:text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1 flex items-center gap-1 truncate">
+                <FiCheckCircle size={10} className="sm:w-3 sm:h-3 flex-shrink-0" />
+                <span className="truncate">{completedCount} confirmed</span>
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
-              <FaMoneyBillWave size={22} />
+            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <FaMoneyBillWave className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </div>
           </div>
 
           {/* Card 2: Confirmed Bookings */}
-          <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-5 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-1">
+          <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-3 sm:p-5 flex items-center justify-between">
+            <div className="min-w-0 pr-1">
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5 sm:mb-1 truncate">
                 Confirmed Bookings
               </p>
-              <h3 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+              <h3 className="font-title text-base sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
                 {completedCount}
               </h3>
-              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
-                <FiCheckCircle size={12} /> Verified client reservations
+              <p className="text-[10px] sm:text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1 flex items-center gap-1 truncate">
+                <FiCheckCircle size={10} className="sm:w-3 sm:h-3 flex-shrink-0" />
+                <span className="truncate">Verified</span>
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
-              <FiCheckCircle size={22} />
+            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <FiCheckCircle className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </div>
           </div>
 
           {/* Card 3: Scheduled Dates */}
-          <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-5 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-1">
+          <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-3 sm:p-5 flex items-center justify-between">
+            <div className="min-w-0 pr-1">
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5 sm:mb-1 truncate">
                 Scheduled Dates
               </p>
-              <h3 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+              <h3 className="font-title text-base sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
                 {scheduledCount}
               </h3>
-              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                Locked on your calendar
+              <p className="text-[10px] sm:text-xs text-gray-400 dark:text-zinc-500 mt-0.5 sm:mt-1 truncate">
+                On calendar
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center flex-shrink-0">
-              <FiCalendar size={22} />
+            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-orange/10 dark:bg-orange/20 text-orange flex items-center justify-center flex-shrink-0">
+              <FiCalendar className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </div>
           </div>
 
           {/* Card 4: Average Advance */}
-          <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-5 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-1">
+          <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-3 sm:p-5 flex items-center justify-between">
+            <div className="min-w-0 pr-1">
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5 sm:mb-1 truncate">
                 Avg. Advance (20%)
               </p>
-              <h3 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+              <h3 className="font-title text-base sm:text-2xl font-bold text-gray-900 dark:text-zinc-100 truncate">
                 {formatLKR(avgAdvance)}
               </h3>
-              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
-                Per confirmed booking
+              <p className="text-[10px] sm:text-xs text-gray-400 dark:text-zinc-500 mt-0.5 sm:mt-1 truncate">
+                Per booking
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
-              <FiTrendingUp size={22} />
+            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+              <FiTrendingUp className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </div>
           </div>
         </div>
 
         {/* Filters & Search Toolbar */}
-        <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-2.5 sm:p-4 mb-3.5 sm:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-[11px] sm:text-xs font-semibold">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500"></span>
               Confirmed Payments ({filteredPayments.length})
             </span>
           </div>
 
           {/* Search Box */}
-          <div className="relative w-full md:w-72">
+          <div className="relative w-full sm:w-72">
             <FiSearch
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500"
-              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500"
+              size={15}
             />
             <input
               type="text"
               placeholder="Search customer, package, reference..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-darkElevated border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-zinc-100 rounded-xl focus:outline-none focus:border-orange focus:bg-white dark:focus:bg-darkElevated transition-colors placeholder:text-gray-400 dark:placeholder:text-zinc-500"
+              className="w-full pl-8 sm:pl-9 pr-7 sm:pr-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-50 dark:bg-darkElevated border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-zinc-100 rounded-lg sm:rounded-xl focus:outline-none focus:border-orange focus:bg-white dark:focus:bg-darkElevated transition-colors placeholder:text-gray-400 dark:placeholder:text-zinc-500"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
               >
-                <FiX size={14} />
+                <FiX size={13} />
               </button>
             )}
           </div>
@@ -673,38 +677,44 @@ const PaymentsPage = () => {
                 );
 
                 return (
-                  <div key={payment.id} className="p-4 flex flex-col gap-3">
+                  <div key={payment.id} className="p-3 sm:p-4 flex flex-col gap-2.5">
+                    {/* Header: Service + Package and Status */}
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <span className="text-xs font-semibold text-gray-400 dark:text-zinc-500">
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[10px] font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider block truncate">
                           {payment.package?.service?.name || "Wedding Service"}
                         </span>
-                        <h4 className="font-title font-bold text-gray-900 dark:text-zinc-100 text-base">
+                        <h4 className="font-title font-bold text-gray-900 dark:text-zinc-100 text-sm sm:text-base truncate">
                           {payment.package?.name || "Package"}
                         </h4>
                       </div>
-                      {getStatusBadge(payment.status)}
+                      <div className="flex-shrink-0">
+                        {getStatusBadge(payment.status)}
+                      </div>
                     </div>
 
-                    <div className="bg-gray-50/70 dark:bg-darkElevated/60 rounded-xl p-3 text-xs space-y-1">
-                      <div className="flex justify-between">
+                    {/* Metadata Grid: Customer, Email, Date */}
+                    <div className="bg-gray-50/70 dark:bg-darkElevated/60 rounded-lg sm:rounded-xl p-2.5 text-xs space-y-1">
+                      <div className="flex justify-between items-center text-[11px] sm:text-xs">
                         <span className="text-gray-500 dark:text-zinc-400">
                           Customer:
                         </span>
-                        <span className="font-medium text-gray-900 dark:text-zinc-200">
+                        <span className="font-medium text-gray-900 dark:text-zinc-200 truncate max-w-[170px]">
                           {customerName}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500 dark:text-zinc-400">
-                          Email:
-                        </span>
-                        <span className="font-medium text-gray-900 dark:text-zinc-200 truncate max-w-[180px]">
-                          {payment.visitor?.email || "N/A"}
-                        </span>
-                      </div>
+                      {payment.visitor?.email && (
+                        <div className="flex justify-between items-center text-[11px] sm:text-xs">
+                          <span className="text-gray-500 dark:text-zinc-400">
+                            Email:
+                          </span>
+                          <span className="font-medium text-gray-600 dark:text-zinc-400 truncate max-w-[170px]">
+                            {payment.visitor.email}
+                          </span>
+                        </div>
+                      )}
                       {payment.bookingDate && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center text-[11px] sm:text-xs">
                           <span className="text-gray-500 dark:text-zinc-400">
                             Event Date:
                           </span>
@@ -720,21 +730,22 @@ const PaymentsPage = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-1">
+                    {/* Footer: Amount & Action */}
+                    <div className="flex items-center justify-between pt-0.5">
                       <div>
-                        <div className="text-[11px] text-gray-400 dark:text-zinc-500">
-                          Advance Amount:
+                        <div className="text-[10px] uppercase font-semibold text-gray-400 dark:text-zinc-500">
+                          Advance (20%):
                         </div>
-                        <div className="font-title font-bold text-gray-900 dark:text-zinc-100 text-base">
+                        <div className="font-title font-bold text-gray-900 dark:text-zinc-100 text-sm sm:text-base text-emerald-600 dark:text-emerald-400">
                           {formatLKR(Number(payment.amount))}
                         </div>
                       </div>
 
                       <button
                         onClick={() => setSelectedPayment(payment)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange text-white rounded-xl text-xs font-medium"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange hover:bg-orange/90 active:scale-95 text-white rounded-lg sm:rounded-xl text-xs font-medium transition-all shadow-xs"
                       >
-                        <FiEye size={13} /> View Receipt
+                        <FiEye size={12} /> View Receipt
                       </button>
                     </div>
                   </div>
