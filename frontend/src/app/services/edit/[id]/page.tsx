@@ -52,16 +52,18 @@ const EditServiceContent = () => {
     <div className="flex flex-col min-h-screen bg-lightYellow dark:bg-darkBg transition-colors duration-200">
       <VendorHeader />
       <div className="bg-lightYellow dark:bg-darkBg flex-grow">
-        <div className="container mx-auto px-3.5 sm:px-4 py-3.5 sm:py-8">
-          <div className="mb-6">
-            <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">Edit Service</h1>
-            <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
+          <div className="mb-3.5 sm:mb-8">
+            <h1 className="font-title text-xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
+              Edit Service
+            </h1>
+            <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
               Manage your service information, media, packages, and public visibility.
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* Sidebar */}
+          <div className="flex flex-col lg:flex-row gap-3.5 sm:gap-8 items-start">
+            {/* Sidebar / Mobile Tabs */}
             <div className="w-full lg:w-72 flex-shrink-0">
               <ServicesMenu
                 setActiveSection={setActiveSection}

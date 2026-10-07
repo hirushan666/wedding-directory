@@ -18,9 +18,9 @@ export const PackageViewRepository = (dataSource: DataSource) =>
       // Skip self-views: if the viewer is the vendor who owns this package
       if (vendorId) {
         const ownerSql = `
-          SELECT 1 FROM offering o
-          INNER JOIN vendor v ON v.id = o.vendor_id
-          WHERE o.id = $1 AND v.id = $2
+          SELECT 1 FROM package p
+          INNER JOIN service s ON s.id = p.service_id
+          WHERE p.id = $1 AND s.vendor_id = $2
           LIMIT 1
         `;
         const owned: any[] = await (this.manager.query as any)(ownerSql, [packageId, vendorId]);

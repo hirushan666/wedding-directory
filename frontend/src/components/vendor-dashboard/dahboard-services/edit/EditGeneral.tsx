@@ -251,36 +251,36 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
     <Fragment>
       <div className="space-y-6 font-body">
         {/* Main General Information Card */}
-        <div className="bg-white dark:bg-darkSurface rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-zinc-800">
+        <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-sm border border-gray-100 dark:border-zinc-800">
           {/* Header Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-100 dark:border-zinc-800">
+          <div className="flex flex-row items-center justify-between gap-3 pb-4 sm:pb-6 mb-4 sm:mb-6 border-b border-gray-100 dark:border-zinc-800">
             <div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
-                  <FiInfo className="text-lg" />
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange shrink-0">
+                  <FiInfo className="text-base sm:text-lg" />
                 </div>
-                <h2 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+                <h2 className="font-title text-lg sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
                   General Information
                 </h2>
               </div>
-              <p className="text-gray-500 dark:text-zinc-400 text-sm mt-1">
+              <p className="hidden sm:block text-gray-500 dark:text-zinc-400 text-sm mt-1">
                 Configure your service category, description, and visibility on
                 the directory.
               </p>
             </div>
 
             {/* Service Visibility Pill */}
-            <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-gray-50 dark:bg-darkElevated border border-gray-200 dark:border-zinc-700 self-start sm:self-auto">
+            <div className="flex items-center gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-gray-50 dark:bg-darkElevated border border-gray-200 dark:border-zinc-700 shrink-0">
               <span
-                className={`text-xs font-semibold ${
+                className={`text-[11px] sm:text-xs font-semibold ${
                   serviceVisibility
                     ? "text-emerald-600 dark:text-emerald-400"
                     : "text-gray-400 dark:text-zinc-500"
                 }`}
               >
                 {serviceVisibility
-                  ? "Visible to Couples"
-                  : "Hidden from Couples"}
+                  ? "Visible"
+                  : "Hidden"}
               </span>
               <Switch
                 checked={serviceVisibility}
@@ -448,11 +448,11 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
             </div>
 
             {/* Unified Card Footer with Save Button */}
-            <div className="flex items-center justify-end pt-6 mt-6 border-t border-gray-100 dark:border-zinc-800">
+            <div className="flex items-center justify-end pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-gray-100 dark:border-zinc-800">
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all disabled:opacity-50"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all disabled:opacity-50"
               >
                 {isUpdating ? (
                   <>
@@ -468,13 +468,13 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
         </div>
 
         {/* Danger Zone: Delete Service */}
-        <div className="bg-white dark:bg-darkSurface rounded-2xl p-6 sm:p-8 shadow-sm border border-red-200/70 dark:border-red-900/40">
+        <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-sm border border-red-200/70 dark:border-red-900/40">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="font-title text-xl font-bold text-red-600 dark:text-red-400">
+              <h3 className="font-title text-base sm:text-xl font-bold text-red-600 dark:text-red-400">
                 Delete Service
               </h3>
-              <p className="text-gray-500 dark:text-zinc-400 text-sm mt-1 max-w-xl">
+              <p className="text-gray-500 dark:text-zinc-400 text-xs sm:text-sm mt-1 max-w-xl">
                 Permanently delete this service listing and all associated
                 packages, media, and reviews. This action cannot be undone.
               </p>
@@ -483,7 +483,7 @@ const EditGeneral: React.FC<EditProfileProps> = () => {
               type="button"
               onClick={handleOpenDeleteModal}
               disabled={isDeleting}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:scale-[0.99] rounded-xl shadow-sm shadow-red-500/20 transition-all disabled:opacity-50 whitespace-nowrap self-start sm:self-auto"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:scale-[0.99] rounded-xl shadow-sm shadow-red-500/20 transition-all disabled:opacity-50 whitespace-nowrap self-stretch sm:self-auto"
             >
               {isDeleting ? (
                 <>

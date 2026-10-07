@@ -395,18 +395,18 @@ const EditPackages: React.FC = () => {
         {viewMode === "list" && (
           <div className="space-y-6">
             {/* Header section matching Settings page theme */}
-            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 sm:p-8">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
-                      <FiPackage className="text-lg" />
+                  <div className="flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange shrink-0">
+                      <FiPackage className="text-base sm:text-lg" />
                     </div>
-                    <h2 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+                    <h2 className="font-title text-lg sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
                       Service Packages
                     </h2>
                   </div>
-                  <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+                  <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
                     Configure package tiers, pricing in LKR, and booking
                     requirements for couples.
                   </p>
@@ -414,10 +414,11 @@ const EditPackages: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleOpenAdd}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all whitespace-nowrap"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white bg-orange hover:bg-orange/90 active:scale-[0.99] rounded-xl shadow-sm shadow-orange/20 transition-all whitespace-nowrap"
                 >
-                  <FiPlus className="text-base" />
-                  <span>Add Package</span>
+                  <FiPlus className="text-sm sm:text-base" />
+                  <span className="hidden sm:inline">Add Package</span>
+                  <span className="sm:hidden">Add</span>
                 </button>
               </div>
             </div>
@@ -655,33 +656,33 @@ const EditPackages: React.FC = () => {
         {(viewMode === "add" || viewMode === "edit") && (
           <div className="space-y-6">
             {/* Top Navigation & Header */}
-            <div className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-8">
+            <div className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 sm:p-8">
               <button
                 type="button"
                 onClick={handleBackToList}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-zinc-400 hover:text-orange dark:hover:text-orange transition-colors mb-4 group"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-600 dark:text-zinc-400 hover:text-orange dark:hover:text-orange transition-colors mb-3 sm:mb-4 group"
               >
-                <FiArrowLeft className="text-base group-hover:-translate-x-1 transition-transform" />
+                <FiArrowLeft className="text-sm sm:text-base group-hover:-translate-x-1 transition-transform" />
                 <span>Back to Packages</span>
               </button>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange">
+                  <div className="flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange/10 flex items-center justify-center text-orange shrink-0">
                       {viewMode === "add" ? (
-                        <FiPlus className="text-lg" />
+                        <FiPlus className="text-base sm:text-lg" />
                       ) : (
-                        <FiEdit2 className="text-lg" />
+                        <FiEdit2 className="text-base sm:text-lg" />
                       )}
                     </div>
-                    <h2 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100">
+                    <h2 className="font-title text-lg sm:text-2xl font-bold text-gray-900 dark:text-zinc-100">
                       {viewMode === "add"
-                        ? "Add New Package"
-                        : `Edit Package: ${formPackage.name || "Untitled"}`}
+                        ? "Add Package"
+                        : `Edit Package`}
                     </h2>
                   </div>
-                  <p className="text-gray-500 dark:text-zinc-400 text-sm mt-1">
+                  <p className="hidden sm:block text-gray-500 dark:text-zinc-400 text-sm mt-1">
                     {viewMode === "add"
                       ? "Create a new service tier with pricing in LKR and customizable features."
                       : "Modify package details, booking rules, features, and visibility."}
@@ -689,17 +690,17 @@ const EditPackages: React.FC = () => {
                 </div>
 
                 {/* Visibility toggle pill in form header */}
-                <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-gray-50 dark:bg-darkElevated border border-gray-200 dark:border-zinc-700 self-start sm:self-auto">
+                <div className="flex items-center gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-gray-50 dark:bg-darkElevated border border-gray-200 dark:border-zinc-700 shrink-0">
                   <span
-                    className={`text-xs font-semibold ${
+                    className={`text-[11px] sm:text-xs font-semibold ${
                       formPackage.visible
                         ? "text-emerald-600 dark:text-emerald-400"
                         : "text-gray-400 dark:text-zinc-500"
                     }`}
                   >
                     {formPackage.visible
-                      ? "Visible to Couples"
-                      : "Hidden from Couples"}
+                      ? "Visible"
+                      : "Hidden"}
                   </span>
                   <Switch
                     checked={formPackage.visible}
@@ -714,7 +715,7 @@ const EditPackages: React.FC = () => {
             {/* Form Container */}
             <form
               onSubmit={handleSavePackage}
-              className="bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-8 space-y-6"
+              className="bg-white dark:bg-darkSurface rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-4 sm:p-8 space-y-5 sm:space-y-6"
             >
               {/* Package Image Section */}
               <div>
