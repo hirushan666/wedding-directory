@@ -351,29 +351,29 @@ const VendorAnalytics: React.FC = () => {
             <Skeleton className="h-8 w-64 rounded-lg" />
             <Skeleton className="h-4 w-80 rounded" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 space-y-4"
+                className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 space-y-2 sm:space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <Skeleton className="h-4 w-24 rounded" />
-                  <Skeleton className="h-10 w-10 rounded-2xl" />
+                  <Skeleton className="h-3 sm:h-4 w-16 sm:w-24 rounded" />
+                  <Skeleton className="h-7 w-7 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl" />
                 </div>
-                <Skeleton className="h-8 w-32 rounded-lg" />
-                <Skeleton className="h-3 w-40 rounded" />
+                <Skeleton className="h-6 sm:h-8 w-20 sm:w-32 rounded-lg" />
+                <Skeleton className="hidden sm:block h-3 w-40 rounded" />
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 space-y-4">
-              <Skeleton className="h-6 w-48 rounded-lg" />
-              <Skeleton className="h-72 w-full rounded-2xl" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="lg:col-span-2 bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-orange/15 dark:border-zinc-800 space-y-3 sm:space-y-4">
+              <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 rounded-lg" />
+              <Skeleton className="h-48 sm:h-72 w-full rounded-xl sm:rounded-2xl" />
             </div>
-            <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 space-y-4">
-              <Skeleton className="h-6 w-36 rounded-lg" />
-              <Skeleton className="h-72 w-full rounded-2xl" />
+            <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-orange/15 dark:border-zinc-800 space-y-3 sm:space-y-4">
+              <Skeleton className="h-5 sm:h-6 w-28 sm:w-36 rounded-lg" />
+              <Skeleton className="h-48 sm:h-72 w-full rounded-xl sm:rounded-2xl" />
             </div>
           </div>
         </div>
@@ -426,135 +426,145 @@ const VendorAnalytics: React.FC = () => {
             ) : null
           }
           actions={
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Link
                 href="/vendor-dashboard/services"
-                className="inline-flex items-center gap-2 bg-white dark:bg-darkSurface hover:bg-gray-50 dark:hover:bg-darkElevated text-gray-700 dark:text-zinc-300 font-medium px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all text-sm shadow-xs"
+                className="inline-flex items-center gap-1 sm:gap-2 bg-white dark:bg-darkSurface hover:bg-gray-50 dark:hover:bg-darkElevated text-gray-700 dark:text-zinc-300 font-medium px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 transition-all text-xs sm:text-sm shadow-xs shrink-0"
               >
-                <FiPackage size={15} className="text-orange" />
-                <span>My Services</span>
+                <FiPackage size={14} className="text-orange" />
+                <span className="hidden sm:inline">My Services</span>
+                <span className="sm:hidden">Services</span>
               </Link>
               <Link
                 href="/vendor-dashboard/payments"
-                className="inline-flex items-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-4 py-2.5 rounded-xl transition-all text-sm shadow-xs"
+                className="inline-flex items-center gap-1 sm:gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl transition-all text-xs sm:text-sm shadow-xs shrink-0"
               >
-                <FiDollarSign size={15} />
-                <span>Payment History</span>
+                <FiDollarSign size={14} />
+                <span className="hidden sm:inline">Payment History</span>
+                <span className="sm:hidden">Payments</span>
               </Link>
             </div>
           }
           className="mb-0"
         />
 
-        {/* 6 Key Performance Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* 6 Key Performance Metric Cards (2 cards per row on mobile, 3 on desktop) */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-5">
           {/* 1. Total Views Card */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
-                Listing Reach
-              </span>
-              <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <FiEye className="text-lg" />
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
+                  Listing Reach
+                </span>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20 flex items-center justify-center shrink-0">
+                  <FiEye className="text-xs sm:text-lg" />
+                </div>
+              </div>
+              <div className="space-y-0.5 sm:space-y-1">
+                <p className="text-xl sm:text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
+                  {analytics.totalUniqueViews.toLocaleString()}
+                </p>
+                <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                  Unique couples who viewed your packages
+                </p>
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
-                {analytics.totalUniqueViews.toLocaleString()}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-                Unique couples who viewed your packages
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-500 dark:text-zinc-400">Across {enrichedPackages.length} packages</span>
-              <span className="font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-0.5">
-                <FiTrendingUp /> Active Reach
+            <div className="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] sm:text-xs">
+              <span className="text-gray-500 dark:text-zinc-400 truncate">{enrichedPackages.length} pkgs</span>
+              <span className="font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-0.5 shrink-0">
+                <FiTrendingUp /> Active
               </span>
             </div>
           </div>
 
           {/* 2. Total Inquiries Card */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
-                Client Inquiries
-              </span>
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <FiMessageSquare className="text-lg" />
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
+                  Inquiries
+                </span>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/20 flex items-center justify-center shrink-0">
+                  <FiMessageSquare className="text-xs sm:text-lg" />
+                </div>
+              </div>
+              <div className="space-y-0.5 sm:space-y-1">
+                <p className="text-xl sm:text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
+                  {totalInquiries}
+                </p>
+                <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                  Active chat conversations with couples
+                </p>
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
-                {totalInquiries}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-                Active chat conversations with couples
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-500 dark:text-zinc-400">Inquiry rate: {inquiryRate}%</span>
+            <div className="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] sm:text-xs">
+              <span className="text-gray-500 dark:text-zinc-400 truncate">{inquiryRate}% rate</span>
               <Link
                 href="/vendor-dashboard/chats"
-                className="font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-0.5"
+                className="font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-0.5 shrink-0"
               >
-                Open Chats <FiArrowUpRight />
+                Chats <FiArrowUpRight />
               </Link>
             </div>
           </div>
 
           {/* 3. Total Bookings Card */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
-                Confirmed Bookings
-              </span>
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <FiCalendar className="text-lg" />
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
+                  Bookings
+                </span>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20 flex items-center justify-center shrink-0">
+                  <FiCalendar className="text-xs sm:text-lg" />
+                </div>
+              </div>
+              <div className="space-y-0.5 sm:space-y-1">
+                <p className="text-xl sm:text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
+                  {totalBookings}
+                </p>
+                <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                  Completed wedding bookings to date
+                </p>
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
-                {totalBookings}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-                Completed wedding bookings to date
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-500 dark:text-zinc-400">Conversion: {bookingRate}%</span>
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+            <div className="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] sm:text-xs">
+              <span className="text-gray-500 dark:text-zinc-400 truncate">{bookingRate}% conv</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 shrink-0">
                 <FiCheckCircle /> Verified
               </span>
             </div>
           </div>
 
           {/* 4. Total Revenue Card */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
-                Gross Earnings
-              </span>
-              <div className="w-10 h-10 rounded-2xl bg-orange/10 dark:bg-orange/20 text-orange ring-1 ring-orange/30 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <FiDollarSign className="text-lg" />
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
+                  Gross Earnings
+                </span>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-orange/10 dark:bg-orange/20 text-orange ring-1 ring-orange/30 flex items-center justify-center shrink-0">
+                  <FiDollarSign className="text-xs sm:text-lg" />
+                </div>
+              </div>
+              <div className="space-y-0.5 sm:space-y-1">
+                <p className="text-xl sm:text-3xl font-bold font-title text-gray-900 dark:text-zinc-100 truncate">
+                  <span className="text-xs sm:text-base font-bold text-orange mr-1">LKR</span>
+                  {totalRevenue.toLocaleString()}
+                </p>
+                <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                  From {totalBookings} completed {totalBookings === 1 ? "booking" : "bookings"}
+                </p>
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
-                <span className="text-base sm:text-lg font-bold text-orange mr-1">LKR</span>
-                {totalRevenue.toLocaleString()}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-                From {totalBookings} completed {totalBookings === 1 ? "booking" : "bookings"}
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-500 dark:text-zinc-400">
-                Avg. LKR {avgBookingValue.toLocaleString()} / bkg
+            <div className="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] sm:text-xs">
+              <span className="text-gray-500 dark:text-zinc-400 truncate">
+                Avg LKR {avgBookingValue.toLocaleString()}
               </span>
               <Link
                 href="/vendor-dashboard/payments"
-                className="font-semibold text-orange hover:underline flex items-center gap-0.5"
+                className="font-semibold text-orange hover:underline flex items-center gap-0.5 shrink-0"
               >
                 Invoices <FiArrowUpRight />
               </Link>
@@ -562,147 +572,146 @@ const VendorAnalytics: React.FC = () => {
           </div>
 
           {/* 5. Client Satisfaction / Reviews Card */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
-                Client Rating
-              </span>
-              <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 ring-1 ring-amber-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <FiStar className="text-lg fill-amber-500 text-amber-500" />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
-                  {calculatedRating}
-                </p>
-                <span className="text-sm font-semibold text-gray-400 dark:text-zinc-500">/ 5.0</span>
-                <div className="flex items-center text-amber-400 text-sm ml-1">
-                  {"★".repeat(Math.round(Number(calculatedRating)))}
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
+                  Client Rating
+                </span>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 dark:text-amber-400 ring-1 ring-amber-500/20 flex items-center justify-center shrink-0">
+                  <FiStar className="text-xs sm:text-lg fill-amber-500 text-amber-500" />
                 </div>
               </div>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-                Based on {totalReviewsCount > 0 ? `${totalReviewsCount} verified couple` : "34 verified"} reviews
-              </p>
+              <div className="space-y-0.5 sm:space-y-1">
+                <div className="flex items-baseline gap-1 sm:gap-2">
+                  <p className="text-xl sm:text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
+                    {calculatedRating}
+                  </p>
+                  <span className="text-[11px] sm:text-sm font-semibold text-gray-400 dark:text-zinc-500">/ 5.0</span>
+                </div>
+                <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                  Based on {totalReviewsCount > 0 ? `${totalReviewsCount} verified couple` : "34 verified"} reviews
+                </p>
+              </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-500 dark:text-zinc-400">Couple Satisfaction</span>
-              <span className="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
+            <div className="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] sm:text-xs">
+              <span className="text-gray-500 dark:text-zinc-400 truncate">Satisfaction</span>
+              <span className="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5 shrink-0">
                 <FiAward /> Excellent
               </span>
             </div>
           </div>
 
           {/* 6. Active Packages Breakdown Card */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
-                Active Catalog
-              </span>
-              <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <FiPackage className="text-lg" />
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-orange/15 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-400 truncate">
+                  Catalog
+                </span>
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/20 flex items-center justify-center shrink-0">
+                  <FiPackage className="text-xs sm:text-lg" />
+                </div>
+              </div>
+              <div className="space-y-0.5 sm:space-y-1">
+                <p className="text-xl sm:text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
+                  {enrichedPackages.length}
+                </p>
+                <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                  Service packages published in directory
+                </p>
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold font-title text-gray-900 dark:text-zinc-100">
-                {enrichedPackages.length}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-                Service packages published in directory
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-500 dark:text-zinc-400">Across {servicesList.length || 1} services</span>
+            <div className="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] sm:text-xs">
+              <span className="text-gray-500 dark:text-zinc-400 truncate">{servicesList.length || 1} services</span>
               <Link
                 href="/vendor-dashboard"
-                className="font-semibold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-0.5"
+                className="font-semibold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-0.5 shrink-0"
               >
-                Manage Services <FiArrowUpRight />
+                Catalog <FiArrowUpRight />
               </Link>
             </div>
           </div>
         </div>
 
         {/* Charts & Funnel Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Visual Trend Chart (2 columns on large) */}
-          <div className="lg:col-span-2 bg-white dark:bg-darkSurface rounded-3xl p-6 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+          <div className="lg:col-span-2 bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
             <div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-6">
                 <div>
-                  <h2 className="text-xl font-bold font-title text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+                  <h2 className="text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100 flex items-center gap-1.5 sm:gap-2">
                     <FiActivity className="text-orange" /> Performance Trends
                   </h2>
-                  <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
+                  <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
                     Monthly breakdown of your audience visibility and generated revenue
                   </p>
                 </div>
 
                 {/* Chart Tab Switcher */}
-                <div className="inline-flex p-1 rounded-xl bg-orange/[0.06] dark:bg-darkElevated border border-orange/15 dark:border-zinc-700 self-start sm:self-auto">
+                <div className="inline-flex p-1 rounded-xl bg-orange/[0.06] dark:bg-darkElevated border border-orange/15 dark:border-zinc-700 shrink-0">
                   <button
                     onClick={() => setActiveChartTab("views")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                       activeChartTab === "views"
                         ? "bg-white dark:bg-darkSurface text-blue-600 dark:text-blue-400 shadow-2xs"
                         : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-200"
                     }`}
                   >
-                    Unique Views
+                    Views
                   </button>
                   <button
                     onClick={() => setActiveChartTab("revenue")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                       activeChartTab === "revenue"
                         ? "bg-white dark:bg-darkSurface text-orange shadow-2xs"
                         : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-200"
                     }`}
                   >
-                    Revenue (LKR)
+                    Revenue
                   </button>
                 </div>
               </div>
 
               {/* Chart Canvas */}
-              <div className="h-64 sm:h-72 w-full">
+              <div className="h-48 sm:h-72 w-full">
                 <Bar data={chartData} options={chartOptions} />
               </div>
             </div>
 
             {/* Quick Chart Legend / Summary */}
-            <div className="mt-6 pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-3 h-3 rounded-md ${
-                      activeChartTab === "views" ? "bg-blue-500" : "bg-orange"
-                    }`}
-                  />
-                  <span className="text-gray-600 dark:text-zinc-400">
-                    {activeChartTab === "views" ? "Monthly Unique Views" : "Monthly Completed Revenue"}
-                  </span>
-                </div>
+            <div className="mt-3 sm:mt-6 pt-2.5 sm:pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-[11px] sm:text-xs">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-md ${
+                    activeChartTab === "views" ? "bg-blue-500" : "bg-orange"
+                  }`}
+                />
+                <span className="text-gray-600 dark:text-zinc-400 font-medium">
+                  {activeChartTab === "views" ? "Monthly Unique Views" : "Monthly Completed Revenue"}
+                </span>
               </div>
-              <span className="text-gray-400 dark:text-zinc-500 italic">
+              <span className="hidden sm:inline text-gray-400 dark:text-zinc-500 italic">
                 Updated in real-time as couples interact with your catalog
               </span>
             </div>
           </div>
 
           {/* Conversion Funnel & Booking Highlights (1 column) */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold font-title text-gray-900 dark:text-zinc-100 mb-1">
+              <h2 className="text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100 mb-0.5 sm:mb-1">
                 Conversion Funnel
               </h2>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 mb-6">
+              <p className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-400 mb-3 sm:mb-6">
                 From discovery to confirmed wedding booking
               </p>
 
               {/* Funnel Steps */}
-              <div className="space-y-4">
+              <div className="space-y-2.5 sm:space-y-4">
                 {/* 1. Views */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="flex items-center gap-1.5 text-gray-700 dark:text-zinc-300">
                       <FiEye className="text-blue-500" /> Listing Views
@@ -711,13 +720,13 @@ const VendorAnalytics: React.FC = () => {
                       {analytics.totalUniqueViews} (100%)
                     </span>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-blue-100/50 dark:bg-blue-950/40 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-blue-100/50 dark:bg-blue-950/40 overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full transition-all duration-500 w-full" />
                   </div>
                 </div>
 
                 {/* 2. Inquiries */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="flex items-center gap-1.5 text-gray-700 dark:text-zinc-300">
                       <FiMessageSquare className="text-purple-500" /> Chat Inquiries
@@ -726,7 +735,7 @@ const VendorAnalytics: React.FC = () => {
                       {totalInquiries} ({inquiryRate}%)
                     </span>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-purple-100/50 dark:bg-purple-950/40 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-purple-100/50 dark:bg-purple-950/40 overflow-hidden">
                     <div
                       className="h-full bg-purple-500 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(100, Math.max(8, Number(inquiryRate)))}%` }}
@@ -735,7 +744,7 @@ const VendorAnalytics: React.FC = () => {
                 </div>
 
                 {/* 3. Bookings */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="flex items-center gap-1.5 text-gray-700 dark:text-zinc-300">
                       <FiCalendar className="text-emerald-500" /> Completed Bookings
@@ -744,7 +753,7 @@ const VendorAnalytics: React.FC = () => {
                       {totalBookings} ({bookingRate}%)
                     </span>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-emerald-100/50 dark:bg-emerald-950/40 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-emerald-100/50 dark:bg-emerald-950/40 overflow-hidden">
                     <div
                       className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(100, Math.max(8, Number(bookingRate)))}%` }}
@@ -755,60 +764,59 @@ const VendorAnalytics: React.FC = () => {
             </div>
 
             {/* Quick Stat Highlights */}
-            <div className="mt-6 pt-5 border-t border-gray-100 dark:border-zinc-800/80 space-y-3">
-              <div className="flex items-center justify-between text-xs p-3 rounded-2xl bg-orange/[0.04] dark:bg-darkElevated border border-orange/15 dark:border-zinc-700">
-                <span className="text-gray-600 dark:text-zinc-400 font-medium">Avg. Booking Value</span>
-                <span className="font-bold font-title text-gray-900 dark:text-zinc-100">
+            <div className="mt-3 sm:mt-6 pt-3 sm:pt-5 border-t border-gray-100 dark:border-zinc-800/80 grid grid-cols-2 gap-2 text-xs">
+              <div className="flex flex-col p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-orange/[0.04] dark:bg-darkElevated border border-orange/15 dark:border-zinc-700">
+                <span className="text-gray-500 dark:text-zinc-400 text-[10px] sm:text-xs">Avg. Value</span>
+                <span className="font-bold font-title text-gray-900 dark:text-zinc-100 text-xs sm:text-sm truncate">
                   LKR {avgBookingValue.toLocaleString()}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-xs p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
-                <span className="font-medium">Total Paid Transactions</span>
-                <span className="font-bold">{totalBookings} Completed</span>
+              <div className="flex flex-col p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
+                <span className="text-[10px] sm:text-xs text-emerald-700 dark:text-emerald-400">Transactions</span>
+                <span className="font-bold text-xs sm:text-sm truncate">{totalBookings} Completed</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Package Performance Breakdown */}
-        <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs">
+        <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs">
           {/* Table Header & Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div>
-              <h2 className="text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
+              <h2 className="text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100">
                 Package Performance & Traffic
               </h2>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
+              <p className="hidden sm:block text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
                 Detailed view count, completed bookings, and earnings per package
               </p>
             </div>
 
             {/* Search and Sort Toolbar */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               {/* Search */}
-              <div className="relative">
-                <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-sm" />
+              <div className="relative flex-1 sm:w-56">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-xs sm:text-sm" />
                 <input
                   type="text"
                   placeholder="Search packages..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 rounded-full text-xs bg-lightYellow dark:bg-darkElevated border border-orange/20 dark:border-zinc-700 text-gray-900 dark:text-zinc-100 focus:outline-none focus:border-orange placeholder:text-gray-400 dark:placeholder:text-zinc-500 w-44 sm:w-56"
+                  className="w-full pl-8 sm:pl-9 pr-3 sm:pr-4 py-1.5 sm:py-2 rounded-full text-xs bg-lightYellow dark:bg-darkElevated border border-orange/20 dark:border-zinc-700 text-gray-900 dark:text-zinc-100 focus:outline-none focus:border-orange placeholder:text-gray-400 dark:placeholder:text-zinc-500"
                 />
               </div>
 
               {/* Sort By */}
-              <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-zinc-400">
-                <span className="hidden sm:inline">Sort:</span>
+              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400 shrink-0">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-3 py-2 rounded-full text-xs font-semibold bg-lightYellow dark:bg-darkElevated border border-orange/20 dark:border-zinc-700 text-gray-800 dark:text-zinc-200 focus:outline-none focus:border-orange cursor-pointer"
+                  className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold bg-lightYellow dark:bg-darkElevated border border-orange/20 dark:border-zinc-700 text-gray-800 dark:text-zinc-200 focus:outline-none focus:border-orange cursor-pointer"
                 >
                   <option value="views">Most Views</option>
-                  <option value="revenue">Highest Revenue</option>
+                  <option value="revenue">Highest Rev</option>
                   <option value="bookings">Most Bookings</option>
-                  <option value="name">Package Name</option>
+                  <option value="name">Name</option>
                 </select>
               </div>
             </div>
@@ -956,27 +964,27 @@ const VendorAnalytics: React.FC = () => {
         </div>
 
         {/* Bottom Section: Recent Bookings & Actionable Growth Tips */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Recent Completed Bookings Feed */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold font-title text-gray-900 dark:text-zinc-100 flex items-center gap-2">
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs">
+            <div className="flex items-center justify-between mb-2 sm:mb-4">
+              <h2 className="text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100 flex items-center gap-1.5 sm:gap-2">
                 <FiCalendar className="text-emerald-600 dark:text-emerald-400" /> Recent Bookings
               </h2>
               <Link
                 href="/vendor-dashboard/payments"
-                className="text-xs font-semibold text-orange hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-orange hover:underline flex items-center gap-1 shrink-0"
               >
                 All Payments <FiArrowUpRight />
               </Link>
             </div>
-            <p className="text-xs text-gray-500 dark:text-zinc-400 mb-4">
+            <p className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-400 mb-3 sm:mb-4">
               Latest client reservations and completed transactions
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               {completedPayments.length === 0 ? (
-                <div className="py-8 text-center text-gray-500 dark:text-zinc-400 text-xs">
+                <div className="py-6 sm:py-8 text-center text-gray-500 dark:text-zinc-400 text-xs">
                   No completed bookings recorded yet. Once couples confirm their dates and pay, they will appear here.
                 </div>
               ) : (
@@ -988,13 +996,13 @@ const VendorAnalytics: React.FC = () => {
                   return (
                     <div
                       key={payment.id}
-                      className="p-3.5 rounded-2xl bg-orange/[0.03] dark:bg-darkElevated border border-orange/10 dark:border-zinc-800 flex items-center justify-between gap-3 hover:border-orange/30 transition-all"
+                      className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-orange/[0.03] dark:bg-darkElevated border border-orange/10 dark:border-zinc-800 flex items-center justify-between gap-2.5 sm:gap-3 hover:border-orange/30 transition-all"
                     >
                       <div className="space-y-0.5 min-w-0">
                         <div className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-zinc-100 truncate">
                           {coupleName}
                         </div>
-                        <div className="text-[11px] text-gray-500 dark:text-zinc-400 truncate">
+                        <div className="text-[10px] sm:text-[11px] text-gray-500 dark:text-zinc-400 truncate">
                           {payment.package?.name || "Service Package"} • {payment.bookingDate || "Date TBD"}
                         </div>
                       </div>
@@ -1003,7 +1011,7 @@ const VendorAnalytics: React.FC = () => {
                         <div className="font-title font-bold text-xs sm:text-sm text-emerald-600 dark:text-emerald-400">
                           LKR {(payment.amount || 0).toLocaleString()}
                         </div>
-                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+                        <span className="inline-block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-1.5 sm:px-2 py-0.5 rounded-full">
                           Paid
                         </span>
                       </div>
@@ -1015,56 +1023,56 @@ const VendorAnalytics: React.FC = () => {
           </div>
 
           {/* Actionable Insights & Recommendations */}
-          <div className="bg-white dark:bg-darkSurface rounded-3xl p-6 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+          <div className="bg-white dark:bg-darkSurface rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-orange/15 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold font-title text-gray-900 dark:text-zinc-100 flex items-center gap-2 mb-1">
+              <h2 className="text-base sm:text-xl font-bold font-title text-gray-900 dark:text-zinc-100 flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                 <FiZap className="text-amber-500" /> Performance Insights
               </h2>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 mb-5">
+              <p className="text-[11px] sm:text-xs text-gray-500 dark:text-zinc-400 mb-3 sm:mb-5">
                 Strategic tips to maximize your inquiries and bookings
               </p>
 
-              <div className="space-y-3.5">
+              <div className="space-y-2.5 sm:space-y-3.5">
                 {/* Tip 1 */}
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                  <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 shrink-0">
-                    <FiTrendingUp className="text-base" />
+                <div className="flex items-start gap-2.5 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                  <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 shrink-0">
+                    <FiTrendingUp className="text-sm sm:text-base" />
                   </div>
                   <div className="text-xs">
                     <h3 className="font-bold text-gray-900 dark:text-zinc-100">
                       Optimize Top Packages
                     </h3>
-                    <p className="text-gray-600 dark:text-zinc-400 mt-0.5">
+                    <p className="text-gray-600 dark:text-zinc-400 mt-0.5 text-[11px] sm:text-xs leading-relaxed">
                       Your top-viewed package generates the most couple interest. Ensure its pricing, inclusions, and photo gallery are always up to date.
                     </p>
                   </div>
                 </div>
 
                 {/* Tip 2 */}
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30">
-                  <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 shrink-0">
-                    <FiMessageSquare className="text-base" />
+                <div className="flex items-start gap-2.5 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30">
+                  <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 shrink-0">
+                    <FiMessageSquare className="text-sm sm:text-base" />
                   </div>
                   <div className="text-xs">
                     <h3 className="font-bold text-gray-900 dark:text-zinc-100">
                       Fast Response Rate
                     </h3>
-                    <p className="text-gray-600 dark:text-zinc-400 mt-0.5">
+                    <p className="text-gray-600 dark:text-zinc-400 mt-0.5 text-[11px] sm:text-xs leading-relaxed">
                       Couples who receive replies within 2 hours are 60% more likely to book. Check your Chats tab daily for unread inquiries.
                     </p>
                   </div>
                 </div>
 
                 {/* Tip 3 */}
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                  <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 shrink-0">
-                    <FiStar className="text-base" />
+                <div className="flex items-start gap-2.5 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                  <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 shrink-0">
+                    <FiStar className="text-sm sm:text-base" />
                   </div>
                   <div className="text-xs">
                     <h3 className="font-bold text-gray-900 dark:text-zinc-100">
                       Collect Verified Reviews
                     </h3>
-                    <p className="text-gray-600 dark:text-zinc-400 mt-0.5">
+                    <p className="text-gray-600 dark:text-zinc-400 mt-0.5 text-[11px] sm:text-xs leading-relaxed">
                       Completed wedding couples can review your service. More positive reviews elevate your ranking in the vendor search directory.
                     </p>
                   </div>
@@ -1072,7 +1080,7 @@ const VendorAnalytics: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
+            <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
               <span className="text-gray-500 dark:text-zinc-400">Need marketing help?</span>
               <Link
                 href="/help"
