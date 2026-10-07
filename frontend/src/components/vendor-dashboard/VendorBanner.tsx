@@ -42,87 +42,138 @@ const VendorBanner = ({ vendor }: VendorProps) => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-7 flex flex-col items-center text-center">
-      {/* Profile Image with subtle ring */}
-      <div className="relative mb-3">
-        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full ring-4 ring-orange/10 dark:ring-orange/20 overflow-hidden shadow-sm relative">
-          <Image
-            src={vendor?.profile_pic_url || vendor?.profilePic || '/images/visitorPlaceholder.png'}
-            alt={vendor?.busname || 'Vendor profile'}
-            fill
-            className="object-cover"
-          />
+    <>
+      {/* ── Mobile: compact card strip (hidden on md+) ── */}
+      <div className="md:hidden w-full bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 px-3 py-2.5">
+        {/* Row 1: avatar + name/greeting + contact pills */}
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <div className="w-11 h-11 rounded-full ring-2 ring-orange/20 dark:ring-orange/30 overflow-hidden shadow-sm relative flex-shrink-0">
+            <Image
+              src={vendor?.profile_pic_url || vendor?.profilePic || '/images/visitorPlaceholder.png'}
+              alt={vendor?.busname || 'Vendor profile'}
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          {/* Greeting + business name */}
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-orange leading-none mb-0.5">
+              {getGreeting()}, {vendor?.fname || 'Vendor'}!
+            </p>
+            <h2 className="font-title text-sm font-bold text-gray-900 dark:text-zinc-100 leading-tight truncate">
+              {vendor?.busname || 'Your Business'}
+            </h2>
+          </div>
+
+          {/* Phone + Email icon pills */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <div
+              className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center hover:bg-orange/20 transition-colors"
+              title={vendor?.phone || 'Phone not provided'}
+            >
+              <FaPhoneAlt size={11} />
+            </div>
+            <div
+              className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center hover:bg-orange/20 transition-colors"
+              title={vendor?.email || 'Email not provided'}
+            >
+              <FaEnvelope size={11} />
+            </div>
+          </div>
         </div>
+
+        {/* Row 2: city text */}
+        {vendor?.city && (
+          <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-gray-100 dark:border-zinc-800">
+            <FaLocationDot size={10} className="text-orange flex-shrink-0" />
+            <span className="text-xs text-gray-500 dark:text-zinc-400 font-body truncate">{vendor.city}</span>
+          </div>
+        )}
       </div>
 
-      {/* Greeting & Business Name */}
-      <div className="mb-5">
-        <span className="inline-block text-xs font-semibold uppercase tracking-wider text-orange mb-1">
-          {getGreeting()}, {vendor?.fname || 'Vendor'}!
-        </span>
-        <h2 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100 leading-tight">
-          {vendor?.busname || 'Your Business'}
-        </h2>
-      </div>
-
-      {/* Contact Details Card */}
-      <div className="w-full bg-gray-50/70 dark:bg-darkElevated border border-gray-100 dark:border-zinc-700 rounded-xl p-3.5 mb-6 text-left flex flex-col gap-2.5 text-xs sm:text-sm text-gray-600 dark:text-zinc-300">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
-            <FaLocationDot size={13} />
+      {/* ── Desktop: full card (hidden below md) ── */}
+      <div className="hidden md:flex w-full bg-white dark:bg-darkSurface rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 p-6 sm:p-7 flex-col items-center text-center">
+        {/* Profile Image with subtle ring */}
+        <div className="relative mb-3">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full ring-4 ring-orange/10 dark:ring-orange/20 overflow-hidden shadow-sm relative">
+            <Image
+              src={vendor?.profile_pic_url || vendor?.profilePic || '/images/visitorPlaceholder.png'}
+              alt={vendor?.busname || 'Vendor profile'}
+              fill
+              className="object-cover"
+            />
           </div>
-          <span className="truncate">{vendor?.city || "Location not provided"}</span>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
-            <FaPhoneAlt size={12} />
-          </div>
-          <span className="truncate">{vendor?.phone || "Phone not provided"}</span>
+        {/* Greeting & Business Name */}
+        <div className="mb-5">
+          <span className="inline-block text-xs font-semibold uppercase tracking-wider text-orange mb-1">
+            {getGreeting()}, {vendor?.fname || 'Vendor'}!
+          </span>
+          <h2 className="font-title text-2xl font-bold text-gray-900 dark:text-zinc-100 leading-tight">
+            {vendor?.busname || 'Your Business'}
+          </h2>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
-            <FaEnvelope size={12} />
+        {/* Contact Details Card */}
+        <div className="w-full bg-gray-50/70 dark:bg-darkElevated border border-gray-100 dark:border-zinc-700 rounded-xl p-3.5 mb-6 text-left flex flex-col gap-2.5 text-xs sm:text-sm text-gray-600 dark:text-zinc-300">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
+              <FaLocationDot size={13} />
+            </div>
+            <span className="truncate">{vendor?.city || "Location not provided"}</span>
           </div>
-          <span className="truncate">{vendor?.email || "Email not provided"}</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
+              <FaPhoneAlt size={12} />
+            </div>
+            <span className="truncate">{vendor?.phone || "Phone not provided"}</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-orange/10 text-orange flex items-center justify-center flex-shrink-0">
+              <FaEnvelope size={12} />
+            </div>
+            <span className="truncate">{vendor?.email || "Email not provided"}</span>
+          </div>
         </div>
-      </div>
 
-      {/* Portal Quick Links */}
-      <div className="w-full text-left">
-        <h3 className="font-title text-sm font-bold text-gray-900 dark:text-zinc-100 uppercase tracking-wider mb-3">
-          Quick Links
-        </h3>
-        <div className="flex flex-col gap-2">
-          {quickLinks.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-zinc-800 hover:border-orange/30 dark:hover:border-orange/30 hover:bg-orange/5 dark:hover:bg-darkElevated transition-all"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-orange/10 text-orange flex items-center justify-center flex-shrink-0 group-hover:bg-orange group-hover:text-white transition-colors">
-                    <Icon size={16} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-gray-800 dark:text-zinc-200 group-hover:text-orange transition-colors truncate">
-                      {item.title}
+        {/* Portal Quick Links */}
+        <div className="w-full text-left">
+          <h3 className="font-title text-sm font-bold text-gray-900 dark:text-zinc-100 uppercase tracking-wider mb-3">
+            Quick Links
+          </h3>
+          <div className="flex flex-col gap-2">
+            {quickLinks.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-zinc-800 hover:border-orange/30 dark:hover:border-orange/30 hover:bg-orange/5 dark:hover:bg-darkElevated transition-all"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-orange/10 text-orange flex items-center justify-center flex-shrink-0 group-hover:bg-orange group-hover:text-white transition-colors">
+                      <Icon size={16} />
                     </div>
-                    <div className="text-xs text-gray-400 dark:text-zinc-500 truncate">
-                      {item.description}
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-gray-800 dark:text-zinc-200 group-hover:text-orange transition-colors truncate">
+                        {item.title}
+                      </div>
+                      <div className="text-xs text-gray-400 dark:text-zinc-500 truncate">
+                        {item.description}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <FiChevronRight className="text-gray-400 dark:text-zinc-500 group-hover:text-orange group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-2" size={16} />
-              </Link>
-            );
-          })}
+                  <FiChevronRight className="text-gray-400 dark:text-zinc-500 group-hover:text-orange group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-2" size={16} />
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

@@ -11,7 +11,7 @@ import { useQuery } from "@apollo/client";
 import { MdAdd } from "react-icons/md";
 import Footer from "@/components/shared/Footer";
 import { VendorDashboardSkeleton } from "@/components/ui/shimmer";
-import { FiCalendar, FiShield } from "react-icons/fi";
+import { FiCalendar, FiShield, FiLayers } from "react-icons/fi";
 import BookingCalendar from "@/components/vendor-dashboard/BookingCalendar";
 import VendorApprovalRequests from "@/components/vendor-dashboard/VendorApprovalRequests";
 
@@ -86,31 +86,52 @@ const VendorDashBoardContent: React.FC = () => {
 
       <main className="flex-grow max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-8 w-full">
         {/* Top Header Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
-          <div>
-            <h1 className="font-title text-3xl font-bold text-gray-900 dark:text-zinc-100">
+        <div className="mb-3 sm:mb-8">
+          {/* Title row */}
+          <div className="flex items-center justify-between sm:justify-start gap-4 mb-2 sm:mb-0">
+            <h1 className="font-title text-2xl sm:text-3xl font-bold text-gray-900 dark:text-zinc-100">
               Vendor Dashboard
             </h1>
-            <p className="text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
-              Monitor customer bookings, manage your storefront profile, and track schedule availability.
-            </p>
+            {/* Desktop-only: Add New Service button */}
+            <Link
+              href="/vendor-dashboard/new-service"
+              className="hidden sm:inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-4 py-2.5 rounded-xl transition-all shadow-sm text-sm"
+            >
+              <MdAdd size={20} />
+              <span>Add New Service</span>
+            </Link>
           </div>
-          <Link
-            href="/vendor-dashboard/new-service"
-            className="inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange/90 text-white font-medium px-4 py-2.5 rounded-xl transition-all shadow-sm text-sm self-start sm:self-auto"
-          >
-            <MdAdd size={20} />
-            <span>Add New Service</span>
-          </Link>
+          <p className="hidden sm:block text-gray-500 dark:text-zinc-400 font-body text-sm mt-1">
+            Monitor customer bookings, manage your storefront profile, and track schedule availability.
+          </p>
+
+          {/* Mobile-only: two action buttons row */}
+          <div className="flex items-center gap-2 sm:hidden">
+            <Link
+              href="/vendor-dashboard/services"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 border-2 border-orange/40 text-orange hover:bg-orange/5 font-semibold px-3 py-2 rounded-xl transition-all text-sm"
+            >
+              <FiLayers size={15} />
+              <span>My Services</span>
+            </Link>
+            <Link
+              href="/vendor-dashboard/new-service"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-orange hover:bg-orange/90 text-white font-semibold px-3 py-2 rounded-xl transition-all shadow-sm text-sm"
+            >
+              <MdAdd size={17} />
+              <span>Add Service</span>
+            </Link>
+          </div>
         </div>
 
         {/* Asymmetric Profile + Booking Calendar Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-8 items-start">
           <div className="lg:col-span-4">
             <VendorBanner vendor={vendorInfo} />
           </div>
-          <div className="lg:col-span-8 flex flex-col gap-4">
-            <div className="flex items-center gap-2 bg-white dark:bg-darkSurface p-1.5 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 w-fit self-start">
+          <div className="lg:col-span-8 flex flex-col gap-3 lg:gap-4">
+            {/* Tab Switcher — full-width on mobile */}
+            <div className="flex items-center gap-2 bg-white dark:bg-darkSurface p-1.5 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 w-full sm:w-fit self-start">
               <button
                 onClick={() => {
                   setDashboardTab("calendar");
@@ -120,7 +141,7 @@ const VendorDashBoardContent: React.FC = () => {
                     "/vendor-dashboard?tab=calendar",
                   );
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
                   dashboardTab === "calendar"
                     ? "bg-orange text-white shadow-sm"
                     : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-50 dark:hover:bg-darkElevated"
@@ -138,7 +159,7 @@ const VendorDashBoardContent: React.FC = () => {
                     "/vendor-dashboard?tab=approvals",
                   );
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex-1 sm:flex-none ${
                   dashboardTab === "approvals"
                     ? "bg-orange text-white shadow-sm"
                     : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100 hover:bg-gray-50 dark:hover:bg-darkElevated"
